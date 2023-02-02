@@ -87,19 +87,19 @@ void setup()
 
   // Create the Main page
   page = PageMain::create(skin);
-  Menu::getInstance()->addPage(*page);
+  Menu::getInstance()->addPage(page);
 
   // Create the File page w/ header
   page = PageFileSelectControl::create("File Select w/ header", "PageOK", "Main", skin, "/", true);
-  Menu::getInstance()->addPage(*page);
+  Menu::getInstance()->addPage(page);
 
   // Create the File page w/o header
   page = PageFileSelectControl::create("File Select w/o header", "PageOK", "Main", skin, "/", false);
-  Menu::getInstance()->addPage(*page);
+  Menu::getInstance()->addPage(page);
 
   // Create the OK page
   page = PageOK::create(skin);
-  Menu::getInstance()->addPage(*page);
+  Menu::getInstance()->addPage(page);
 
 
 }

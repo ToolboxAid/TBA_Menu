@@ -198,7 +198,7 @@ public:
     ElementVariable *findVariable = (ElementVariable *)this->variableListPlus->searchName(name);
     if (findVariable)
     {
-      //return findVariable->getValue();
+      // return findVariable->getValue();
       return findVariable;
     }
 
@@ -233,37 +233,6 @@ public:
 
     return NULL;
   }
-
-  // boolean setPageVariable(const char *name, const char *value)
-  // {
-  //   ElementVariable *findVariable = (ElementVariable *)this->variableListPlus->searchName(name);
-  //   if (findVariable)
-  //   {
-  //     findVariable->setValue(value);
-  //     return true;
-  //   }
-  //   Serial.print("setPageVariable not found: ");
-  //   Serial.println(name);
-  //   Serial.println(" : ");
-  //   Serial.println(value);
-
-  //   return false;
-  // }
-  // boolean setPageInput(const char *name, const char *input)
-  // {
-  //   ElementInput *findInput = (ElementInput *)this->inputListPlus->searchName(name);
-  //   if (findInput)
-  //   {
-  //     findInput->setInput(input);
-  //     return true;
-  //   }
-  //   Serial.print("setPageInput not found: ");
-  //   Serial.print(name);
-  //   Serial.println(" : ");
-  //   Serial.println(input);
-
-  //   return false;
-  // }
 
   void clearFiles()
   {

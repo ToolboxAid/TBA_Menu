@@ -49,7 +49,6 @@ spi.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
 
 #include "pages/PageMain.h"
 #include "pages/PageMap.h"
-#include "pages/PageVariable.h"
 
 // #define DEBUG
 
@@ -64,7 +63,7 @@ void setup()
   Serial.println("\n\nBooting...");
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
   Serial.println("ToolboxAid.com");
-  Serial.println("Menu Test - Variables");
+  Serial.println("Menu Test - Button Map");
   Serial.print  ("Tag: ");
   Serial.println(TAG);
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
@@ -84,15 +83,7 @@ void setup()
   ElementPage *page;
 
   // Create the menu page
-  page = PageMain::create();
-  Menu::getInstance()->addPage(page);
-
-  // // Create the variables page
-  // page = PageVariable::create();
-  // Menu::getInstance()->addPage(page);
-
-  // Create the 2x2 map page
-  page = PageMap::create(2, 2, skin);
+  page = PageMain::create(3, 4, skin);
   Menu::getInstance()->addPage(page);
 
   // Create the 3x3 map page

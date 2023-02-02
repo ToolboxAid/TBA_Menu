@@ -41,26 +41,26 @@ public:
     /* clear screen        */ true);
 
     // Add label
-    page->addLabel(*(new ElementLabel("Hello world", new Point(10, 50))));
-    page->addLabel(*(new ElementLabel("File Select Example", new Point(10, 90))));
+    page->addLabel(new ElementLabel("Show me some files", new Point(10, 50)));
+    page->addLabel(new ElementLabel("File Select Examples", new Point(10, 90)));
 
-    dimensions = new Dimensions(20, 140, 280, 35);
+    dimensions = new Dimensions(15, 150, 290, 35);
     button = new ElementButton("File Select w/ header",
     /* X, Y, W, H             */ dimensions,
     /* short press            */ NULL, //&StaticPage::pageMain,
     /* new short current page */ "File Select w/ header",
     /* long  press            */ NULL,
     /* new long current page  */ NULL);
-    page->addButton(*button);
+    page->addButton(button);
 
-    dimensions = new Dimensions(20, 180, 280, 35);
+    dimensions = new Dimensions(15, 190, 290, 35);
     button = new ElementButton("File Select w/o header",
     /* X, Y, W, H             */ dimensions,
     /* short press            */ NULL, //&StaticPage::pageMain,
     /* new short current page */ "File Select w/o header",
     /* long  press            */ NULL,
     /* new long current page  */ NULL);
-    page->addButton(*button);
+    page->addButton(button);
 
 
     /* Don't do this, errors on display.

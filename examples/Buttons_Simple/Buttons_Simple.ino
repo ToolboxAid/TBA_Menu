@@ -69,7 +69,6 @@ void setup()
 
   Skin *skin = new Skin(); /* Using TBA default skin */
 
-skin->debugSerial("main");
  /*override TBA default skin
   skin = new Skin( name,  rotate,
         screenWidth,  screenHeight,

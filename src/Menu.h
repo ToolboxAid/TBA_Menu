@@ -229,11 +229,9 @@ void Menu::checkMenuActions()
 
       if (triggerState == ElementButton::STATE::SHORT)
       { // Short
-// button->debugSerial("Root");
-
         button->executeShortFunction();
 
-        findPage = (ElementPage *)thisMenu->pageListPlus->searchName(button->getShortPage());
+        findPage = (ElementPage *)thisMenu->pageListPlus->searchName(button->getShortPage());        
         if (findPage)
         {
           thisMenu->newPage = findPage;
@@ -244,9 +242,33 @@ void Menu::checkMenuActions()
           thisMenu->pageLoadTime = millis(); // set time to prevent spam
           if (!button->getShortPage() == NULL)
           {
+            Serial.println(button->getShortPage());
             Serial.print("checkMenuActions short button change page not found: '");
             Serial.print(button->getShortPage());
             Serial.println("'");
+            //
+            //
+              Serial.println("Valid Pages are: ");
+              pageListPlus->setCurrentToHead();
+              ElementPage *page = (ElementPage*)pageListPlus->getNext();
+              while (page)
+              {
+                //page->debugSerial("all pages");
+                Serial.print("ID: '");
+                Serial.print(page->getIdentity());
+                Serial.print("' Name: '");
+                Serial.print(page->getName());
+                Serial.print("'");
+                Serial.println();
+                page = (ElementPage*)pageListPlus->getNext();
+              }
+                Serial.print("' Size: '");
+                Serial.print(pageListPlus->getNodeCount());
+                Serial.print("'");
+                Serial.println();
+
+            //
+            //             
           }
         }
       }
@@ -266,7 +288,7 @@ void Menu::checkMenuActions()
           {
             Serial.print("checkMenuActions long button change page not found: '");
             Serial.print(button->getLongPage());
-            Serial.println("'");
+            Serial.println("'");// 
           }
         }
       }
@@ -287,27 +309,15 @@ void Menu::checkMenuActions()
 
   // delete anything we use NEW on.
   delete point;
-}
 
-// boolean Menu::setPageVariable(const char *name, const char *value)
-// { // This is the only way to get access to current page
-//   return thisMenu->currentPage->setPageVariable(name, value);
-// }
+
+
+}
 
 ElementVariable  *Menu::getPageVariable(const char *name)
 { // This is the only way to get access to current page
   return thisMenu->currentPage->getPageVariable(name);
 }
-
-// boolean Menu::setPageInput(const char *name, const char *input)
-// { // This is the only way to get access to current page
-//   if (thisMenu->currentPage->setPageInput(name, input))
-//   {
-//     Display::getInstance()->drawInput(thisMenu->currentPage);
-//     return true;
-//   }
-//   return false;
-// }
 
 ElementInput *Menu::getPageInput(const char *name)
 { // This is the only way to get access to current page

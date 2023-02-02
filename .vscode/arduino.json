@@ -3,6 +3,6 @@
     "board": "esp32:esp32:esp32wrover",
     "programmer": "esp32:esptool",
     "port": "COM3",
-    "sketch": "examples\\Page_Variables\\Page_Variables.ino",
+    "sketch": "examples\\File_System\\File_System.ino",
     "output": "../Build"
 }

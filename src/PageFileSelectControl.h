@@ -18,7 +18,7 @@
 #include <string>
 
 #include "ElementFile.h"
-#include "ElementButton.h"
+// #include "ElementButton.h"
 #include "Dimensions.h"
 
 class PageFileSelectControl
@@ -39,10 +39,9 @@ public:
 
     ElementButton *button;
     Dimensions *dimensions;
-    ElementFile *fileElement;
+    ElementFile *elementFile;
     ElementRectangle *rectangle;
     const char * icon;
-    // bool addIcon = false;
 
     uint8_t size = 25;
 
@@ -57,69 +56,49 @@ public:
     // Add button: UP
     dimensions = new Dimensions(skin->getScreenWidth() - size - skin->buttonMargin, top + skin->buttonMargin, size, size);
     button = new ElementButton("U", dimensions, &PageFileSelectControl::pageUpButton, NULL, NULL, NULL, icon, "up", false);
-    page->addButton(*button);
+    page->addButton(button);
 
     // Add button DW
     dimensions = new Dimensions(skin->getScreenWidth() - size - skin->buttonMargin, 240 - size - skin->buttonMargin, size, size);
     button = new ElementButton("D", dimensions, &PageFileSelectControl::pageDownButton, NULL, NULL, NULL, icon, "dn", false);
-    page->addButton(*button);
+    page->addButton(button);
 
     // Add rectangle slider bar (between U & D)
     dimensions = new Dimensions(skin->getScreenWidth() - size - skin->buttonMargin, top + size, size, skin->getScreenHeight() - top - size - (skin->buttonMargin * 2));
     rectangle = new ElementRectangle("sidebar", dimensions);
-    page->addRectangle(*rectangle);
+    page->addRectangle(rectangle);
 
     // Add rectangle sidebar (position box)
     dimensions = new Dimensions(skin->getScreenWidth() - size, top + size, size - 10, size);
     rectangle = new ElementRectangle("slider", dimensions);
-    page->addRectangle(*rectangle);
+    page->addRectangle(rectangle);
 
     // =============================================================================
     // Add input directory name
     dimensions = new Dimensions(skin->buttonMargin, top + skin->buttonMargin, skin->getScreenWidth() - size - (skin->buttonMargin * 2) - (skin->buttonBorderWidth * 2), 22);
-    page->addInput(*(new ElementInput("inputDirectory", "Directory name here", dimensions)));
+    page->addInput(new ElementInput("inputDirectory", "Directory name here", dimensions));
     // =============================================================================
     // Add rectangles back drop
     top = dimensions->getY() + dimensions->getH() + skin->buttonMargin;
     dimensions = new Dimensions(skin->buttonMargin, top, skin->getScreenWidth() - size - (skin->buttonMargin * 2) - (skin->buttonBorderWidth * 2), skin->getScreenHeight() - top - (skin->buttonMargin * 1));
     rectangle = new ElementRectangle("backdrop", dimensions);
-    page->addRectangle(*rectangle);
+    page->addRectangle(rectangle);
 
-    //     //=============================================================================
-    //     //Add a button per File // Just for show here
-    //     top = dimensions->getY() + skin->buttonMargin + skin->buttonPadding;
-    //     uint8_t loopSize = 8;
-    //     if (page->getDisplayHeader())
-    //       loopSize = 7;
-    //     for (int x = 0; x <= 2; x++)
-    //     { //                             x,                                                              y,                 w,   h
-    //       dimensions = new Dimensions(skin->buttonBorderWidth + skin->buttonMargin + skin->buttonPadding, top + (x * 20),
-    //                                   skin->getScreenWidth() - size - (skin->buttonMargin * 4) - (skin->buttonBorderWidth * 2), 20);
-    // //      dimensions->debugSerial("loop");
-    //       fileElement = new ElementFile("Filename goes here", dimensions, &PageFileSelectControl::pageFileSelect, "PageOK", "full file path", NULL);
-    //       page->addButton(*fileElement);
-    //     }
-
-    /* Don't do this, errors on display. (No NEW used)
-    delete dimensions;
-    delete button;
-    delete page;
-    */
     return page;
   }
 
   static void refresh(/* void */)
   { // Do some work on a specific variables page
 
-    Serial.println("-------------------------------------------------------------------------------------");
-Menu::getInstance()->getCurrentPage()->buttonListPlus->display();
-    Serial.println("-------------------------------------------------------------------------------------");
+Serial.println("-------------------------------------------------------------------------------------");
+Menu::getInstance()->getCurrentPage()->buttonListPlus->traverseForward();
+Serial.println("-------------------------------------------------------------------------------------");
     Serial.print("Refresh: ");
     static uint16_t cnt = 0;
     Serial.print(cnt++);
 
     Dimensions *dimensions;
-    ElementFile *fileElement;
+    ElementFile *elementFile;
     ElementRectangle *rectangle;
 
     // =============================================================================
@@ -128,7 +107,6 @@ Menu::getInstance()->getCurrentPage()->buttonListPlus->display();
     rectangle = Menu::getInstance()->getPageRectangle("backdrop");
     if (rectangle)
     {
-      // rectangle->debugSerial("refresh");
       uint16_t top = rectangle->getDimensions()->getH();
       uint8_t loopSize = top / 20;
       Serial.print(" loopSize: ");
@@ -137,10 +115,10 @@ Menu::getInstance()->getCurrentPage()->buttonListPlus->display();
       for (int x = 0; x < loopSize; x++)
       { //                             x,                                                              y,                                              w,   h
         dimensions = new Dimensions(rectangle->getDimensions()->getX(), rectangle->getDimensions()->getY() + (x * 20), rectangle->getDimensions()->getW(), 20);
-        fileElement = new ElementFile("Filename goes here", dimensions, &PageFileSelectControl::pageFileSelect, "PageOK", "full file path", NULL);
+        elementFile = new ElementFile("Filename goes here", dimensions, &PageFileSelectControl::pageFileSelect, "PageOK", "full file path", NULL);
 
-        Menu::getInstance()->getCurrentPage()->addButton(*fileElement);
-        // Menu::getInstance()->addFile(*fileElement);
+        Menu::getInstance()->getCurrentPage()->addButton(elementFile);
+        // Menu::getInstance()->addFile(*elementFile);
       }
     }
     else

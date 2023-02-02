@@ -47,17 +47,17 @@ public:
     // Add buttons: clear, Back, Send
     dimensions = skin->getMapDimensions(across, down, 2, 5);
     button = new ElementButton("OK", dimensions, NULL, "Main", NULL, NULL);
-    page->addButton(*button);
+    page->addButton(button);
 
     // Add label
-    page->addLabel(*(new ElementLabel("File Selected:", new Point(40, 60), false)));
+    page->addLabel(new ElementLabel("File Selected:", new Point(40, 60), false));
 
     // Add rectangle DW
     uint8_t top = 40;
     uint8_t edg = 25;
     dimensions = new Dimensions(skin->buttonMargin + edg, top, skin->getScreenWidth() - (skin->buttonMargin * 2) - (edg * 2), skin->getScreenHeight() - top - (skin->buttonMargin * 2));
     rectangle = new ElementRectangle("backdrop", dimensions);
-    page->addRectangle(*rectangle);
+    page->addRectangle(rectangle);
     
     /* Don't do this, errors on display.
     delete dimensions;
