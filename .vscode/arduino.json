@@ -1,0 +1,5 @@
+{
+    "board": "esp32:esp32:esp32wrover",
+    "port": "COM3",
+    "sketch": "examples\\TBA_ListPlus_test\\TBA_ListPlus_test.ino"
+}
