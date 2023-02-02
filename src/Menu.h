@@ -85,11 +85,7 @@ public:
 
   ElementVariable *getPageVariable(const char *name);
 
-//  boolean setPageVariable(const char *name, const char *value);
-
   ElementInput *getPageInput(const char *name);
-
-//  boolean setPageInput(const char *name, const char *input);
 
   ElementRectangle *getPageRectangle(const char *name);
 
@@ -129,7 +125,7 @@ boolean Menu::executePageBackMethod()
 {
   if (thisMenu->currentPage->hasBackPage())
   {
-    if (millis() > (thisMenu->pageLoadTime + (thisMenu->currentPage->getBackPageDelay() * 1000)))
+    if (millis() >= (thisMenu->pageLoadTime + (thisMenu->currentPage->getBackPageDelay() * 1000)))
     {
       ElementPage *findPage = (ElementPage *)thisMenu->pageListPlus->searchName(thisMenu->currentPage->getBackPage());
       if (findPage)
@@ -189,7 +185,9 @@ boolean Menu::checkPageChange()
 {
   if (thisMenu->newPage != thisMenu->currentPage)
   {
+    thisMenu->currentPage->doExit();
     thisMenu->currentPage = thisMenu->newPage;
+    thisMenu->currentPage->doLoad();
     thisMenu->pageLoadTime = millis(); // set page load time
     Display::getInstance()->drawCurrentPage(thisMenu->currentPage);
     return true;
@@ -222,30 +220,6 @@ void Menu::checkMenuActions()
     }
     if (button->isRELEASED()) // we are changing page, short or long?
     {
-      // use action to change page
-      button->resetButton();
-
-      ElementPage *findPage;
-
-      if (triggerState == ElementButton::STATE::SHORT)
-      { // Short
-        button->executeShortFunction();
-
-        findPage = (ElementPage *)thisMenu->pageListPlus->searchName(button->getShortPage());        
-        if (findPage)
-        {
-          thisMenu->newPage = findPage;
-          return; // new page, not worth the risk of a delayed updates.
-        }
-        else
-        {
-          thisMenu->pageLoadTime = millis(); // set time to prevent spam
-          if (!button->getShortPage() == NULL)
-          {
-            Serial.println(button->getShortPage());
-            Serial.print("checkMenuActions short button change page not found: '");
-            Serial.print(button->getShortPage());
-            Serial.println("'");
             //
             //
               Serial.println("Valid Pages are: ");
@@ -268,7 +242,78 @@ void Menu::checkMenuActions()
                 Serial.println();
 
             //
-            //             
+            //
+            //
+            //
+              Serial.println("Valid Buttons are: ");
+              currentPage->buttonListPlus->setCurrentToHead();
+              ElementButton *button = (ElementButton*)currentPage->buttonListPlus->getNext();
+              while (button)
+              {
+                //page->debugSerial("all button");
+                Serial.print("ID: '");
+                Serial.print(button->getIdentity());
+                Serial.print("' Name: '");
+                Serial.print(button->getName());
+                Serial.print("'");
+                Serial.println();
+                button = (ElementButton*)currentPage->buttonListPlus->getNext();
+              }
+                Serial.print("' Size: '");
+                Serial.print(currentPage->buttonListPlus->getNodeCount());
+                Serial.print("'");
+                Serial.println();
+
+            //
+            //
+
+      // use action to change page
+      button->resetButton();
+
+      ElementPage *findPage;
+
+      if (triggerState == ElementButton::STATE::SHORT)
+      { // Short
+        button->executeShortFunction();
+
+        findPage = (ElementPage *)thisMenu->pageListPlus->searchName(button->getShortPage());
+        if (findPage)
+        {
+          thisMenu->newPage = findPage;
+          return; // new page, not worth the risk of a delayed updates.
+        }
+        else
+        {
+          thisMenu->pageLoadTime = millis(); // set time to prevent spam
+          if (!button->getShortPage() == NULL)
+          {
+            Serial.println(button->getShortPage());
+            Serial.print("checkMenuActions short button change page not found: '");
+            Serial.print(button->getShortPage());
+            Serial.println("'");
+            // //
+            // //
+            //   Serial.println("Valid Pages are: ");
+            //   pageListPlus->setCurrentToHead();
+            //   ElementPage *page = (ElementPage*)pageListPlus->getNext();
+            //   while (page)
+            //   {
+            //     //page->debugSerial("all pages");
+            //     Serial.print("ID: '");
+            //     Serial.print(page->getIdentity());
+            //     Serial.print("' Name: '");
+            //     Serial.print(page->getName());
+            //     Serial.print("'");
+            //     Serial.println();
+            //     page = (ElementPage*)pageListPlus->getNext();
+            //   }
+            //     Serial.print("' Size: '");
+            //     Serial.print(pageListPlus->getNodeCount());
+            //     Serial.print("'");
+            //     Serial.println();
+
+            // //
+            // //
           }
         }
       }
@@ -288,7 +333,7 @@ void Menu::checkMenuActions()
           {
             Serial.print("checkMenuActions long button change page not found: '");
             Serial.print(button->getLongPage());
-            Serial.println("'");// 
+            Serial.println("'"); //
           }
         }
       }
@@ -309,12 +354,9 @@ void Menu::checkMenuActions()
 
   // delete anything we use NEW on.
   delete point;
-
-
-
 }
 
-ElementVariable  *Menu::getPageVariable(const char *name)
+ElementVariable *Menu::getPageVariable(const char *name)
 { // This is the only way to get access to current page
   return thisMenu->currentPage->getPageVariable(name);
 }

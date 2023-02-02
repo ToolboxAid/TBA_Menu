@@ -53,11 +53,12 @@ spi.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
 #include "pages/PageOK.h"
 #include "TBA_SupportFunction.h";
 
-TBA_SupportFunction supportFunction = TBA_SupportFunction();;
+TBA_SupportFunction supportFunction = TBA_SupportFunction();
+;
 
 void setup()
 {
- // Use serial port
+  // Use serial port
   Serial.begin(115200);
   while (!Serial && (millis() <= 10000))
   {
@@ -66,21 +67,21 @@ void setup()
   Serial.println("Booting...");
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
   Serial.println("ToolboxAid.com");
-  Serial.println("Menu Tester");
-  Serial.print  ("Tag: ");
+  Serial.println("Menu - File Example");
+  Serial.print("Tag: ");
   Serial.println(TAG);
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
 
   Skin *skin = new Skin(); /* Using TBA default skin */
- /*override TBA default skin
-  skin = new Skin( name,  rotate,
-        screenWidth,  screenHeight,
-        headerHeight,  headerFontTextSize,  headerTextColor,  headerBackGroundColor,  headerIconImage,
-        buttonTextColor,  buttonColor,  buttonShortColor,  buttonLongColor,  buttonBorderColor
-         buttonMargin,  buttonBorderWidth,  buttonPadding,  buttonRadius,
-        textFontSize,  textColor,  textBackgroundColor);  */
+                           /*override TBA default skin
+                            skin = new Skin( name,  rotate,
+                                  screenWidth,  screenHeight,
+                                  headerHeight,  headerFontTextSize,  headerTextColor,  headerBackGroundColor,  headerIconImage,
+                                  buttonTextColor,  buttonColor,  buttonShortColor,  buttonLongColor,  buttonBorderColor
+                                   buttonMargin,  buttonBorderWidth,  buttonPadding,  buttonRadius,
+                                  textFontSize,  textColor,  textBackgroundColor);  */
 
-// PageFileSelectControl
+  // PageFileSelectControl
   Menu::getInstance()->init(*skin, "Main");
 
   ElementPage *page;
@@ -100,24 +101,25 @@ void setup()
   // Create the OK page
   page = PageOK::create(skin);
   Menu::getInstance()->addPage(page);
-
-
 }
 
+int cntr = 0;
 void loop()
 {
+  if (cntr++ > 1000) // Show mem usage
+  {
+    supportFunction.memoryInfo();
+    cntr = 0;
+  }
 
-supportFunction.memoryInfo();
-
-// Dimensions *d = new Dimensions(0,0,100,100);
-// Serial.print(" '0x");Serial.print((unsigned int)&d,HEX);Serial.print("'");
-// delete d;
-// Serial.print(" '0x");Serial.print((unsigned int)&d,HEX);Serial.print("'");
-// d = NULL;
-// Serial.print(" '0x");Serial.print((unsigned int)&d,HEX);Serial.print("'");
-// Serial.println();
+  // Dimensions *d = new Dimensions(0,0,100,100);
+  // Serial.print(" '0x");Serial.print((unsigned int)&d,HEX);Serial.print("'");
+  // delete d;
+  // Serial.print(" '0x");Serial.print((unsigned int)&d,HEX);Serial.print("'");
+  // d = NULL;
+  // Serial.print(" '0x");Serial.print((unsigned int)&d,HEX);Serial.print("'");
+  // Serial.println();
 
   Menu::getInstance()->checkMenuActions();
-  delay(1000);
   yield(); // Allow WDT to reset
 }
