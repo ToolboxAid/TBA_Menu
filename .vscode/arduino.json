@@ -1,5 +1,8 @@
 {
+    "configuration": "PartitionScheme=no_ota,FlashMode=qio,FlashFreq=80,UploadSpeed=921600,DebugLevel=none,EraseFlash=none",
     "board": "esp32:esp32:esp32wrover",
+    "programmer": "esp32:esptool",
     "port": "COM3",
-    "sketch": "examples\\TBA_ListPlus_test\\TBA_ListPlus_test.ino"
+    "sketch": "examples\\Page_Variables\\Page_Variables.ino",
+    "output": "../Build"
 }
