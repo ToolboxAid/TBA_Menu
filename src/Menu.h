@@ -125,7 +125,7 @@ boolean Menu::executePageBackMethod()
 {
   if (thisMenu->currentPage->hasBackPage())
   {
-    if (millis() >= (thisMenu->pageLoadTime + (thisMenu->currentPage->getBackPageDelay() * 1000)))
+    if (millis() > (thisMenu->pageLoadTime + (thisMenu->currentPage->getBackPageDelay() * 1000)))
     {
       ElementPage *findPage = (ElementPage *)thisMenu->pageListPlus->searchName(thisMenu->currentPage->getBackPage());
       if (findPage)
@@ -185,9 +185,7 @@ boolean Menu::checkPageChange()
 {
   if (thisMenu->newPage != thisMenu->currentPage)
   {
-    thisMenu->currentPage->doExit();
     thisMenu->currentPage = thisMenu->newPage;
-    thisMenu->currentPage->doLoad();
     thisMenu->pageLoadTime = millis(); // set page load time
     Display::getInstance()->drawCurrentPage(thisMenu->currentPage);
     return true;
@@ -220,53 +218,6 @@ void Menu::checkMenuActions()
     }
     if (button->isRELEASED()) // we are changing page, short or long?
     {
-            //
-            //
-              Serial.println("Valid Pages are: ");
-              pageListPlus->setCurrentToHead();
-              ElementPage *page = (ElementPage*)pageListPlus->getNext();
-              while (page)
-              {
-                //page->debugSerial("all pages");
-                Serial.print("ID: '");
-                Serial.print(page->getIdentity());
-                Serial.print("' Name: '");
-                Serial.print(page->getName());
-                Serial.print("'");
-                Serial.println();
-                page = (ElementPage*)pageListPlus->getNext();
-              }
-                Serial.print("' Size: '");
-                Serial.print(pageListPlus->getNodeCount());
-                Serial.print("'");
-                Serial.println();
-
-            //
-            //
-            //
-            //
-              Serial.println("Valid Buttons are: ");
-              currentPage->buttonListPlus->setCurrentToHead();
-              ElementButton *button = (ElementButton*)currentPage->buttonListPlus->getNext();
-              while (button)
-              {
-                //page->debugSerial("all button");
-                Serial.print("ID: '");
-                Serial.print(button->getIdentity());
-                Serial.print("' Name: '");
-                Serial.print(button->getName());
-                Serial.print("'");
-                Serial.println();
-                button = (ElementButton*)currentPage->buttonListPlus->getNext();
-              }
-                Serial.print("' Size: '");
-                Serial.print(currentPage->buttonListPlus->getNodeCount());
-                Serial.print("'");
-                Serial.println();
-
-            //
-            //
-
       // use action to change page
       button->resetButton();
 
@@ -291,29 +242,29 @@ void Menu::checkMenuActions()
             Serial.print("checkMenuActions short button change page not found: '");
             Serial.print(button->getShortPage());
             Serial.println("'");
-            // //
-            // //
-            //   Serial.println("Valid Pages are: ");
-            //   pageListPlus->setCurrentToHead();
-            //   ElementPage *page = (ElementPage*)pageListPlus->getNext();
-            //   while (page)
-            //   {
-            //     //page->debugSerial("all pages");
-            //     Serial.print("ID: '");
-            //     Serial.print(page->getIdentity());
-            //     Serial.print("' Name: '");
-            //     Serial.print(page->getName());
-            //     Serial.print("'");
-            //     Serial.println();
-            //     page = (ElementPage*)pageListPlus->getNext();
-            //   }
-            //     Serial.print("' Size: '");
-            //     Serial.print(pageListPlus->getNodeCount());
-            //     Serial.print("'");
-            //     Serial.println();
+            //
+            //
+            Serial.println("Valid Pages are: ");
+            pageListPlus->setCurrentToHead();
+            ElementPage *page = (ElementPage *)pageListPlus->getNext();
+            while (page)
+            {
+              // page->debugSerial("all pages");
+              Serial.print("ID: '");
+              Serial.print(page->getIdentity());
+              Serial.print("' Name: '");
+              Serial.print(page->getName());
+              Serial.print("'");
+              Serial.println();
+              page = (ElementPage *)pageListPlus->getNext();
+            }
+            Serial.print("' Size: '");
+            Serial.print(pageListPlus->getNodeCount());
+            Serial.print("'");
+            Serial.println();
 
-            // //
-            // //
+            //
+            //
           }
         }
       }
@@ -333,7 +284,7 @@ void Menu::checkMenuActions()
           {
             Serial.print("checkMenuActions long button change page not found: '");
             Serial.print(button->getLongPage());
-            Serial.println("'"); //
+            Serial.println("'");
           }
         }
       }
@@ -349,7 +300,10 @@ void Menu::checkMenuActions()
   if (thisMenu->currentPage->checkRefresh())
   {
     Display::getInstance()->drawVariable(thisMenu->currentPage);
-    Display::getInstance()->drawInput(thisMenu->currentPage);
+  }
+  else
+  {
+    Display::getInstance()->checkInput(thisMenu->currentPage);
   }
 
   // delete anything we use NEW on.

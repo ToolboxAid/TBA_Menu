@@ -17,7 +17,6 @@
 #include <sstream>
 #include <string>
 
-#include "Menu.h"
 #include "ElementFile.h"
 // #include "ElementButton.h"
 #include "Dimensions.h"
@@ -27,24 +26,22 @@ class PageFileSelectControl
 private:
 protected:
 public:
-  static ElementPage *create(const char *name, const char *selectPage, const char *backPage, Skin *skin, const char *directory, bool showHeader = false)
+  static ElementPage *create(const char * name, const char * selectPage, const char * backPage, Skin *skin, const char * directory, bool showHeader = false)
   {
     // Create Page
     ElementPage *page = new ElementPage(name,
-                                        /* static load func     */ &PageFileSelectControl::load,
-                                        /* static refresh func  */ &PageFileSelectControl::refresh,
-                                        /* refrest seconds      */ 1,
-                                        /* static exit func     */ &PageFileSelectControl::exit,
-                                        /* show Header          */ showHeader,
-                                        /* clear screen         */ true,
-                                        /* backPageDelay seconds*/ 255, // max 255
-                                        /* backPage             */ backPage);
+            /* static func to exec  */ &PageFileSelectControl::refresh,
+            /* refrest seconds      */ 1,
+            /* show Header          */ showHeader,
+            /* clear screen         */ true,
+            /* backPageDelay seconds*/ 254,// max 255
+            /* backPage             */ backPage);
 
     ElementButton *button;
     Dimensions *dimensions;
     ElementFile *elementFile;
     ElementRectangle *rectangle;
-    const char *icon;
+    const char * icon;
 
     uint8_t size = 25;
 
@@ -57,14 +54,14 @@ public:
     // =============================================================================
     // === Scrole Bar ===
     // Add button: UP
-    // dimensions = new Dimensions(skin->getScreenWidth() - size - skin->buttonMargin, top + skin->buttonMargin, size, size);
-    // button = new ElementButton("U", dimensions, &PageFileSelectControl::pageUpButton, NULL, NULL, NULL, icon, "up", false);
-    // page->addButton(button);
+    dimensions = new Dimensions(skin->getScreenWidth() - size - skin->buttonMargin, top + skin->buttonMargin, size, size);
+    button = new ElementButton("U", dimensions, &PageFileSelectControl::pageUpButton, NULL, NULL, NULL, icon, "up", false);
+    page->addButton(button);
 
-    // // Add button DW
-    // dimensions = new Dimensions(skin->getScreenWidth() - size - skin->buttonMargin, 240 - size - skin->buttonMargin, size, size);
-    // button = new ElementButton("D", dimensions, &PageFileSelectControl::pageDownButton, NULL, NULL, NULL, icon, "dn", false);
-    // page->addButton(button);
+    // Add button DW
+    dimensions = new Dimensions(skin->getScreenWidth() - size - skin->buttonMargin, 240 - size - skin->buttonMargin, size, size);
+    button = new ElementButton("D", dimensions, &PageFileSelectControl::pageDownButton, NULL, NULL, NULL, icon, "dn", false);
+    page->addButton(button);
 
     // Add rectangle slider bar (between U & D)
     dimensions = new Dimensions(skin->getScreenWidth() - size - skin->buttonMargin, top + size, size, skin->getScreenHeight() - top - size - (skin->buttonMargin * 2));
@@ -90,50 +87,48 @@ public:
     return page;
   }
 
-  static void addFiles()
-  {
-    Serial.println("-------------------------------------------------------------------------------------");
-    Menu::getInstance()->getCurrentPage()->buttonListPlus->traverseForward();
-    Serial.println("-------------------------------------------------------------------------------------");
-
-    // ElementRectangle *rectangle = Menu::getInstance()->getPageRectangle("backdrop");
-    // if (rectangle)
-    // {
-    //   uint16_t top = rectangle->getDimensions()->getH();
-    //   uint8_t loopSize = top / 20;
-    //   // Serial.print(" loopSize: ");
-    //   // Serial.print(loopSize);
-    //   Menu::getInstance()->getCurrentPage()->clearFiles();
-    //   for (int x = 0; x < loopSize; x++)
-    //   { //                             x,                                                              y,                                              w,   h
-    //     Dimensions *dimensions = new Dimensions(rectangle->getDimensions()->getX(), rectangle->getDimensions()->getY() + (x * 20), rectangle->getDimensions()->getW(), 20);
-    //     ElementFile *elementFile = new ElementFile("Filename goes here", dimensions, &PageFileSelectControl::pageFileSelect, "PageOK", "full file path", NULL);
-
-    //     Menu::getInstance()->getCurrentPage()->addFile(elementFile);
-    //   }
-    // }
-    // else
-    // {
-    //   Serial.println("Rect not found: 'backdrop'");
-    // }
-  }
-
-  static void load(/* void */)
-  {
-    Serial.println("Page Load");
-    addFiles();
-  }
   static void refresh(/* void */)
-  { // Do some work on a specific to the page
-   Serial.println("Page Refresh");
-  }
-  static void exit(/* void */)
-  {
-    Serial.println("Page Load");
-    // clearFiles();
+  { // Do some work on a specific variables page
+
+Serial.println("-------------------------------------------------------------------------------------");
+Menu::getInstance()->getCurrentPage()->buttonListPlus->traverseForward();
+Serial.println("-------------------------------------------------------------------------------------");
+    Serial.print("Refresh: ");
+    static uint16_t cnt = 0;
+    Serial.print(cnt++);
+
+    Dimensions *dimensions;
+    ElementFile *elementFile;
+    ElementRectangle *rectangle;
+
+    // =============================================================================
+    // Add a button per File // Just for show here
+
+    rectangle = Menu::getInstance()->getPageRectangle("backdrop");
+    if (rectangle)
+    {
+      uint16_t top = rectangle->getDimensions()->getH();
+      uint8_t loopSize = top / 20;
+      Serial.print(" loopSize: ");
+      Serial.print(loopSize);
+      Menu::getInstance()->getCurrentPage()->clearFiles();
+      for (int x = 0; x < loopSize; x++)
+      { //                             x,                                                              y,                                              w,   h
+        dimensions = new Dimensions(rectangle->getDimensions()->getX(), rectangle->getDimensions()->getY() + (x * 20), rectangle->getDimensions()->getW(), 20);
+        elementFile = new ElementFile("Filename goes here", dimensions, &PageFileSelectControl::pageFileSelect, "PageOK", "full file path", NULL);
+
+        Menu::getInstance()->getCurrentPage()->addButton(elementFile);
+        // Menu::getInstance()->addFile(*elementFile);
+      }
+    }
+    else
+    {
+      Serial.println("Rect not found: 'backdrop'");
+    }
+Serial.println();
   }
 
-  static void pageUpButton(const char *value)
+  static void pageUpButton(const char * value)
   { // Do some work on a specific variables page
     uint16_t top = 60;
     uint8_t size = 40;
@@ -144,9 +139,10 @@ public:
     // }
     //    Display::getInstance()->getScreenTFT().fillRoundRect(320 - size, top, size, 180 - (size * 2), 5, Skin::rgb888torgb565(0xFFFF00));
 
-   // PageFileSelectControl::refresh();
+    PageFileSelectControl::refresh();
   }
-  static void pageDownButton(const char *value)
+
+  static void pageDownButton(const char * value)
   { // Do some work on a specific variables page
     uint16_t top = 60;
     uint8_t size = 40;
@@ -157,9 +153,10 @@ public:
     // }
     //    Display::getInstance()->getScreenTFT().fillRoundRect(320 - size, top, size, 200 - (size * 2), 5, Skin::rgb888torgb565(0x00FF00));
 
-   // PageFileSelectControl::refresh();
+    PageFileSelectControl::refresh();
   }
-  static void pageFileSelect(const char *value)
+
+  static void pageFileSelect(const char * value)
   { // Do some work on a specific variables page
     uint16_t top = 60;
     uint8_t size = 40;
@@ -170,8 +167,6 @@ public:
     // }
     Display::getInstance()->getScreenTFT().fillRoundRect(320 - size, top, size, 220 - (size * 2), 5, Skin::rgb888torgb565(0x00FFFF));
   }
-
-
 };
 
 #endif

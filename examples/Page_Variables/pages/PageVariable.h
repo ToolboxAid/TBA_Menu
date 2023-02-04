@@ -21,6 +21,7 @@
 #include "ElementLabel.h"
 #include "ElementButton.h"
 
+#include "TBA_Macros.h"
 /* Format and it's comsumption (does not include the buffer space)
 Format	Type      bytes
 ======  ========  =====
@@ -75,8 +76,6 @@ int main() {
   query("Floating point: ", d);
   query("A word: ", s);
 }*/
-
-#define formatBool(b) ((b) ? "   true" : "  false")
 
 class PageVariable
 {

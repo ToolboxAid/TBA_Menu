@@ -31,7 +31,6 @@ C:\Users\davidq\Documents\Arduino\libraries\TFT_eSPI  line 295
 #include "Skin.h"
 #include "Point.h"
 
-//#include "DisplayPNG.h"
 #include "DisplayICON.h"
 
 /* This is the file name used to store the calibration data
@@ -40,12 +39,11 @@ C:\Users\davidq\Documents\Arduino\libraries\TFT_eSPI  line 295
 */
 #define CALIBRATION_FILE "/TouchCal.Data"
 
-
 /* Set REPEAT_CAL to true instead of false to run calibration
    again, otherwise it will only be done once.
    Repeat calibration if you change the screen rotation.
    */
-#define REPEAT_CAL false
+#define REPEAT_CAL false // Rotation Change, set to true to update file
 
 /* This is a singleton class,
 only one instance will ever be created
@@ -53,7 +51,6 @@ only one instance will ever be created
 class Display
 {
 private:
-
   static Display *thisDisplay;
 
   Display() {}
@@ -64,7 +61,7 @@ private:
   void drawHeader(ElementPage *currentPage);
   void drawLabel(ElementPage *currentPage);
   uint16_t getFileStateColor(ElementButton *button);
-  uint16_t getFileStateBoarderColor(ElementButton *button);  
+  uint16_t getFileStateBoarderColor(ElementButton *button);
   uint16_t getButtonStateColor(ElementButton *button);
   void drawFile(ElementPage *currentPage, ElementButton *button);
   bool drawButtonIcon(ElementButton *button);
@@ -76,17 +73,15 @@ private:
   // Store the touch coordinates
   uint16_t t_x = 0, t_y = 0;
   Point *point;
-  
+
 protected:
 public:
-
-
   static Display *getInstance()
   {
     if (!thisDisplay)
     {
-      thisDisplay = new Display; // ()
-      TBA_FileSystem fileSystem = TBA_FileSystem();  // init SD & SPIFFS
+      thisDisplay = new Display;                    // ()
+      TBA_FileSystem fileSystem = TBA_FileSystem(); // init SD & SPIFFS
     }
     return thisDisplay;
   }
@@ -94,14 +89,16 @@ public:
   void init(Skin &skin);
   void drawCurrentPage(ElementPage *currentPage);
   void drawVariable(ElementPage *currentPage);
-  void drawInput(ElementPage *currentPage);
+  void checkInput(ElementPage *currentPage);
+  void drawInput(ElementInput *input);
+  void drawInputs(ElementPage *currentPage);
   void drawButton(ElementPage *currentPage, ElementButton *button);
 
   Dimensions *getScreenDimensions();
 
   Point *getScreenTouchPoint(bool &pressed);
   TFT_eSPI getScreenTFT();
-  void debugSerial(const char * debugLocation);
+  void debugSerial(const char *debugLocation);
 };
 
 /* Allocating and initializing GlobalClass's
@@ -194,7 +191,7 @@ void Display::touch_calibrate()
 uint16_t Display::drawHeaderIcon(ElementPage *currentPage)
 {
   uint16_t iconOffset = 0;
-  if (thisDisplay->skin.headerIconImage  != NULL)
+  if (thisDisplay->skin.headerIconImage != NULL)
   {
     int rc, filecount = 0;
 
@@ -263,7 +260,7 @@ void Display::drawLabel(ElementPage *currentPage)
     else
     {
       tft.setTextColor(thisDisplay->skin.textColor);
-    }    
+    }
     tft.setCursor(label->getPoint()->getX(), label->getPoint()->getY());
     tft.print(label->getName());
     label = currentPage->nextLabel();
@@ -285,10 +282,28 @@ void Display::drawVariable(ElementPage *currentPage)
   }
 }
 
-void Display::drawInput(ElementPage *currentPage)
+void Display::drawInput(ElementInput *input)
+{
+  u_int16_t TBA_GRAY = Skin::rgb888torgb565(0xBBBBBB);
+  // Draw input outline
+  tft.fillRoundRect(input->getDimensions()->getX(), input->getDimensions()->getY(),
+                    input->getDimensions()->getW(), input->getDimensions()->getH(),
+                    thisDisplay->skin.buttonRadius,
+                    TBA_GRAY);
+  // Draw input background
+  tft.fillRoundRect(input->getDimensions()->getX() + thisDisplay->skin.buttonBorderWidth, input->getDimensions()->getY() + thisDisplay->skin.buttonBorderWidth,
+                    input->getDimensions()->getW() - (thisDisplay->skin.buttonBorderWidth * 2), input->getDimensions()->getH() - (thisDisplay->skin.buttonBorderWidth * 2),
+                    thisDisplay->skin.buttonRadius,
+                    TFT_WHITE);
+  // Draw the String
+  tft.drawString(input->getInput(),
+                 input->getDimensions()->getX() + input->getDimensions()->getW() - thisDisplay->skin.buttonBorderWidth - thisDisplay->skin.buttonPadding,
+                 input->getDimensions()->getY() + (input->getDimensions()->getH() / 2));
+}
+void Display::drawInputs(ElementPage *currentPage)
 {
 
-  //tft.setTextColor(thisDisplay->skin.textColor, thisDisplay->skin.textBackgroundColor);
+  // tft.setTextColor(thisDisplay->skin.textColor, thisDisplay->skin.textBackgroundColor);
   tft.setTextColor(thisDisplay->skin.textColor);
   tft.setTextSize(thisDisplay->skin.textFontSize);
   tft.setTextDatum(CR_DATUM);
@@ -299,20 +314,29 @@ void Display::drawInput(ElementPage *currentPage)
   ElementInput *input = currentPage->nextInput();
   while (input)
   {
-   // Draw input outline
-    tft.fillRoundRect(input->getDimensions()->getX(), input->getDimensions()->getY(),
-                      input->getDimensions()->getW(), input->getDimensions()->getH(),
-                      thisDisplay->skin.buttonRadius,
-                      TBA_GRAY);
-    // Draw input background
-    tft.fillRoundRect(input->getDimensions()->getX() + thisDisplay->skin.buttonBorderWidth, input->getDimensions()->getY() + thisDisplay->skin.buttonBorderWidth,
-                      input->getDimensions()->getW() - (thisDisplay->skin.buttonBorderWidth * 2), input->getDimensions()->getH() - (thisDisplay->skin.buttonBorderWidth * 2),
-                      thisDisplay->skin.buttonRadius,
-                      TFT_WHITE);
-    // Draw the String
-    tft.drawString(input->getInput(), 
-                   input->getDimensions()->getX() + input->getDimensions()->getW() - thisDisplay->skin.buttonBorderWidth - thisDisplay->skin.buttonPadding,
-                   input->getDimensions()->getY() + (input->getDimensions()->getH() / 2));
+    Display::drawInput(input);
+    input = currentPage->nextInput();
+  }
+}
+
+void Display::checkInput(ElementPage *currentPage)
+{
+  tft.setTextColor(thisDisplay->skin.textColor);
+  tft.setTextSize(thisDisplay->skin.textFontSize);
+  tft.setTextDatum(CR_DATUM);
+
+  u_int16_t TBA_GRAY = Skin::rgb888torgb565(0xBBBBBB);
+
+  // iterator
+  currentPage->resetIterators();
+  ElementInput *input = currentPage->nextInput();
+  while (input)
+  {
+    if (input->getInputChange())
+    {
+      Display::drawInput(input);
+      input->resetInputChange();
+    }
     input = currentPage->nextInput();
   }
 }
@@ -380,7 +404,7 @@ uint16_t Display::getButtonStateColor(ElementButton *button)
   case ElementButton::STATE::UP:
   case ElementButton::STATE::ROLLOFF:
   case ElementButton::STATE::RELEASED:
-    buttonColor = thisDisplay->skin.buttonColor;    
+    buttonColor = thisDisplay->skin.buttonColor;
     break;
   case ElementButton::STATE::SHORT:
     buttonColor = thisDisplay->skin.buttonShortColor;
@@ -400,7 +424,7 @@ uint16_t Display::getButtonStateColor(ElementButton *button)
 }
 bool Display::drawButtonIcon(ElementButton *button)
 {
-  if (!button->getIcon()  == NULL)
+  if (button->getIcon() != NULL)
   {
     int rc, filecount = 0;
     button->getIcon();
@@ -445,7 +469,7 @@ void Display::drawFile(ElementPage *currentPage, ElementButton *button)
     color = getFileStateColor(button);
     // Draw Name
     tft.setTextSize(thisDisplay->skin.textFontSize);
-    tft.setTextColor(color,thisDisplay->skin.fileBackColor,true);
+    tft.setTextColor(color, thisDisplay->skin.fileBackColor, true);
     tft.setTextDatum(TL_DATUM);
     tft.drawString(button->getName(),
                    button->getDimensions()->getX(),
@@ -461,7 +485,7 @@ void Display::drawButton(ElementPage *currentPage, ElementButton *button)
   }
   if (!button->isHidden())
   {
-      tft.setTextSize(thisDisplay->skin.textFontSize);
+    tft.setTextSize(thisDisplay->skin.textFontSize);
 
     uint16_t buttonColor = getButtonStateColor(button);
 
@@ -490,9 +514,9 @@ void Display::drawButton(ElementPage *currentPage, ElementButton *button)
 }
 void Display::drawButtons(ElementPage *currentPage)
 {
-//  tft.setTextColor(thisDisplay->skin.buttonTextColor, thisDisplay->skin.buttonColor);
+  //  tft.setTextColor(thisDisplay->skin.buttonTextColor, thisDisplay->skin.buttonColor);
   // tft.setTextSize(thisDisplay->skin.textFontSize);
-//  tft.setTextDatum(CC_DATUM);
+  //  tft.setTextDatum(CC_DATUM);
 
   // Setup iterator & loop on buttons
   ElementButton *button = currentPage->nextButton();
@@ -542,7 +566,7 @@ void Display::drawRectangle(ElementPage *currentPage)
                       thisDisplay->skin.rectangleRadius, thisDisplay->skin.rectangleBorderColor);
 
     uint8_t offset = thisDisplay->skin.buttonBorderWidth;
-    tft.fillRoundRect(rectangle->getDimensions()->getX() +  offset,      rectangle->getDimensions()->getY() +  offset,
+    tft.fillRoundRect(rectangle->getDimensions()->getX() + offset, rectangle->getDimensions()->getY() + offset,
                       rectangle->getDimensions()->getW() - (offset * 2), rectangle->getDimensions()->getH() - (offset * 2),
                       thisDisplay->skin.rectangleRadius, thisDisplay->skin.rectangleBackColor);
 
@@ -591,7 +615,7 @@ void Display::drawCurrentPage(ElementPage *currentPage)
   thisDisplay->drawVariable(currentPage);
 
   // Draw Input
-  thisDisplay->drawInput(currentPage);
+  thisDisplay->drawInputs(currentPage);
 
   // Draw Buttons
   thisDisplay->drawButtons(currentPage);
@@ -610,12 +634,11 @@ Point *Display::getScreenTouchPoint(bool &pressed)
   // return point;
 }
 
-void Display::debugSerial(const char * debugLocation)
+void Display::debugSerial(const char *debugLocation)
 {
   Serial.print(" <");
   Serial.print(__FILENAME__);
   Serial.print("> ");
-
 
   Serial.print(F(" thisDisplay '0x"));
   Serial.print((unsigned int)(thisDisplay), HEX);

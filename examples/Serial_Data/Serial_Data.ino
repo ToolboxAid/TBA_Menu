@@ -50,8 +50,6 @@ spi.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
 #include "pages/PageData.h"
 #include "pages/PageOK.h"
 
-
-
 // #define DEBUG
 
 void setup()
@@ -66,8 +64,8 @@ void setup()
   Serial.println("Booting...");
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
   Serial.println("ToolboxAid.com");
-  Serial.println("Menu Tester");
-  Serial.print  ("Tag: ");
+  Serial.println("Menu - Serial data");
+  Serial.print("Tag: ");
   Serial.println(TAG);
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
 
@@ -79,13 +77,13 @@ void setup()
 
   u_int16_t TBA_GRAY = Skin::rgb888torgb565(0xBBBBBB);
 
-  //skin = new Skin(); /* Using TBA default skin */
+  // skin = new Skin(); /* Using TBA default skin */
   Skin *skin = new Skin("TBA", Skin::ROTATE::SD_UP,
-                  240, 320,
-                  50-5, 3, TBA_ORANGE, TBA_PURPLE, NULL,
-                  TBA_ORANGE, TBA_PURPLE, TBA_SHORT, TBA_LONG, TBA_GRAY,
-                  5, 2, 3, 4,
-                  2, TBA_PURPLE, TBA_ORANGE);
+                        240, 320,
+                        50 - 5, 3, TBA_ORANGE, TBA_PURPLE, NULL,
+                        TBA_ORANGE, TBA_PURPLE, TBA_SHORT, TBA_LONG, TBA_GRAY,
+                        5, 2, 3, 4,
+                        2, TBA_PURPLE, TBA_ORANGE);
 
   Menu::getInstance()->init(*skin, "PageData");
 
@@ -93,87 +91,104 @@ void setup()
 
   // Create the variables page
   page = PageData::create(skin);
-  Menu::getInstance()->addPage(*page);
+  Menu::getInstance()->addPage(page);
 
   // Create the OK page
   page = PageOK::create(skin);
-  Menu::getInstance()->addPage(*page);
+  Menu::getInstance()->addPage(page);
 }
 
-char serialBuffer[128];
-void serialEvent1() {
-  for (uint8_t x = 0; x<128;x++)
-    serialBuffer[x]='\0';
+/*
+// void serialEvent1()
+// {
+//   for (uint8_t x = 0; x < 128; x++)
+//     serialBuffer[x] = '\0';
 
-  while (Serial.available()) {
-    size_t size = Serial.readBytes(serialBuffer,128);
-    Serial.print(size);
-    Serial.print (" ");
-    Serial.println(serialBuffer);
-  }
-}
+//   while (Serial.available())
+//   {
+//     size_t size = Serial.readBytes(serialBuffer, 128);
+//     Serial.print(size);
+//     Serial.print(" ");
+//     Serial.println(serialBuffer);
+//   }
+// }
 
-const char * inputString;
-bool serialEvent()
+// // const char *inputString;
+// char *inputString;
+// bool serialEvent()
+// {
+//   if (Serial.available())
+//   {
+//     // get the new byte :
+//     char inChar = (char)Serial.read();
+// Serial.println(inChar);
+//     //---------------------------------------------------
+//     // if the incoming character is a newline, return a flag
+//     // so the main loop can do something about it
+//     if (inChar == '\n')
+//     //    if (inChar == '*')
+//     {
+//       inputString += '\0';
+//       return true;
+//     }
+//     else
+//     {
+//       inputString += inChar;
+//     }
+// Serial.println(inputString);
+//
+//     if (inChar == '\n')
+//     {
+//       Serial.println("NL");
+//       Serial.flush();
+//     }
+//     if (inChar == '\r')
+//     {
+//       Serial.println("CR");
+//       Serial.flush();
+//     }
+//
+//   }
+//   return false;
+// }
+*/
+uint16_t serialOffset = 0;
+char serialBuffer[100];
+void serialEvent()
 {
   if (Serial.available())
   {
-    // get the new byte :
-    char inChar = (char)Serial.read();
-
-    //---------------------------------------------------
-    // if the incoming character is a newline, return a flag
-    // so the main loop can do something about it
-    if (inChar == '\n')
-//    if (inChar == '*')
+    while (Serial.available())
     {
-      inputString += '\0';
-      return true;
+      serialBuffer[serialOffset] = Serial.read();
+
+      if (serialBuffer[serialOffset] == '\n')
+      {
+        serialBuffer[serialOffset] = '\0'; // Append a null terminator
+
+        ElementInput *findInput = Menu::getInstance()->getCurrentPage()->getPageInput(PageData::inputName);
+        if (findInput != NULL)
+        {
+          findInput->clear();
+          for (int loop = 0; loop < serialOffset; loop++)
+          {
+            findInput->append(serialBuffer[loop]);
+          }
+        }
+        serialOffset = 0;
+      }
+      else
+      {
+        serialOffset++;
+      }
     }
-
-    //---------------------------------------------------
-    // add it to the inputString:
-    //if (!(inChar == '\r' || inChar == '\n'))
-    else
-    {
-      inputString += inChar;
-    }
-
-    // if (inChar == '\n')
-    // {
-    //   Serial.println("NL");
-    //   Serial.flush();
-    // }
-    // if (inChar == '\r')
-    // {
-    //   Serial.println("CR");
-    //   Serial.flush();
-    // }
-
-
   }
-  return false;
 }
-
 
 void loop()
 {
   Menu::getInstance()->checkMenuActions();
-  if (serialEvent())
-  { // Set inputData for display
-    if (!Menu::getInstance()->setPageInput("inputData", inputString))
-    {
-      Serial.print("inputString update failed: ");
-      Serial.println(inputString);      
-    }
-
-     // Send inputData to PC
-    Serial.println(inputString);
-    Serial.flush();
-
-    // clear inputString
-    inputString = NULL;;
-  }
+  serialEvent();
   delay(1);
   yield(); // Allow WDT to reset
 }

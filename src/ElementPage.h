@@ -37,11 +37,9 @@ private:
   boolean displayHeader;
   boolean clearScreen;
 
-  void (*pLoadFunction)(void);    // pointer to a function to manage the display outside the buttons
-  void (*pRefreshFunction)(void); // pointer to a function to manage the display outside the buttons
-  uint8_t refrestTimer = 1;       // seconds
+  uint8_t refrestTimer = 1; // seconds
   uint64_t refreshNext = 0;
-  void (*pExitFunction)(void); // pointer to a function to manage the display outside the buttons
+  void (*pRefreshFunction)(void); // pointer to a function to manage the display outside the buttons
 
   // will be used if both fields are populated
   uint8_t backPageDelay; // Num of sec to redirect to backPage. Max 255 seconds
@@ -49,22 +47,21 @@ private:
 
 protected:
 public:
-  LinkListPlus *buttonListPlus = new LinkListPlus(); // This needs moved back to private:
+  LinkListPlus *buttonListPlus = new LinkListPlus();
 
   ElementPage(
       const char *name,
       void (*pRefreshFunction)(void),
       uint16_t refrestTimer,
       boolean displayHeader,
-      boolean clearScreen) : ElementBase(name) //----->call base class
+      boolean clearScreen
+      ) : ElementBase(name) //----->call base class
   {
     this->displayHeader = displayHeader;
     this->clearScreen = clearScreen;
-    this->pLoadFunction = NULL;
     this->pRefreshFunction = pRefreshFunction;
     this->refrestTimer = refrestTimer;
-    this->pExitFunction = NULL;
-
+    // Optional & defaulted
     this->backPageDelay = 0;
     this->backPage = NULL;
   }
@@ -80,31 +77,9 @@ public:
   {
     this->displayHeader = displayHeader;
     this->clearScreen = clearScreen;
-    this->pLoadFunction = NULL;
     this->pRefreshFunction = pRefreshFunction;
     this->refrestTimer = refrestTimer;
-    this->pExitFunction = NULL;
-    this->backPageDelay = backPageDelay;
-    this->backPage = backPage;
-  }
-
-  ElementPage(
-      const char *name,
-      void (*pLoadFunction)(void),
-      void (*pRefreshFunction)(void),
-      uint16_t refrestTimer,
-      void (*pExitFunction)(void),
-      boolean displayHeader,
-      boolean clearScreen,
-      uint8_t backPageDelay,
-      const char *backPage) : ElementBase(name) //----->call base class
-  {
-    this->displayHeader = displayHeader;
-    this->clearScreen = clearScreen;
-    this->pLoadFunction = pLoadFunction;
-    this->pRefreshFunction = pRefreshFunction;
-    this->refrestTimer = refrestTimer;
-    this->pExitFunction = pExitFunction;
+    // Optional & defaulted
     this->backPageDelay = backPageDelay;
     this->backPage = backPage;
   }
@@ -116,19 +91,6 @@ public:
     // delete labelListPlus;
     // delete rectangleListPlus;
     // delete variableListPlus;
-  }
-
-  void doExit()
-  {
-    Serial.println("Load");
-    // if (this->pLoadFunction != NULL)
-    //   this->pLoadFunction();
-  }
-  void doLoad()
-  {
-    Serial.println("Exit");
-    // if (this->pExitFunction != NULL)
-    //   this->pExitFunction();
   }
 
   boolean getDisplayHeader()
@@ -143,11 +105,6 @@ public:
   void addButton(ElementButton *elementButton)
   {
     ElementBase *elementBase = (ElementBase *)elementButton;
-    this->buttonListPlus->insertAtEnd(elementBase);
-  }
-  void addFile(ElementButton *elementFile)
-  {
-    ElementBase *elementBase = (ElementBase *)elementFile;
     this->buttonListPlus->insertAtEnd(elementBase);
   }
   void addInput(ElementInput *inputElement)
@@ -238,7 +195,6 @@ public:
     ElementVariable *findVariable = (ElementVariable *)this->variableListPlus->searchName(name);
     if (findVariable)
     {
-      // return findVariable->getValue();
       return findVariable;
     }
 
@@ -255,17 +211,18 @@ public:
       return findInput;
     }
 
-    Serial.print("getPageInput not found: ");
-    Serial.println(name);
+    Serial.print("getPageInput not found: '");
+    Serial.print(name);
+    Serial.println("'");
 
     return NULL;
   }
   ElementRectangle *getPageRectangle(const char *name)
   {
-    ElementRectangle *findInput = (ElementRectangle *)this->rectangleListPlus->searchName(name);
-    if (findInput)
+    ElementRectangle *findRect = (ElementRectangle *)this->rectangleListPlus->searchName(name);
+    if (findRect)
     {
-      return findInput;
+      return findRect;
     }
 
     Serial.print("getPageRectangle not found: ");
