@@ -13,7 +13,10 @@
 class Skin
 {
 private:
-  uint16_t screenWidth;
+
+protected:
+public:
+   uint16_t screenWidth;
   uint16_t screenHeight;
   uint8_t rotate;
 
@@ -22,10 +25,8 @@ private:
 
   uint16_t headerHeight;
   uint16_t headerWidth;
-
-protected:
-public:
-  const char *name;
+  
+ const char *name;
 
   // uint8_t  headerFont;    // need to add font someday
   uint8_t headerFontTextSize;
@@ -146,7 +147,6 @@ public:
     this->headerFontTextSize = 3;
     this->headerTextColor = TBA_ORANGE;
     this->headerBackGroundColor = TBA_PURPLE;
-    // this->headerIconImage = NULL;
     this->headerIconImage = "/TBA_40x25.png";
 
     // Button
@@ -194,7 +194,7 @@ public:
     {
       while (true) // the forever loop
       {
-        Serial.println("Valid values are: 0, 1, 2, 3, REV...");
+        Serial.println("Valid values are: 0, 1, 2, 3, & REVs...");
         delay(1000);
       }
     }
@@ -274,34 +274,34 @@ public:
     Serial.print("> ");
 
     Serial.print(" headerFontTextSize: '");
-    Serial.print(headerFontTextSize);
+    Serial.print(this->headerFontTextSize);
 
     Serial.print("' headerTextColor: '");
-    Serial.print(headerTextColor);
+    Serial.print(this->headerTextColor);
 
     Serial.print("' headerBackGroundColor': '");
-    Serial.print(headerBackGroundColor);
+    Serial.print(this->headerBackGroundColor);
 
     Serial.print("' headerIconImage: '");
-    Serial.print(headerIconImage);
+    Serial.print(this->headerIconImage);
 
     Serial.print("' H W: '");
-    Serial.print(getHeaderWidth());
+    Serial.print(this->getHeaderWidth());
 
     Serial.print("' H H: '");
-    Serial.print(getHeaderHeight());
+    Serial.print(this->getHeaderHeight());
 
     // Serial.print("' len '");
     // Serial.print(getName().length());
 
     Serial.print("' F S: '");
-    Serial.print(headerFontTextSize);
+    Serial.print(this->headerFontTextSize);
 
     Serial.print("' F W: '");
-    Serial.print(getFontWidth());
+    Serial.print(this->getFontWidth());
 
     Serial.print("' F H: '");
-    Serial.print(getFontHeight());
+    Serial.print(this->getFontHeight());
 
     Serial.print(F("' debug Loc: '"));
     Serial.print(debugLocation);

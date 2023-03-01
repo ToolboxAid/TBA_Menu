@@ -7,7 +7,7 @@
 /*
 Other than ILI9431, the library also supports:
 ILI9341_2, ST7735, ILI9163, S6D02A1, RPI_ILI9486,
-HX8357D, ILI9481, ILI9486, ILI9488, ST7789, ST7789_2,
+HX8357D, ILI9481, ILI9488, ILI9488, ST7789, ST7789_2,
 R61581, RM68140, ST7796, SSD1351, SSD1963_480,
 SSD1963_800, SSD1963_800ALT, ILI9225, GC9A01.
 */
@@ -24,8 +24,6 @@ SSD1963_800, SSD1963_800ALT, ILI9225, GC9A01.
 #include "TBA_FileSystem.h"
 */
 
-#include "Display.h"
-
 #include "FS.h"
 #include <SPI.h>
 
@@ -35,12 +33,14 @@ SSD1963_800, SSD1963_800ALT, ILI9225, GC9A01.
 #include "ElementBase.h"
 
 #include "ElementPage.h"
+#include "ElementArg.h"
 #include "ElementButton.h"
-#include "ElementFile.h"
 #include "ElementRectangle.h"
 #include "LinkListPlus.h"
 
 #include "PageTBA.h"
+
+// #define DEBUG
 
 /* This is a singleton class,
 only one instance will ever be created
@@ -49,14 +49,16 @@ class Menu
 {
 private:
   static Menu *thisMenu;
-
   Menu() {}
-  boolean executeShortButtonMethod();
-  boolean executeLongButtonMethod();
-  boolean executePageBackMethod();
-  boolean checkPageChange();
+
+  void traversMenuLists();
+  boolean hasPageChange();
+  boolean hasPageBack();
+
+  void validPages(const char *, const char *);
 
   LinkListPlus *pageListPlus = new LinkListPlus();
+  LinkListPlus *argsListPlus = new LinkListPlus();
 
   unsigned long pageLoadTime = 0;
   ElementPage *currentPage = NULL;
@@ -72,14 +74,14 @@ public:
   {
     if (!thisMenu)
     {
-      thisMenu = new Menu; // ()
+      thisMenu = new Menu();
     }
     return thisMenu;
   }
 
-  void init(Skin &skin, const char *frontPage); /*---------------------*/
+  void Initialize(Skin *skin, const char *lcd, const char *frontPage);
 
-  void addPage(ElementPage *page);
+  uint16_t addPage(ElementPage *page);
 
   void checkMenuActions();
 
@@ -88,11 +90,14 @@ public:
   ElementInput *getPageInput(const char *name);
 
   ElementRectangle *getPageRectangle(const char *name);
+  boolean removePageRectangle(const char *name);
 
-  // void clearFiles(const char* endsWith);
-  // bool addFile(ElementFile *file);
+  void clearArgs();
+  uint16_t addArg(ElementArg *);
+  ElementArg *searchArg(const char *);
 
   ElementPage *getCurrentPage();
+  void setNewPage(const char *newPage);
 
   void debugSerial(const char *debugLocation);
 };
@@ -100,258 +105,291 @@ public:
 /* Allocating and initializing GlobalClass's
    static data member.  The pointer is being
    allocated - not the object inself. */
+Menu *Menu::thisMenu = NULL;
 
-Menu *Menu::thisMenu = 0;
-
-void Menu::init(Skin &skin, const char *frontPage = "Main")
+void Menu::Initialize(Skin *skin, const char *lcdName = "ILI9341", const char *frontPage = "Main")
 {
-  Display::getInstance()->init(skin); /*---------------------*/
+  // Init LCD
+  LCD::Initialize(lcdName, skin);
 
   // Add TBA Page & Set to current
-  ElementPage *tbaPage = PageTBA::create(frontPage, skin.getScreenWidth());
-  addPage(tbaPage);
-  thisMenu->currentPage = tbaPage;
-
-  thisMenu->newPage = thisMenu->currentPage;
-  thisMenu->currentPage = NULL;
+  PageTBA *tbaPage = new PageTBA(frontPage, skin);
+  addPage((ElementPage *)tbaPage);
+  this->newPage = tbaPage;
+  this->currentPage = NULL;
 }
 
-void Menu::addPage(ElementPage *page)
+uint16_t Menu::addPage(ElementPage *page)
 {
-  thisMenu->pageListPlus->insertAtEnd(((ElementBase *)page));
+  return this->pageListPlus->insertAtEnd(((ElementBase *)page));
 }
 
-boolean Menu::executePageBackMethod()
+void Menu::traversMenuLists()
 {
-  if (thisMenu->currentPage->hasBackPage())
+#ifdef DEBUG
+  Serial.println("=================================================");
+  Serial.println("=================================================");
+  Serial.println("=================================================");
+  Serial.println("-------------------Current Page------------------");
+  Serial.println(currentPage->getName());
+
+  // Menu owned items
+  Serial.println("- - - - - - - - - -ElementPage- - - - - - - - - -");
+  pageListPlus->setCurrentToHead();
+  ElementPage *page = (ElementPage *)pageListPlus->getNext();
+  while (page)
   {
-    if (millis() > (thisMenu->pageLoadTime + (thisMenu->currentPage->getBackPageDelay() * 1000)))
+    page->debugSerial("traversLists - 'ElementPage'");
+    page = (ElementPage *)pageListPlus->getNext();
+  }
+
+  Serial.println("- - - - - - - - - -ElementArg- - - - - - - - - -");
+  argsListPlus->setCurrentToHead();
+  ElementArg *arg = (ElementArg *)argsListPlus->getNext();
+  while (arg)
+  {
+    arg->debugSerial("traversLists - 'ElementArg'");
+    arg = (ElementArg *)argsListPlus->getNext();
+  }
+
+  // Page owned items
+  currentPage->traverPageLists();
+#endif
+}
+
+boolean Menu::hasPageChange()
+{
+  if (this->newPage != this->currentPage)
+  {
+    if (this->currentPage)
     {
-      ElementPage *findPage = (ElementPage *)thisMenu->pageListPlus->searchName(thisMenu->currentPage->getBackPage());
+      this->currentPage->exit();
+    }
+    this->currentPage = this->newPage;
+    this->currentPage->load();
+    this->currentPage->setInputs();
+    this->traversMenuLists(); // ------------------ TODO: remove this
+
+    this->pageLoadTime = millis();
+    this->clearArgs();
+    this->currentPage->drawPage();
+    return true;
+  }
+  return false;
+}
+
+boolean Menu::hasPageBack()
+{
+  if (this->currentPage->hasBackPage())
+  {
+    if (millis() > (this->pageLoadTime + (this->currentPage->getBackPageDelay() * 1000)))
+    {
+      ElementPage *findPage = (ElementPage *)this->pageListPlus->searchName(this->currentPage->getBackPage());
       if (findPage)
       {
-        thisMenu->newPage = findPage;
+        this->newPage = findPage;
         return true;
       }
       else
       {
-        thisMenu->pageLoadTime = millis(); // set time to prevent spam
-        Serial.print("executePageBackMethod change not found: '");
-        Serial.print(thisMenu->currentPage->getBackPage());
-        Serial.print("' backPageDelay: '");
-        Serial.print(thisMenu->currentPage->getBackPageDelay());
-        Serial.println("'");
+        this->pageLoadTime = millis(); // set time to prevent spam
+        this->validPages("checkPageBack change not found: ", this->currentPage->getBackPage());
       }
     }
   }
   return false;
 }
-bool Menu::executeShortButtonMethod()
-{
-  ElementPage *findPage = (ElementPage *)thisMenu->pageListPlus->searchName(thisMenu->currentPage->getBackPage());
-  if (findPage)
-  {
-    thisMenu->newPage = findPage;
-    return true;
-  }
-  else
-  {
-    thisMenu->pageLoadTime = millis(); // set time to prevent spam
-    Serial.print("executeShortButtonMethod change not found: ");
-    Serial.println(thisMenu->currentPage->getBackPage());
-  }
 
-  return false;
-}
-bool Menu::executeLongButtonMethod()
+void Menu::validPages(const char *message, const char *findPage)
 {
-  ElementPage *findPage = (ElementPage *)thisMenu->pageListPlus->searchName(thisMenu->currentPage->getBackPage());
-  if (findPage)
-  {
-    thisMenu->newPage = findPage;
-    return true;
-  }
-  else
-  {
-    thisMenu->pageLoadTime = millis(); // set time to prevent spam
-    Serial.print("executeLongButtonMethod change not found: ");
-    Serial.println(thisMenu->currentPage->getBackPage());
-  }
+  Serial.print(message);
+  Serial.print(" '");
+  Serial.print(findPage);
+  Serial.print("' backPageDelay: '");
+  Serial.print(this->currentPage->getBackPageDelay());
+  Serial.println("'");
 
-  return false;
-}
-
-boolean Menu::checkPageChange()
-{
-  if (thisMenu->newPage != thisMenu->currentPage)
+  Serial.println("Valid Pages are: ");
+  this->pageListPlus->setCurrentToHead();
+  ElementPage *page = (ElementPage *)this->pageListPlus->getNext();
+  while (page)
   {
-    thisMenu->currentPage = thisMenu->newPage;
-    thisMenu->pageLoadTime = millis(); // set page load time
-    Display::getInstance()->drawCurrentPage(thisMenu->currentPage);
-    return true;
+    Serial.print("ID: '");
+    Serial.print(page->getIdentity());
+    Serial.print("' Name: '");
+    Serial.print(page->getName());
+    Serial.print("'");
+    Serial.println();
+    page = (ElementPage *)this->pageListPlus->getNext();
   }
-  return false;
+  Serial.print("' Size: '");
+  Serial.print(this->pageListPlus->getNodeCount());
+  Serial.print("'");
+  Serial.println();
 }
 
 void Menu::checkMenuActions()
 { // Check page actions (update screen based on current page, buttons, timer, event, ???)
-  if (thisMenu->checkPageChange())
+  if (this->hasPageChange() || this->hasPageBack())
     return; // new page, not worth the risk of a delayed updates.
 
-  if (thisMenu->executePageBackMethod())
-    return; // new page, not worth the risk of a delayed updates.
+  LCD *lcd = LCD::GetInstance();
 
-  // Iterate of button to check if point is pressed....
   boolean pressed;
-  Point *point = Display::getInstance()->getScreenTouchPoint(pressed);
+  Point *point = lcd->getScreenTouchPoint(pressed);
 
-  thisMenu->currentPage->resetIterators();
-  ElementButton *button = thisMenu->currentPage->nextButton();
+  boolean redrawPage = false;
+
+  this->currentPage->resetButtonIterator();
+  ElementButton *button = this->currentPage->nextButton();
   while (button)
   {
-    // action of short or long, change page
+
     ElementButton::STATE triggerState = ElementButton::STATE::UP;
 
-    if (button->hasStateChange(point, pressed, triggerState)) // Check if button::State changed
+    if (button->hasStateChange(point, pressed, triggerState))
     {
-      Display::getInstance()->drawButton(thisMenu->currentPage, button);
-    }
-    if (button->isRELEASED()) // we are changing page, short or long?
-    {
-      // use action to change page
-      button->resetButton();
-
-      ElementPage *findPage;
-
-      if (triggerState == ElementButton::STATE::SHORT)
-      { // Short
-        button->executeShortFunction();
-
-        findPage = (ElementPage *)thisMenu->pageListPlus->searchName(button->getShortPage());
-        if (findPage)
-        {
-          thisMenu->newPage = findPage;
-          return; // new page, not worth the risk of a delayed updates.
-        }
-        else
-        {
-          thisMenu->pageLoadTime = millis(); // set time to prevent spam
-          if (!button->getShortPage() == NULL)
-          {
-            Serial.println(button->getShortPage());
-            Serial.print("checkMenuActions short button change page not found: '");
-            Serial.print(button->getShortPage());
-            Serial.println("'");
-            //
-            //
-            Serial.println("Valid Pages are: ");
-            pageListPlus->setCurrentToHead();
-            ElementPage *page = (ElementPage *)pageListPlus->getNext();
-            while (page)
-            {
-              // page->debugSerial("all pages");
-              Serial.print("ID: '");
-              Serial.print(page->getIdentity());
-              Serial.print("' Name: '");
-              Serial.print(page->getName());
-              Serial.print("'");
-              Serial.println();
-              page = (ElementPage *)pageListPlus->getNext();
-            }
-            Serial.print("' Size: '");
-            Serial.print(pageListPlus->getNodeCount());
-            Serial.print("'");
-            Serial.println();
-
-            //
-            //
-          }
-        }
-      }
+      // Redraw button or file...
+      if (button->isStyleButton())
+        button->draw();
       else
-      { // Long
-        button->executeLongFunction();
-        findPage = (ElementPage *)thisMenu->pageListPlus->searchName(button->getLongPage());
-        if (findPage)
-        {
-          thisMenu->newPage = findPage;
-          return; // new page, not worth the risk of a delayed updates.
+        ((ElementFile *)button)->draw(); //???????????????????? Is this needed????
+
+      if (button->isRELEASED())
+      {
+#ifdef DEBUG
+        Serial.println("* * * * * * * * button->isRELEASED() * * * * * * * *");
+        if (button->isStyleFile())
+          ((ElementFile *)button)->debugSerial("ElementFile * * ");
+        else
+          button->debugSerial("ElementButton");
+#endif
+        button->resetButton();
+        if (triggerState == ElementButton::STATE::SHORT)
+        { // Short Press
+          if (button->hasShortPage())
+          {
+            ElementPage *findPage = (ElementPage *)this->pageListPlus->searchName(button->getShortPage());
+            if (findPage)
+            {
+              this->newPage = findPage;
+            }
+            else
+            {
+              this->pageLoadTime = millis(); // set time to prevent spam
+              validPages("checkMenuActions short button change page not found: ", button->getShortPage());
+              button->debugSerial("checkMenuActions 1");
+            }
+          }
+          redrawPage = this->currentPage->buttonShortPress(button);
+          break;
         }
         else
-        {
-          thisMenu->pageLoadTime = millis(); // set time to prevent spam
-          if (!button->getLongPage() == NULL)
+        { // Long Press
+          if (button->hasLongPage())
           {
-            Serial.print("checkMenuActions long button change page not found: '");
-            Serial.print(button->getLongPage());
-            Serial.println("'");
+            ElementPage *findPage = (ElementPage *)this->pageListPlus->searchName(button->getLongPage());
+            if (findPage)
+            {
+              this->newPage = findPage;
+            }
+            else
+            {
+              this->pageLoadTime = millis(); // set time to prevent spam
+              validPages("checkMenuActions long button change page not found: ", button->getLongPage());
+              button->debugSerial("checkMenuActions 2");
+            }
           }
+          redrawPage = this->currentPage->buttonLongPress(button);
+          break;
         }
       }
-    }
-    if (button->isROLLOFF())
-    {
-      button->resetButton();
+      else if (button->isROLLOFF())
+      { // User no longer on the button
+        button->resetButton();
+        break;
+      }
     }
 
-    button = thisMenu->currentPage->nextButton();
+    button = this->currentPage->nextButton();
   }
 
-  if (thisMenu->currentPage->checkRefresh())
+  if (redrawPage)
   {
-    Display::getInstance()->drawVariable(thisMenu->currentPage);
+    traversMenuLists();
+    this->currentPage->drawPage();
+  }
+  else if (this->currentPage->checkRefresh())
+  {
+    this->currentPage->drawVariables();
   }
   else
   {
-    Display::getInstance()->checkInput(thisMenu->currentPage);
+    this->currentPage->drawInputs();
   }
 
-  // delete anything we use NEW on.
-  delete point;
+  delete point; // delete anything we use NEW on.
 }
 
 ElementVariable *Menu::getPageVariable(const char *name)
 { // This is the only way to get access to current page
-  return thisMenu->currentPage->getPageVariable(name);
+  return this->currentPage->getPageVariable(name);
 }
 
 ElementInput *Menu::getPageInput(const char *name)
 { // This is the only way to get access to current page
-  return thisMenu->currentPage->getPageInput(name);
+  return this->currentPage->getPageInput(name);
 }
 
 ElementRectangle *Menu::getPageRectangle(const char *name)
 { // This is the only way to get access to current page
-  return thisMenu->currentPage->getPageRectangle(name);
+  return this->currentPage->getPageRectangle(name);
+}
+boolean Menu::removePageRectangle(const char *name)
+{
+  return this->currentPage->removePageRectangle(name);
 }
 
-/*
-void Menu::clearFiles(const char* endsWith)
+uint16_t Menu::addArg(ElementArg *arg)
 {
- Serial.println("clearFiles"); delay(1000);
-   // Setup iterator & loop on buttons
-  ElementButton *button = currentPage->nextButton();
-
-  while (button)
+  return this->argsListPlus->insertAtEnd((ElementBase *)arg);
+}
+ElementArg *Menu::searchArg(const char *name)
+{
+  return (ElementArg *)this->argsListPlus->searchName(name);
+}
+void Menu::clearArgs()
+{
+  // Setup iterator to top & loop
+  this->argsListPlus->setCurrentToHead();
+  ElementArg *arg = (ElementArg *)this->argsListPlus->getNext();
+  while (arg)
   {
-    //drawButton(currentPage, button);
-    button->debugSerial("clearFiles");
-
+    // remove the arg
+    if (!this->argsListPlus->deleteID(arg->getIdentity()))
+    {
+      arg->debugSerial("failed delete");
+    }
     // Get next button
-    button = currentPage->nextButton();
+    arg = (ElementArg *)this->argsListPlus->getNext();
   }
 }
 
-bool Menu::addFile(ElementFile *file)
-{
-  Serial.println("pre addFile 2"); delay(1000);
-  thisMenu->currentPage->addButton(file);
-}
-*/
-
 ElementPage *Menu::getCurrentPage()
 {
-  return thisMenu->currentPage;
+  return this->currentPage;
+}
+
+void Menu::setNewPage(const char *page)
+{
+  if (page)
+  {
+    this->newPage = (ElementPage *)pageListPlus->searchName(page);
+    if (!this->newPage)
+    {
+      validPages("setNewPage not found: ", page);
+    }
+  }
 }
 
 void Menu::debugSerial(const char *debugLocation)
@@ -361,7 +399,7 @@ void Menu::debugSerial(const char *debugLocation)
   Serial.print("> ");
 
   Serial.print(F(" thisMenu '0x "));
-  Serial.println((unsigned int)(thisMenu), HEX);
+  Serial.println((unsigned int)(this->thisMenu), HEX);
 
   Serial.print(F("' debug Loc: '"));
   Serial.print(debugLocation);

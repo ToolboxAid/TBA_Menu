@@ -13,86 +13,42 @@
 
 #include "GlobalConst.h"
 
-#include <sstream>
-#include <string>
-
+#include "Point.h"
 #include "Dimensions.h"
 
-#include "ElementLabel.h"
 #include "ElementButton.h"
+#include "ElementLabel.h"
 
-//#include "PageBase.h"
+#include "TBA_SupportFunction.h"
+TBA_SupportFunction supportFunction = TBA_SupportFunction();
 
-class PageMain //: PageBase
+class PageMain : public ElementPage
 {
 private:
+  inline static const char *NAME = "Main";
+  inline static const char *VALUE = "Go to Vars Page";
+  inline static const char *VARS = "Vars Example";
+  inline static const char *LABEL1 = "Show me Buttons w/ Icons!";
+  inline static const char *BUTTON = "Show Icon Buttons";
+  inline static const char *ICONS = "Icons";
+
 protected:
 public:
-
-//  PageMain() : PageBase(){}
-
-  static ElementPage *create()
+  PageMain() : ElementPage(PageMain::NAME, 0, true, true, 0, NULL)
   {
-    // Create Page
-    const char *MAIN = "Main";
-    ElementPage *page = new ElementPage(MAIN,
-    /* static func to exec */ NULL,
-    /* ms refrest seconds   */ 1,
-    /* display Header      */ true,
-    /* clear screen        */ true);
+    // Add labels
+    this->addLabel(new ElementLabel("The below button will", new Point(10, 60)));
+    this->addLabel(new ElementLabel("show you the Vars Example", new Point(10, 80)));
 
-    // Add label
-    Point *point = new Point(10, 60);
-    ElementLabel *label = new ElementLabel("The below button will", point);
-    page->addLabel(label);
+    this->addButton(new ElementButton(PageMain::VALUE,new Dimensions(40, 130, 240, 30),PageMain::VARS));
 
-    point = new Point(10, 90);
-    label = new ElementLabel("show you the Vars Example", point);
-    page->addLabel(label);
-
-
-// 320 - 240 = 80 /2 = 40
-    Dimensions *dimensions = new Dimensions(40, 190, 240, 30);
-    ElementButton *button = new ElementButton("Go to Vars Page",
-                                              /* X, Y, W, H             */ dimensions,
-                                              /* short press            */ NULL,
-                                              /* new short current page */ "Vars Example",
-                                              /* long  press            */ NULL,
-                                              /* new long current page  */ NULL,
-                                              /* icon                   */ NULL,
-                                              /* value                  */ NULL,
-                                              /* is Hidden              */ false);
-    page->addButton(button);
-
-    /* Don't do this, errors on display.
-    delete dimensions;
-    delete button;
-    */
-
-    return page;
+    this->addLabel(new ElementLabel("FYI:", new Point(10, 190)));
+    this->addLabel(new ElementLabel("Vars Page uses refresh()", new Point(10, 210)));
   }
 
-  /* Formating options...
-  Format	Type      bytes
-  ======  ========  =====
-  %c   	char      1/char
-  %i  	int       4
-  %u  	unsigned  4
-  %f  	float     4
-          double    8
-  %s  	string    1/char + 1 for terminater
-  */
-  static void pageRefresh()
-  { // Do some work on a specific variables page
-    // Serial.println("pageRefresh");
-  }
-  static void hiddenButtonShort()
-  { // Do some work on a specific variables page
-    // Serial.println("hiddenButtonShort");
-  }
-  static void hiddenButtonLong()
-  { // Do some work on a specific variables page
-    // Serial.println("hiddenButtonLong");
+  void load()
+  {
+    supportFunction.memoryInfo();
   }
 };
 

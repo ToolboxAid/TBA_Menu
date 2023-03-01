@@ -48,13 +48,10 @@ spi.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
 #include "ElementPage.h"
 
 #include "pages/PageMain.h"
-#include "pages/PageMap.h"
-
-// #define DEBUG
+#include "pages/PageIcons.h"
 
 void setup()
 {
- // Use serial port
   Serial.begin(115200);
   while (!Serial && (millis() <= 10000))
   {
@@ -64,31 +61,19 @@ void setup()
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
   Serial.println("ToolboxAid.com");
   Serial.println("Menu Test - Buttons w/Icons");
-  Serial.print  ("Tag: ");
+  Serial.print("Tag: ");
   Serial.println(TAG);
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
 
   Skin *skin = new Skin(); /* Using TBA default skin */
- /*override TBA default skin
-  skin = new Skin( name,  rotate,
-        screenWidth,  screenHeight,
-        headerHeight,  headerFontTextSize,  headerTextColor,  headerBackGroundColor,  headerIconImage,
-        buttonTextColor,  buttonColor,  buttonShortColor,  buttonLongColor,  buttonBorderColor
-         buttonMargin,  buttonBorderWidth,  buttonPadding,  buttonRadius,
-        textFontSize,  textColor,  textBackgroundColor);  */
 
-  //Menu::getInstance()->init(*skin, "Vars Example");
-  Menu::getInstance()->init(*skin, "Main");
+  Menu::getInstance()->Initialize(skin, "ILI9341", PageMain::NAME);
 
-  ElementPage *page;
-
-  // Create the menu page
-  page = PageMain::create();
-  Menu::getInstance()->addPage(page);
+  // Create the main page
+  Menu::getInstance()->addPage(new PageMain());
 
   // Create the 2x2 map page
-  page = PageMap::create(2, 2, skin);
-  Menu::getInstance()->addPage(page);
+  Menu::getInstance()->addPage(new PageIcons(2, 2, skin));
 }
 
 void loop()

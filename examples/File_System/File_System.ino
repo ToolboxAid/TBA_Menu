@@ -1,9 +1,4 @@
 /*
-Required Packages:
-https://github.com/janelia-arduino/Vector
-*/
-
-/*
 In settings.json add "C_Cpp.intelliSenseEngine" to "Tag Parser", don't forget the comma
  "C_Cpp.intelliSenseEngine": "Tag Parser"
 
@@ -47,77 +42,56 @@ spi.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
 
 #include "ElementPage.h"
 
-//
-#include "PageFileSelectControl.h"
-#include "pages/PageMain.h"
 #include "pages/PageOK.h"
-#include "TBA_SupportFunction.h";
+#include "pages/PageMain.h"
+#include "pages/PageFileSelectControlWithHeader.h"
+#include "pages/PageFileSelectControlWithOutHeader.h"
 
-TBA_SupportFunction supportFunction = TBA_SupportFunction();;
+#include "TBA_SupportFunction.h"
+TBA_SupportFunction supportFunction = TBA_SupportFunction();
 
 void setup()
-{
- // Use serial port
+{ // Use serial port
   Serial.begin(115200);
   while (!Serial && (millis() <= 10000))
-  {
+  { /* looping */
   };
+
+  Serial.println();
+  supportFunction.memoryInfo();
 
   Serial.println("Booting...");
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
   Serial.println("ToolboxAid.com");
-  Serial.println("Menu Tester");
-  Serial.print  ("Tag: ");
+  Serial.println("Menu - File System");
+  Serial.print("Tag: ");
   Serial.println(TAG);
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
 
-  Skin *skin = new Skin(); /* Using TBA default skin */
- /*override TBA default skin
-  skin = new Skin( name,  rotate,
-        screenWidth,  screenHeight,
-        headerHeight,  headerFontTextSize,  headerTextColor,  headerBackGroundColor,  headerIconImage,
-        buttonTextColor,  buttonColor,  buttonShortColor,  buttonLongColor,  buttonBorderColor
-         buttonMargin,  buttonBorderWidth,  buttonPadding,  buttonRadius,
-        textFontSize,  textColor,  textBackgroundColor);  */
+  /* Using TBA default skin */
+  Skin *skin = new Skin(); 
 
-// PageFileSelectControl
-  Menu::getInstance()->init(*skin, "Main");
-
-  ElementPage *page;
+  Menu::getInstance()->Initialize(skin, "ILI9341", PageMain::NAME);
 
   // Create the Main page
-  page = PageMain::create(skin);
-  Menu::getInstance()->addPage(page);
+  Menu::getInstance()->addPage(new PageMain());
 
   // Create the File page w/ header
-  page = PageFileSelectControl::create("File Select w/ header", "PageOK", "Main", skin, "/", true);
-  Menu::getInstance()->addPage(page);
+  Menu::getInstance()->addPage(new PageFileSelectControlWithHeader(skin));
 
-  // Create the File page w/o header
-  page = PageFileSelectControl::create("File Select w/o header", "PageOK", "Main", skin, "/", false);
-  Menu::getInstance()->addPage(page);
+  // // Create the File page w/o header
+  Menu::getInstance()->addPage(new PageFileSelectControlWithOutHeader(skin));
 
   // Create the OK page
-  page = PageOK::create(skin);
-  Menu::getInstance()->addPage(page);
+  Menu::getInstance()->addPage(new PageOK(skin));
 
-
+  // Show memory differences
+  supportFunction.memoryInfo();
 }
 
 void loop()
 {
-
-supportFunction.memoryInfo();
-
-// Dimensions *d = new Dimensions(0,0,100,100);
-// Serial.print(" '0x");Serial.print((unsigned int)&d,HEX);Serial.print("'");
-// delete d;
-// Serial.print(" '0x");Serial.print((unsigned int)&d,HEX);Serial.print("'");
-// d = NULL;
-// Serial.print(" '0x");Serial.print((unsigned int)&d,HEX);Serial.print("'");
-// Serial.println();
-
   Menu::getInstance()->checkMenuActions();
-  delay(1000);
+  delay(1);
   yield(); // Allow WDT to reset
 }

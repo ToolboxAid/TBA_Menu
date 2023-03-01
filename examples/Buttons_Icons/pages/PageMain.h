@@ -21,63 +21,43 @@
 #include "ElementLabel.h"
 #include "ElementButton.h"
 
-// #include "PageBase.h"
+#include "TBA_FileSystem.h"
+TBA_FileSystem fileSystem = TBA_FileSystem();
 
-class PageMain //: PageBase
+#include "TBA_SupportFunction.h"
+TBA_SupportFunction supportFunction = TBA_SupportFunction();
+
+class PageMain : public ElementPage
 {
 private:
+  inline static const char *LABEL1 = "Show me Buttons w/ Icons!";
+  inline static const char *BUTTON = "Show Icon Buttons";
+  inline static const char *ICONS = "Icons";
+
 protected:
+
 public:
-  //  PageMain() : PageBase(){}
+  inline static const char *NAME = "Main";
 
-  static ElementPage *create()
+  PageMain() : ElementPage(PageMain::NAME, 0, true, true, 0, NULL)
   {
-    // Create Page
-    const char *MAIN = "Main";
-    ElementPage *page = new ElementPage(MAIN,
-                                        /* static func to exec */ NULL,
-                                        /* ms refrest seconds   */ 1,
-                                        /* display Header      */ true,
-                                        /* clear screen        */ true);
-
-    // ElementPage::ElementPage(
-    //   const char * name,
-    //   void(* pRefreshFunction)(void),
-    //   uint16_t refrestTimer,
-    //   boolean displayHeader,
-    //   boolean clearScreen,
-    //   uint8_t backPageDelay,
-    //   const char * backPage)
-
-    // Add label
-    Point *point = new Point(10, 100);
-    ElementLabel *label = new ElementLabel("Show me Buttons w/ Icons!", point);
-    page->addLabel(label);
-
-    Dimensions *dimensions = new Dimensions(50, 190, 225, 25);
-    ElementButton *button = new ElementButton("Show Icon Buttons",
-                                              /* X, Y, W, H             */ dimensions,
-                                              /* short press            */ NULL,
-                                              /* new short current page */ "2x2",
-                                              /* long  press            */ NULL,
-                                              /* new long current page  */ "2x2");
-    page->addButton(button);
-
-    return page;
+    this->addLabel(new ElementLabel(PageMain::LABEL1, new Point(10, 100)));
+    this->addButton(new ElementButton(PageMain::BUTTON, new Dimensions(50, 190, 225, 25), "Icons"));
   }
 
-  static void pageRefresh()
-  { // Do some work on a specific variables page
-    // Serial.println("pageRefresh");
-  }
-  static void hiddenButtonShort()
-  { // Do some work on a specific variables page
-    // Serial.println("hiddenButtonShort");
-  }
-  static void hiddenButtonLong()
-  { // Do some work on a specific variables page
-    // Serial.println("hiddenButtonLong");
-  }
+void load()
+{
+  Serial.println("load(PageMain)");
+  supportFunction.memoryInfo();
+}
+void refresh(/* void */)
+{ // Do some work for page refresh
+  Serial.println("refresh(PageMain)");
+}
+void exit()
+{
+  Serial.println("exit(PageMain)");
+}
 };
 
 #endif

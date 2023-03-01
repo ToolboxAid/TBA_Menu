@@ -7,39 +7,79 @@
 #include "ElementBase.h"
 #include "TBA_Macros.h"
 
+#include "GlobalConst.h"
 class ElementInput : public ElementBase
 {
 private:
     Dimensions *dimensions;
-    uint8_t length;
+    uint8_t length; // is the max length of the array
+    uint8_t size;   // is the number of chars appended
     char *input;
-
     boolean inputChange = false;
 
 protected:
 public:
-    ElementInput(const char *name, uint8_t length, Dimensions *dimensions) : ElementBase(name) //----->call base class
-                                                                                               //  ElementInput(const char *name, char * input, Dimensions *dimensions) : ElementBase(name) //----->call base class
-    {
-        this->dimensions = dimensions;
-        this->length = length;
-        this->input = new char[length]{};
-        this->clear();
+    enum JUSTIFICATION
+    { // Do not change order.
+        LEFT = 0,
+        RIGHT
+    };
 
-        /*
-        Serial.println(strlen(this->input));
-        Serial.print  ("this->input: '");
-        Serial.print  (this->input);
-        Serial.println("'");
-        Serial.println("              1234567890123456789012345678901234567890");
-        Serial.println("              0        1         2         3         4");
-        */
+    JUSTIFICATION justification;
+
+    ElementInput(const char *name, uint8_t length, JUSTIFICATION justification, Dimensions *dimensions, const char *input)
+        : ElementInput(name, length, justification, dimensions) //----->call below ElementInput constructor
+    {
+        // Save the new input
+        int loop = 0;
+        while (input[loop] != '\0')
+        {
+            this->append(input[loop++]);
+        }
+    }
+
+    ElementInput(const char *name, uint8_t length, JUSTIFICATION justification, Dimensions *dimensions)
+        : ElementBase(name) //----->call base class
+    {
+        this->length = length;
+        this->size = 0;
+        this->input = new char[length + 1]{};
+        this->justification = justification;
+        this->dimensions = dimensions;
+
+        this->clear();
     }
 
     ~ElementInput()
     {
-        if (this->input)
-            delete this->input;
+        // if (this->input)
+        //     free (this->input);
+    }
+
+    void draw()
+    {
+        LCD *lcd = LCD::GetInstance();
+
+        // tft.setTextColor(lcd->getSkin()->textColor, lcd->getSkin()->textBackgroundColor);// if drawing background color
+        tft.setTextColor(lcd->getSkin()->textColor);
+        tft.setTextSize(lcd->getSkin()->textFontSize);
+        tft.setTextDatum(CR_DATUM);
+
+        u_int16_t TBA_GRAY = Skin::rgb888torgb565(0xBBBBBB);
+        // Draw input outline
+        tft.fillRoundRect(this->dimensions->getX(), this->dimensions->getY(),
+                          this->dimensions->getW(), this->dimensions->getH(),
+                          lcd->getSkin()->buttonRadius,
+                          TBA_GRAY);
+        // Draw input background
+        tft.fillRoundRect(this->dimensions->getX() + lcd->getSkin()->buttonBorderWidth, this->dimensions->getY() + lcd->getSkin()->buttonBorderWidth,
+                          this->dimensions->getW() - (lcd->getSkin()->buttonBorderWidth * 2), this->dimensions->getH() - (lcd->getSkin()->buttonBorderWidth * 2),
+                          lcd->getSkin()->buttonRadius,
+                          TFT_WHITE);
+        // Draw the String
+        tft.drawString(this->input,
+                       this->dimensions->getX() + this->dimensions->getW() - lcd->getSkin()->buttonBorderWidth - lcd->getSkin()->buttonPadding,
+                       this->dimensions->getY() + (this->dimensions->getH() / 2));
     }
 
     void clear()
@@ -47,7 +87,8 @@ public:
         for (uint8_t loop = 0; loop < length; loop++)
             this->input[loop] = ' ';
         this->input[length] = '\0';
-        inputChange = true;
+        this->size = 0;
+        this->inputChange = true;
     }
 
     boolean getInputChange()
@@ -58,41 +99,73 @@ public:
     {
         this->inputChange = false;
     }
+    void setInputChange()
+    {
+        this->inputChange = true;
+    }
 
     void append(const char *append)
     {
-        for (uint8_t loop = 0; loop < length; loop++)
-            this->input[loop] = this->input[loop + 1];
+        uint8_t start = 0;
+        uint8_t end = strlen(append);
 
-        this->input[length - 1] = append[0];
-        // this->input[length - 1] = std::string(append);
-        // strncpy(this->input[length - 1], append, 1);
-        this->input[length] = '\0';
+        if (end + this->size > this->length)
+        {
+            start = end - this->length;
+        }
 
-        inputChange = true;
+        for (uint8_t loop = start; loop < end; loop++)
+        {
+            this->append(append[loop]);
+        }
     }
 
     void append(char append)
     {
-        for (uint8_t loop = 0; loop < length; loop++)
-            this->input[loop] = this->input[loop + 1];
+        if (this->size >= this->length)
+            return; // input is full
 
-        this->input[length - 1] = append;
-        // this->input[length - 1] = std::string(append);
-        // strncpy(this->input[length - 1], append, 1);
-        this->input[length] = '\0';
-
+        if (this->justification == JUSTIFICATION::RIGHT)
+        {
+            for (uint8_t loop = 0; loop < length; loop++)
+            {
+                this->input[loop] = this->input[loop + 1];
+            }
+            this->input[length - 1] = append;
+            this->input[length] = '\0';
+        }
+        else
+        {
+            this->input[size] = append;
+        }
+        this->size++;
         inputChange = true;
     }
 
     void back()
     {
-        for (uint8_t loop = length; loop > 0; loop--)
-            this->input[loop] = this->input[loop - 1];
+        if (this->size == 0)
+            return;
 
+        if (this->justification == JUSTIFICATION::RIGHT)
+        { // move everything to the right on byte
+            for (uint8_t loop = length; loop > 0; loop--)
+                this->input[loop] = this->input[loop - 1];
+            this->input[length] = '\0';
+        }
+        else
+        { // JUSTIFICATION::LEFT
+            // Remove/replace last char on right with ' '
+            this->input[this->size - 1] = ' ';
+        }
         this->input[0] = ' ';
-        this->input[length] = '\0';
         inputChange = true;
+        this->size--;
+    }
+
+    uint8_t getSize()
+    {
+        return this->size;
     }
 
     Dimensions *getDimensions()
@@ -111,13 +184,19 @@ public:
         Serial.print(F("> "));
 
         Serial.print(F(" Length: '"));
-        Serial.print(length);
+        Serial.print(this->length);
+
+        Serial.print(F(" Size: '"));
+        Serial.print(this->size);
 
         Serial.print(F("' input: '"));
-        Serial.print(input);
+        Serial.print(this->input);
+
+        Serial.print(F("' L/R: '"));
+        Serial.print(this->justification);
 
         Serial.print(F("' inputChange: '"));
-        Serial.print(inputChange);
+        Serial.print(this->inputChange);
         Serial.print(F("'  "));
 
         dimensions->debugSerial("NO_CR");

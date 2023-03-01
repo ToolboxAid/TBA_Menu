@@ -21,77 +21,32 @@
 #include "ElementLabel.h"
 #include "ElementButton.h"
 
-class PageMain //: PageBase
+#include "TBA_SupportFunction.h"
+TBA_SupportFunction supportFunction = TBA_SupportFunction();
+
+class PageMain : public ElementPage
 {
 private:
+  inline static const char *NAME = "Main";
+  inline static const char *LABEL1 = "The TBA intro page has";
+  inline static const char *LABEL2 = "a hidden button on it.";
+  inline static const char *LABEL3 = "Did you touch the screen?";
+  inline static const char *BUTTON = "Back to TBA";
+  inline static const char *SHORT = "Toolbox Aid";
+
 protected:
 public:
-  //  PageMain() : PageBase(){}
-
-  static ElementPage *create()
+  PageMain() : ElementPage(PageMain::NAME, 3, true, true, 0, NULL)
   {
-    // Create Page
-    const char *MAIN = "Main";
-    ElementPage *page = new ElementPage(MAIN,
-                                        /* static func to exec */ NULL,
-                                        /* ms refrest seconds   */ 1,
-                                        /* display Header      */ true,
-                                        /* clear screen        */ true);
-
-    // Add label
-    Point *point = new Point(10, 60);
-    ElementLabel *label = new ElementLabel("The TBA intro page has", point);
-    page->addLabel(label);
-
-    point = new Point(10, 90);
-    label = new ElementLabel("a hidden button on it.", point);
-    page->addLabel(label);
-
-    point = new Point(10, 140);
-    label = new ElementLabel("Did you touch the screen?", point);
-    page->addLabel(label);
-
-    Dimensions *dimensions = new Dimensions(80, 190, 160, 30);
-    ElementButton *button = new ElementButton("Back to TBA",
-                                              /* X, Y, W, H             */ dimensions,
-                                              /* short press            */ NULL,
-                                              /* new short current page */ "Toolbox Aid",
-                                              /* long  press            */ NULL,
-                                              /* new long current page  */ NULL,
-                                              /* icon                   */ NULL,
-                                              /* value                  */ NULL,
-                                              /* is Hidden              */ false);
-    page->addButton(button);
-
-    /* Don't do this, errors on display.
-    delete dimensions;
-    delete button;
-    */
-
-    return page;
+    this->addLabel(new ElementLabel(PageMain::LABEL1, new Point(10, 60)));
+    this->addLabel(new ElementLabel(PageMain::LABEL2, new Point(10, 90)));
+    this->addLabel(new ElementLabel(PageMain::LABEL3, new Point(10, 140)));
+    this->addButton(new ElementButton(PageMain::BUTTON, new Dimensions(80, 190, 160, 30), PageMain::SHORT));
   }
 
-  /* Formating options...
-  Format	Type      bytes
-  ======  ========  =====
-  %c   	char      1/char
-  %i  	int       4
-  %u  	unsigned  4
-  %f  	float     4
-          double    8
-  %s  	string    1/char + 1 for terminater
-  */
-  static void pageRefresh()
-  { // Do some work on a specific variables page
-    // Serial.println("pageRefresh");
-  }
-  static void hiddenButtonShort()
-  { // Do some work on a specific variables page
-    // Serial.println("hiddenButtonShort");
-  }
-  static void hiddenButtonLong()
-  { // Do some work on a specific variables page
-    // Serial.println("hiddenButtonLong");
+  void load()
+  {
+    supportFunction.memoryInfo();
   }
 };
 

@@ -16,22 +16,20 @@ class Dimensions : public Point
 
 protected:
 private:
-    //Dimensions(){ };
     short H;
     short W;
- //   bool pressed; // Pressed will be set true if there is a valid touch on the screen
+ //    boolean pressed; // Pressed will be set true if there is a valid touch on the screen
 
 public:
     Dimensions(short x, short y, short w, short h) : Point(x, y) 
     {
         this->H = h;
         this->W = w;
-    //  this->pressed = false; // Point(x, y, false)  :: defaults pressed to 29, why?    
+    //  this->pressed = false; // Point(x, y, false)  :: defaults pressed to 29 (not 0), why?    
     }
 
     ~Dimensions()
-    { 
-        Serial.println("~Dimensions()");    
+    {
     }
 
     short getW()
