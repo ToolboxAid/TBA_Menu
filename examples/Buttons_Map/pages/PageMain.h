@@ -13,92 +13,50 @@
 
 #include "GlobalConst.h"
 
-#include <sstream>
-#include <string>
-
 #include "Dimensions.h"
 
 #include "ElementLabel.h"
 #include "ElementButton.h"
 
-class PageMain //: PageBase
+#include "TBA_SupportFunction.h"
+TBA_SupportFunction supportFunction = TBA_SupportFunction();
+
+class PageMain : public ElementPage
 {
 private:
+  inline static const char *LABEL1 = "This page is a Button Map";
+  inline static const char *LABEL2 = "Press a";
+  inline static const char *LABEL3 = "Button to";
+  inline static const char *LABEL4 = "see more Maps";
+
 protected:
 public:
-  //  PageMain() : PageBase(){}
+  inline static const char *NAME = "Main";
+  inline static const char *BUTTON3X3 = "3x3";
+  inline static const char *BUTTON4X4 = "4x4";
+  inline static const char *BUTTON4X8 = "4x8";
 
-  static ElementPage *create(uint8_t across, uint8_t down, Skin *skin)
+  PageMain(uint8_t across, uint8_t down, Skin *skin) : ElementPage(PageMain::NAME, 0, true, true, 0, NULL)
   {
-    // Create Page
-    const char *MAIN = "Main";
-    ElementPage *page = new ElementPage(MAIN,
-                                        /* static func to exec */ NULL,
-                                        /* ms refrest seconds   */ 1,
-                                        /* display Header      */ true,
-                                        /* clear screen        */ true);
-
-    // ElementPage::ElementPage(
-    //   const char * name,
-    //   void(* pRefreshFunction)(void),
-    //   uint16_t refrestTimer,
-    //   boolean displayHeader,
-    //   boolean clearScreen,
-    //   uint8_t backPageDelay,
-    //   const char * backPage)
-
-    // Add label
-    Point *point = new Point(35, 40);
-    ElementLabel *label = new ElementLabel("Show me a Button Maps", point);
-    page->addLabel(label);
-
-    Dimensions *dimensions = NULL;
-    ElementButton *button = NULL;
+    // Add labels
+    this->addLabel(new ElementLabel(PageMain::LABEL1, new Point(10, 40)));
+    this->addLabel(new ElementLabel(PageMain::LABEL2, new Point(5, 180)));
+    this->addLabel(new ElementLabel(PageMain::LABEL3, new Point(5, 200)));
+    this->addLabel(new ElementLabel(PageMain::LABEL4, new Point(5, 220)));
 
     // 3x3 - createMapPage(3,3);
-    dimensions = skin->getMapDimensions(across, down, 1, down - 2);
-    button = new ElementButton("3x3",
-                               /* X, Y, W, H             */ dimensions,
-                               /* short press            */ NULL,
-                               /* new short current page */ "3x3",
-                               /* long  press            */ NULL,
-                               /* new long current page  */ "3x3");
-    page->addButton(button);
+    this->addButton(new ElementButton(PageMain::BUTTON3X3, skin->getMapDimensions(across, down, 1, down - 2), PageMain::BUTTON3X3));
 
     // 4x4 - createMapPage(4,4);
-    dimensions = skin->getMapDimensions(across, down, 2, down - 1);
-    button = new ElementButton("4x4",
-                               /* X, Y, W, H             */ dimensions,
-                               /* short press            */ NULL,
-                               /* new short current page */ "4x4",
-                               /* long  press            */ NULL,
-                               /* new long current page  */ "4x4");
-    page->addButton(button);
+    this->addButton(new ElementButton(PageMain::BUTTON4X4, skin->getMapDimensions(across, down, 2, down - 1), PageMain::BUTTON4X4));
 
     // 4x8 - createMapPage(4,8);
-    dimensions = skin->getMapDimensions(across, down, 3, down);
-    button = new ElementButton("4x8",
-                               /* X, Y, W, H             */ dimensions,
-                               /* short press            */ NULL,
-                               /* new short current page */ "4x8",
-                               /* long  press            */ NULL,
-                               /* new long current page  */ "4x8");
-    page->addButton(button);
-
-    return page;
+    this->addButton(new ElementButton(PageMain::BUTTON4X8, skin->getMapDimensions(across, down, 3, down - 0), PageMain::BUTTON4X8));
   }
 
-  static void pageRefresh()
-  { // Do some work on a specific variables page
-    // Serial.println("pageRefresh");
-  }
-  static void hiddenButtonShort()
-  { // Do some work on a specific variables page
-    // Serial.println("hiddenButtonShort");
-  }
-  static void hiddenButtonLong()
-  { // Do some work on a specific variables page
-    // Serial.println("hiddenButtonLong");
+  void load()
+  {
+    supportFunction.memoryInfo();
   }
 };
 

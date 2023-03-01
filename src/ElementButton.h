@@ -12,6 +12,8 @@
 #include "Arduino.h"
 
 #include "GlobalConst.h"
+#include "LCD.h"
+#include "DisplayICON.h"
 
 #include "Point.h"
 #include "Dimensions.h"
@@ -22,40 +24,8 @@
 
 class ElementButton : public ElementBase
 {
-private:
- 
-    Dimensions *dimensions;
-    // uint8_t fontSize; // used to override default fontSize
-
-    const char *icon;
-
-    const char *value;
-
-
-    boolean hidden;
-
-    void (*pShortFunction)(const char *value);
-    const char *shortPage;
-
-    void (*pLongFunction)(const char *value);
-    const char *longPage;
-
-    static uint16_t deboundDelay;
-
-    static unsigned long pressedTime;
-    // static unsigned long releaseTime;
-    // static unsigned long lastBounceTime;
-
-    // Test rollover of timer
-    // static uint16_t pressedTime;
-    // static uint16_t releaseTime;
-    // static uint16_t lastBounceTime;
-
-protected:
-
-
 public:
-   enum STATE
+    enum STATE
     { // Do not change order.
         UP = 0,
         SHORT,
@@ -69,102 +39,197 @@ public:
         FILE
     };
 
+private:
+    const char *icon;
+
+    boolean hidden;
+
+    const char *shortPage;
+
+    const char *longPage;
+
+    static uint16_t deboundDelay;
+    static unsigned long pressedTime;
+
+protected:
+    Dimensions *dimensions;
+    const char *value;
+
     STATE state;
     STYLE style;
 
-    // Use this to create a Button of style : FILE
-    ElementButton(const char *name, Dimensions *dimensions,
-                  void (*pShortFunction)(const char *), const char *shortPage,
-                  void (*pLongFunction)(const char *), const char *longPage,
-                  const char *value)
-                  :ElementButton (name, dimensions, 
-                                pShortFunction, shortPage,
-                                pLongFunction, longPage,
-                                NULL,value ,false)
-                            //: ElementBase(name) // BUTTON
-    { /* calls larger constructor first */ 
-        // Filename will be loaded to ->name
-        // Filefullpath will be loaded to ->value
-        this->style = STYLE::FILE;
+    // uint8_t fontSize; // used to override default fontSize
+
+public:
+    // Filename will be loaded to ->name
+    ElementButton(const char *name, Dimensions *dimensions, const char *shortPage)
+        : ElementButton(name, dimensions, shortPage, NULL, NULL)
+    { /* calls below larger constructor first */
     }
 
-    // Use this to create a Button of style : BUTTON
-    ElementButton(const char *name, Dimensions *dimensions,
-                  void (*pShortFunction)(const char *), const char *shortPage,
-                  void (*pLongFunction)(const char *), const char *longPage)
-                  :ElementButton (name, dimensions, 
-                                pShortFunction, shortPage,
-                                pLongFunction, longPage,
-                                NULL,NULL,false)
-                            //: ElementBase(name) // BUTTON
-    { /* calls larger constructor first */ }
+    ElementButton(const char *name, Dimensions *dimensions, const char *shortPage, const char *longPage, const char *value)
+        : ElementButton(name, dimensions, shortPage, longPage, value, NULL, false)
+    { /* calls below larger constructor first */
+    }
 
-    // Use this to create a Button of style : BUTTON
-    ElementButton(const char *name, Dimensions *dimensions,
-                  void (*pShortFunction)(const char *), const char *shortPage,
-                  void (*pLongFunction)(const char *), const char *longPage,
-                  const char *icon,
-                  const char *value,
-                  bool hidden = false) : ElementBase(name) // BUTTON
+    ElementButton(const char *name, Dimensions *dimensions, const char *shortPage, const char *longPage, const char *value, const char *icon, boolean hidden = false)
+        : ElementBase(name)
     {
         this->dimensions = dimensions;
 
-        this->pShortFunction = pShortFunction;
         this->shortPage = shortPage;
+
+        this->longPage = longPage;
 
         this->value = value;
 
-        this->pLongFunction = pLongFunction;
-        this->longPage = longPage;
-
         this->icon = icon;
 
-        this->state = ElementButton::STATE::UP;  // this->state = (ElementButton::STATE)random(0,6); //this->state = (ElementButton::STATE)random(0,5);
+        this->hidden = hidden;
+
+        this->state = ElementButton::STATE::UP; // this->state = (ElementButton::STATE)random(0,6); //this->state = (ElementButton::STATE)random(0,5);
 
         this->style = STYLE::BUTTON;
-
-        this->hidden = hidden;
     }
 
     ~ElementButton()
     {
-        Serial.println("~ElementButton()");
-
-        icon = NULL;
-
-        value = NULL;
-
-        shortPage = NULL;
-        pShortFunction = NULL;
-
-        longPage = NULL;
-        pLongFunction = NULL;
-
-        Serial.print(" dim 1 '0x");
-        Serial.print((unsigned int)&dimensions, HEX);
-        Serial.print("' dim 2 '0x");
-        Serial.print((unsigned int)dimensions, HEX);
-        Serial.print("'");
+        // Serial.print(" dim 1 '0x");
+        // Serial.print((unsigned int)&dimensions, HEX);
+        // Serial.print("' dim 2 '0x");
+        // Serial.print((unsigned int)dimensions, HEX);
+        // Serial.println("'");
 
         delete dimensions; // We created it, we must delete it...
-        dimensions = NULL;
-
-        Serial.println();
     }
+
+    //=============================================================================================================
+
+    boolean drawButtonIcon()
+    {
+        if (this->hasIcon())
+        {
+            int rc, filecount = 0;
+            // this->getIcon();
+            // for (int i = 0; i < sizeof(buffer) / (sizeof(buffer[0])); i++)
+            // {
+            //   buffer[i] = this->getIcon()[i];
+            // }
+            // rc = png.open(buffer, myOpen, myClose, myRead, mySeek, PNGDraw);
+
+            rc = png.open(this->getIcon(), myOpen, myClose, myRead, mySeek, PNGDraw);
+            if (rc == PNG_SUCCESS)
+            {
+
+                tft.setCursor(this->dimensions->getX() + ((this->dimensions->getW() - png.getWidth()) / 2),
+                              this->dimensions->getY() + ((this->dimensions->getH() - png.getHeight()) / 2));
+
+                // Serial.printf("  image specs: (%d x %d), %d bpp, pixel type: %d\n", png.getWidth(), png.getHeight(), png.getBpp(), png.getPixelType());
+                rc = png.decode(NULL, 0);
+                png.close();
+            }
+            else
+            {
+                Serial.print(" Button Icon open failure: '");
+                Serial.print(this->getIcon());
+                Serial.println("'");
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    uint16_t getStateColor()
+    {
+        LCD *lcd = LCD::GetInstance();
+
+        uint16_t buttonColor;
+
+        switch (this->state)
+        {
+        case ElementButton::STATE::UP:
+        case ElementButton::STATE::ROLLOFF:
+        case ElementButton::STATE::RELEASED:
+            buttonColor = lcd->getSkin()->buttonColor;
+            break;
+        case ElementButton::STATE::SHORT:
+            buttonColor = lcd->getSkin()->buttonShortColor;
+            break;
+        case ElementButton::STATE::LONG:
+            buttonColor = lcd->getSkin()->buttonLongColor;
+            break;
+        default:
+            buttonColor = Skin::rgb888torgb565(0xFF0000);
+            Serial.print(F("Invalid Button STATE: "));
+            Serial.print(this->getButtonState());
+            Serial.print(F(" for Button : "));
+            Serial.println(this->getName());
+            break;
+        }
+        return buttonColor;
+    }
+    void draw()
+    {
+        LCD *lcd = LCD::GetInstance();
+
+        if (!this->isHidden())
+        {
+            LCD *lcd = LCD::GetInstance();
+
+            tft.setTextSize(lcd->getSkin()->textFontSize);
+
+            uint16_t buttonColor = getStateColor();
+
+            // Draw button outline
+            tft.fillRoundRect(this->dimensions->getX(), this->dimensions->getY(),
+                              this->dimensions->getW(), this->dimensions->getH(),
+                              lcd->getSkin()->buttonRadius, lcd->getSkin()->buttonBorderColor);
+
+            // Draw button background
+            tft.fillRoundRect(this->dimensions->getX() + lcd->getSkin()->buttonBorderWidth, this->dimensions->getY() + lcd->getSkin()->buttonBorderWidth,
+                              this->dimensions->getW() - (lcd->getSkin()->buttonBorderWidth * 2), this->dimensions->getH() - (lcd->getSkin()->buttonBorderWidth * 2),
+                              lcd->getSkin()->buttonRadius, buttonColor);
+
+            // Draw Icon
+            if (!drawButtonIcon())
+            {
+                // Draw Name
+                tft.setTextColor(lcd->getSkin()->buttonTextColor, buttonColor);
+                tft.setTextDatum(CC_DATUM);
+                tft.drawString(this->getName(),
+                               this->dimensions->getX() + (this->dimensions->getW() / 2),
+                               this->dimensions->getY() + (this->dimensions->getH() / 2));
+            }
+        }
+    }
+
+    //=============================================================================================================
 
     Dimensions *getDimensions()
     {
         return this->dimensions;
     }
 
+    boolean hasIcon()
+    {
+        return (this->icon && this->icon[0] != '\0');
+    }
     const char *getIcon()
     {
         return this->icon;
     }
 
-    const char *getValue()
+    boolean hasValue()
     {
-        this->value;
+        if (this->value)
+            if (this->value[0] != '\0')
+                return true;
+        return false;
+    }
+    virtual const char *getValue() // virtual: Just incase you need to reserve memory for this
+    {
+        return this->value;
     }
 
     ElementButton::STATE getButtonState()
@@ -172,44 +237,56 @@ public:
         return this->state;
     }
 
-    bool isUP()
+    boolean isUP()
     {
         return (this->state == ElementButton::STATE::UP);
     }
-    bool isSHORT()
+    boolean isSHORT()
     {
         return (this->state == ElementButton::STATE::SHORT);
     }
-    bool isLONG()
+    boolean isLONG()
     {
         return (this->state == ElementButton::STATE::LONG);
     }
-    bool isROLLOFF()
+    boolean isROLLOFF()
     {
         return (this->state == ElementButton::STATE::ROLLOFF);
     }
-    bool isRELEASED()
+    boolean isRELEASED()
     {
         return ((this->state == ElementButton::STATE::RELEASED));
     }
 
-    bool isStyleButton()
+    boolean isStyleButton()
     {
         return (this->style == ElementButton::STYLE::BUTTON);
     }
-    bool isStyleFile()
+    boolean isStyleFile()
     {
         return (this->style == ElementButton::STYLE::FILE);
     }
 
-    bool isHidden()
+    boolean isHidden()
     {
         return this->hidden;
     }
 
+    boolean hasShortPage()
+    {
+        if (this->shortPage && this->shortPage[0] != '\0')
+            return true;
+        return false;
+    }
     const char *getShortPage()
     {
         return this->shortPage;
+    }
+    boolean hasLongPage()
+    {
+        if (this->longPage && this->longPage[0] != '\0')
+            return true;
+        return false;
     }
     const char *getLongPage()
     {
@@ -222,9 +299,9 @@ public:
     }
 
     /* UP = 0, SHORT, LONG, ROLLOFF, RELEASED */
-    bool hasStateChange(Point *point, bool isPressed, ElementButton::STATE &triggerState)
+    boolean hasStateChange(Point *point, boolean isPressed, ElementButton::STATE &triggerState)
     {
-        bool stateChange = false;
+        boolean stateChange = false;
         triggerState = ElementButton::STATE::UP;
 
         if (point->getX() > dimensions->getX() && point->getX() < dimensions->getXW() &&
@@ -238,9 +315,9 @@ public:
                     this->state = ElementButton::STATE::SHORT;
                     stateChange = true;
                 }
-                if (isSHORT() && millis() > pressedTime + deboundDelay)
+                else if (isSHORT() && millis() > pressedTime + deboundDelay)
                 {
-                    if (this->pLongFunction != NULL || this->longPage != NULL)
+                    if (this->hasLongPage())
                     {
                         this->state = ElementButton::STATE::LONG;
                         stateChange = true;
@@ -270,54 +347,48 @@ public:
         return stateChange;
     }
 
-    boolean executeShortFunction()
-    { // check if refreshFunction available
-        if (this->pShortFunction != NULL)
-        {
-            this->pShortFunction(this->value); // do some work on a specific page
-            return true;
-        }
-        return false;
-    }
-    boolean executeLongFunction()
-    { // check if refreshFunction available
-        if (this->pLongFunction != NULL)
-        {
-            this->pLongFunction(this->value); // do some work on a specific page
-            return true;
-        }
-        return false;
-    }
-
     void debugSerial(const char *debugLocation)
     {
         Serial.print(F(" <"));
         Serial.print(__FILENAME__);
         Serial.print(F("> "));
 
-        Serial.print(F(" STYLE: '"));
-        Serial.print(this->style);
+        dimensions->debugSerial("NO_CR");
+
+        Serial.print(F("' shortPg: '"));
+        if (this->hasShortPage())
+            Serial.print(this->shortPage);
+        else
+            Serial.print("isNULL");
+
+        Serial.print(F("' longPg: '"));
+        if (this->hasLongPage())
+            Serial.print(this->longPage);
+        else
+            Serial.print("isNULL");
+
+        Serial.print(F("' value: '"));
+        if (this->hasValue())
+            Serial.print(this->value);
+        else
+            Serial.print("isNULL");
 
         Serial.print(F("' icon: '"));
-        Serial.print(this->icon);
-
-        Serial.print(F("' Val: '"));
-        Serial.print(this->value);
-
-        Serial.print(F("' St: '"));
-        Serial.print(this->state);
+        if (this->hasValue())
+            Serial.print(this->icon);
+        else
+            Serial.print("isNULL");
 
         Serial.print(F("' isHid: '"));
         Serial.print(this->hidden);
 
-        Serial.print(F("' shPage: '"));
-        Serial.print(this->shortPage);
+        Serial.print(F(" STYLE: '"));
+        Serial.print(this->style);
 
-        Serial.print(F("' lgPage: '"));
-        Serial.print(this->longPage);
+        Serial.print(F("' STATE: '"));
+        Serial.print(this->state);
 
         Serial.print(F("' "));
-
         ElementBase::debugSerial(debugLocation);
     }
 };

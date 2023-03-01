@@ -53,8 +53,6 @@ spi.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
 #include "pages/PageMain.h"
 #include "pages/PageMap.h"
 
-// #define DEBUG
-
 void setup()
 {
  // Use serial port
@@ -72,34 +70,20 @@ void setup()
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
 
   Skin *skin = new Skin(); /* Using TBA default skin */
- /*override TBA default skin
-  skin = new Skin( name,  rotate,
-        screenWidth,  screenHeight,
-        headerHeight,  headerFontTextSize,  headerTextColor,  headerBackGroundColor,  headerIconImage,
-        buttonTextColor,  buttonColor,  buttonShortColor,  buttonLongColor,  buttonBorderColor
-         buttonMargin,  buttonBorderWidth,  buttonPadding,  buttonRadius,
-        textFontSize,  textColor,  textBackgroundColor);  */
 
-  //Menu::getInstance()->init(*skin, "Vars Example");
-  Menu::getInstance()->init(*skin, "Main");
-
-  ElementPage *page;
+  Menu::getInstance()->Initialize(skin, "ILI9341", PageMain::NAME);
 
   // Create the menu page
-  page = PageMain::create(3, 4, skin);
-  Menu::getInstance()->addPage(page);
+  Menu::getInstance()->addPage(new PageMain(3,4,skin));
 
   // Create the 3x3 map page
-  page = PageMap::create(3, 3, skin);
-  Menu::getInstance()->addPage(page);
+  Menu::getInstance()->addPage(new PageMap(PageMain::BUTTON3X3, 3, 3, skin));
 
   // Create the 4x4 map page
-  page = PageMap::create(4, 4, skin);
-  Menu::getInstance()->addPage(page);
+  Menu::getInstance()->addPage(new PageMap(PageMain::BUTTON4X4, 4, 4, skin));
 
   // Create the 4x8 map page
-  page = PageMap::create(4, 8, skin);
-  Menu::getInstance()->addPage(page);
+  Menu::getInstance()->addPage(new PageMap(PageMain::BUTTON4X8, 4, 8, skin));
 }
 
 void loop()

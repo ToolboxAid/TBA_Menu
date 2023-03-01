@@ -13,15 +13,14 @@
 
 #include "GlobalConst.h"
 
-#include <sstream>
-#include <string>
-
-class PageMap
+class PageMap : public ElementPage
 {
 private:
+  inline static const char *MAIN = "Main";
+
 protected:
 public:
-  static ElementPage *create(uint8_t across, uint8_t down, Skin *skin)
+  PageMap(const char *name, uint8_t across, uint8_t down, Skin *skin) : ElementPage(name, 0, false, true, 0, NULL)
   {
     Dimensions *dimensions;
     ElementButton *button;
@@ -30,18 +29,7 @@ public:
     snprintf_P(buffer, sizeof(buffer), PSTR("%ix%i"), across, down);
     // const char *label = buffer;
 
-    // ElementPage *page = new ElementPage(label,
-    ElementPage *page = new ElementPage((const char *) buffer,
-    
-                                        /* static func to exec  */ NULL,
-                                        /* ms refrest seconds   */ 1,
-                                        /* display Header       */ false,
-                                        /* clear screen         */ true,
-                                        /* backPageDelay seconds*/ 10,
-                                        /* backPage             */ "Main");
-
-
-    bool addIcon = false;
+    boolean addIcon = false;
     const char *icon = NULL;
 
     // add the buttons
@@ -55,49 +43,14 @@ public:
         // Add button
         dimensions = skin->getMapDimensions(across, down, x, y);
 
-        button = new ElementButton((const char *) buffer,
-                                   /* X, Y, W, H             */ dimensions,
-                                   /* short press static func*/ NULL,
-                                   /* new short current page */ "Main",
-                                   /* long press static func */ NULL,
-                                   /* new long current page  */ "Main",
-                                   /* icon                   */ icon,
-                                   /* value                  */ NULL,
-                                   /* is Hidden              */ false);
-
-        page->addButton(button);
+        button = new ElementButton((const char *)buffer, dimensions, PageMap::MAIN);
+        this->addButton(button);
       }
     }
-
-    /* Don't do this, errors on display.
-    delete dimensions;
-    delete button;
-    */
-
-    return page;
   }
-
-  /* Formating options...
-  Format	Type      bytes
-  ======  ========  =====
-  %c   	char      1/char
-  %i  	int       4
-  %u  	unsigned  4
-  %f  	float     4
-          double    8
-  %s  	string    1/char + 1 for terminater
-  */
-  static void pageRefresh()
-  { // Do some work on a specific variables page
-    // Serial.println("pageRefresh");
-  }
-  static void hiddenButtonShort()
-  { // Do some work on a specific variables page
-    // Serial.println("hiddenButtonShort");
-  }
-  static void hiddenButtonLong()
-  { // Do some work on a specific variables page
-    // Serial.println("hiddenButtonLong");
+  void load()
+  {
+    supportFunction.memoryInfo();
   }
 };
 

@@ -53,7 +53,8 @@ void PNGDraw(PNGDRAW *pDraw)
 {
   uint16_t usPixels[320];
   png.getLineAsRGB565(pDraw, usPixels, PNG_RGB565_BIG_ENDIAN, 0xffffffff);
-  tft.pushImage(tft.getCursorX(), tft.getCursorY() + pDraw->y, pDraw->iWidth, 1, usPixels, 0x7E0);//uint16_t transparent_color = Skin::rgb888torgb565(0x00FF00); // 0x7E0; // green
+  //uint16_t transparent_color = Skin::rgb888torgb565(0x00FF00); // 0x7E0; // green  
+  tft.pushImage(tft.getCursorX(), tft.getCursorY() + pDraw->y, pDraw->iWidth, 1, usPixels, 0x7E0);
 }
 
 #endif

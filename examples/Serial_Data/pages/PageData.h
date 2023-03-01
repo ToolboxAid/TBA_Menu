@@ -17,28 +17,32 @@
 #include <string>
 
 #include "Skin.h"
-#include "PageBase.h"
+
+#include "Dimensions.h"
+
+#include "ElementButton.h"
 #include "ElementInput.h"
-class PageData
+
+#include "TBA_SupportFunction.h"
+TBA_SupportFunction supportFunction = TBA_SupportFunction();
+
+class PageData : public ElementPage
 {
 private:
+  inline static const char *BACK = "Back";
+  inline static const char *CLEAR = "Clear";
+  inline static const char *SEND = "Send";
+  inline static const char *PAGEOK = "PageOK";
 
 protected:
 public:
+  inline static const char *NAME = "PageData";
   inline static const char *inputName = "inputData";
 
-  static ElementPage *create(Skin *skin)
+  PageData(Skin *skin) : ElementPage(PageData::NAME, 0, true, true, 0, NULL)
   {
-    ElementPage *pageData = new ElementPage("PageData",
-                                            /* static func to exec  */ NULL, //&PageData::pageDataNum1,
-                                            /* ms refrest seconds   */ 0,
-                                            /* display Header       */ true,
-                                            /* clear screen         */ true);
-
     Dimensions *dimensions;
-    ElementButton *button;
     const char *icon;
-    // bool addIcon = false;
 
     // button layout
     uint8_t across = 3;
@@ -47,116 +51,136 @@ public:
     // =============================================================================
     // Add input
     dimensions = skin->getMapDimensions(across, down, 1, 2);
-    //    pageData->addInput(new ElementInput("inputName", "some space for display", new Dimensions(
-    pageData->addInput(new ElementInput(inputName, 18, new Dimensions(skin->buttonMargin, dimensions->getY(), skin->getScreenWidth() - (skin->buttonMargin * 2), dimensions->getH())));
+    this->addInput(new ElementInput(inputName, 18, ElementInput::JUSTIFICATION::RIGHT, new Dimensions(skin->buttonMargin, dimensions->getY(), skin->getScreenWidth() - (skin->buttonMargin * 2), dimensions->getH())));
 
     // =============================================================================
     // Add buttons: clear, Back, Send
     dimensions = skin->getMapDimensions(across, down, 1, 3);
-    button = new ElementButton("Clear", dimensions, &PageData::pageClearButton, NULL, NULL, NULL, icon, "clr", false);
-    pageData->addButton(button);
+    this->addButton(new ElementButton(PageData::CLEAR, dimensions, NULL, NULL, "clr"));
 
     // Add button remove last
     dimensions = skin->getMapDimensions(across, down, 2, 3);
-    button = new ElementButton("Back", dimensions, &PageData::pageBackButton, NULL, NULL, NULL, icon, "bak", false);
-    pageData->addButton(button);
+    this->addButton(new ElementButton(PageData::BACK, dimensions, NULL, NULL, "bak"));
 
     // Add button send
     dimensions = skin->getMapDimensions(across, down, 3, 3);
-    button = new ElementButton("Send", dimensions, &PageData::pageSendButton, "PageOK", NULL, NULL /*, icon, "snd", false*/);
-    pageData->addButton(button);
+    this->addButton(new ElementButton(PageData::SEND, dimensions, PAGEOK, NULL, "snd"));
 
     // =============================================================================
     // Add button 1
     dimensions = skin->getMapDimensions(across, down, 1, 4);
-    button = new ElementButton("1", dimensions, &PageData::pageNumButton, NULL, NULL, NULL, icon, "1", false);
-    pageData->addButton(button);
+    this->addButton(new ElementButton("1", dimensions, NULL, NULL, "1"));
 
     // Add button 2
     dimensions = skin->getMapDimensions(across, down, 2, 4);
-    button = new ElementButton("2", dimensions, &PageData::pageNumButton, NULL, NULL, NULL, icon, "2", false);
-    pageData->addButton(button);
+    this->addButton(new ElementButton("2", dimensions, NULL, NULL, "2"));
 
     // Add button 3
     dimensions = skin->getMapDimensions(across, down, 3, 4);
-    button = new ElementButton("3", dimensions, &PageData::pageNumButton, NULL, NULL, NULL, icon, "3", false);
-    pageData->addButton(button);
+    this->addButton(new ElementButton("3", dimensions, NULL, NULL, "3"));
 
     // =============================================================================
     // Add button 4
     dimensions = skin->getMapDimensions(across, down, 1, 5);
-    button = new ElementButton("4", dimensions, &PageData::pageNumButton, NULL, NULL, NULL, icon, "4", false);
-    pageData->addButton(button);
+    this->addButton(new ElementButton("4", dimensions, NULL, NULL, "4"));
 
     // Add button 5
     dimensions = skin->getMapDimensions(across, down, 2, 5);
-    button = new ElementButton("5", dimensions, &PageData::pageNumButton, NULL, NULL, NULL, icon, "5", false);
-    pageData->addButton(button);
+    this->addButton(new ElementButton("5", dimensions, NULL, NULL, "5"));
 
     // Add button 6
     dimensions = skin->getMapDimensions(across, down, 3, 5);
-    button = new ElementButton("6", dimensions, &PageData::pageNumButton, NULL, NULL, NULL, icon, "6", false);
-    pageData->addButton(button);
+    this->addButton(new ElementButton("6", dimensions, NULL, NULL, "6"));
 
     // =============================================================================
     // Add button 7
     dimensions = skin->getMapDimensions(across, down, 1, 6);
-    button = new ElementButton("7", dimensions, &PageData::pageNumButton, NULL, NULL, NULL, icon, "7", false);
-    pageData->addButton(button);
+    this->addButton(new ElementButton("7", dimensions, NULL, NULL, "7"));
 
     // Add button 8
     dimensions = skin->getMapDimensions(across, down, 2, 6);
-    button = new ElementButton("8", dimensions, &PageData::pageNumButton, NULL, NULL, NULL, icon, "8", false);
-    pageData->addButton(button);
+    this->addButton(new ElementButton("8", dimensions, NULL, NULL, "8"));
 
     // Add button 9
     dimensions = skin->getMapDimensions(across, down, 3, 6);
-    button = new ElementButton("9", dimensions, &PageData::pageNumButton, NULL, NULL, NULL, icon, "9", false);
-    pageData->addButton(button);
+    this->addButton(new ElementButton("9", dimensions, NULL, NULL, "9"));
 
     // =============================================================================
     // Add button dot
     dimensions = skin->getMapDimensions(across, down, 1, 7);
-    button = new ElementButton("*", dimensions, &PageData::pageNumButton, NULL, NULL, NULL, icon, "*", false);
-    pageData->addButton(button);
+    this->addButton(new ElementButton("*", dimensions, NULL, NULL, "*"));
 
     // Add button 0
     dimensions = skin->getMapDimensions(across, down, 2, 7);
-    button = new ElementButton("0", dimensions, &PageData::pageNumButton, NULL, NULL, NULL, icon, "0", false);
-    pageData->addButton(button);
+    this->addButton(new ElementButton("0", dimensions, NULL, NULL, "0"));
 
     // Add button pound
     dimensions = skin->getMapDimensions(across, down, 3, 7);
-    button = new ElementButton("#", dimensions, &PageData::pageNumButton, NULL, NULL, NULL, icon, "#", false);
-    pageData->addButton(button);
-
-    return pageData;
+    this->addButton(new ElementButton("#", dimensions, NULL, NULL, "#"));
   }
 
-  static void pageClearButton(const char *value)
-  { // Do some work on a specific variables page
-    ElementInput *inputValue = Menu::getInstance()->getPageInput(inputName);
-    if (inputValue != NULL)
+  void load()
+  {
+    supportFunction.memoryInfo();
+  }
+
+  void pageClearButton()
+  {
+    ElementInput *inputValue = getPageInput(PageData::inputName);
+    if (inputValue)
       inputValue->clear();
   }
-  static void pageBackButton(const char *value)
-  { // Do some work on a specific variables page
-    ElementInput *inputValue = Menu::getInstance()->getPageInput(inputName);
-    if (inputValue != NULL)
+
+  void pageBackButton()
+  {
+    ElementInput *inputValue = getPageInput(PageData::inputName);
+    if (inputValue)
       inputValue->back();
   }
-  static void pageSendButton(const char *value)
-  { // Do some work on a specific variables page
-    ElementInput *inputValue = Menu::getInstance()->getPageInput(inputName);
-    if (inputValue != NULL)
-      Serial.println(inputValue->getInput());
+
+  void pageSendButton()
+  {
+    ElementInput *inputValue = getPageInput(PageData::inputName);
+    if (inputValue)
+      Serial.print(" - - inputValue->getInput(): '");
+      Serial.print(inputValue->getInput());
+      Serial.println("'");
   }
 
-  static void pageNumButton(const char *value)
-  { // Do some work on a specific variables page
-    ElementInput *inputValue = Menu::getInstance()->getPageInput(inputName);
-    if (inputValue != NULL)
+  void pageNumButton(const char *value)
+  {
+    ElementInput *inputValue = getPageInput(PageData::inputName);
+    if (inputValue)
       inputValue->append(value);
+  }
+
+  boolean buttonShortPress(ElementButton * button)
+  {
+    if (strcmp(SEND, button->getName()) == 0)
+      pageSendButton();
+    else if (strcmp(BACK, button->getName()) == 0)
+      pageBackButton();
+    else if (strcmp(CLEAR, button->getName()) == 0)
+      pageClearButton();
+    else
+      pageNumButton(button->getValue()); // only button type left is data
+
+    // ElementPage::buttonShortPress(button);// Points to virtual method that returns false
+
+    return false; // Redraw page
+  }
+
+  boolean buttonLongPress(ElementButton * button)
+  {
+    Serial.print("buttonLongPress overload - name '");
+    Serial.print(button->getName());
+    Serial.print("' value '");
+    Serial.print(button->getValue());
+    Serial.println("'");
+
+    // ElementPage::buttonLongPress(button);// Points to virtual method that returns false
+
+    return false; // Redraw page 
   }
 };
 

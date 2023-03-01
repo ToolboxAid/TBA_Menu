@@ -17,31 +17,22 @@
 #include <string>
 
 #include "Skin.h"
-#include "PageBase.h"
 
+#include "ElementButton.h"
+#include "ElementLabel.h"
 #include "ElementRectangle.h"
 
-
-class PageOK
+class PageOK : public ElementPage
 {
 private:
+  inline static const char *NAME = "PageOK";
+
 protected:
 public:
-
-  static ElementPage *create(Skin *skin)
+  
+  PageOK(Skin *skin) : ElementPage(PageOK::NAME, 0, true, true, 0, NULL)
   {
-    ElementPage *page = new ElementPage("PageOK",
-              /* static func to exec  */ NULL,
-              /* ms refrest seconds   */ 0,
-              /* display Header       */ false,
-              /* clear screen         */ false); 
-              // ,
-              // /* backPageDelay seconds*/ 0,
-              // /* backPage             */ NULL);
-
     Dimensions *dimensions;
-    ElementButton *button;
-    ElementRectangle *rectangle;
 
     // button layout
     uint8_t across = 3;
@@ -50,24 +41,16 @@ public:
     // =============================================================================
     // Add buttons: clear, Back, Send
     dimensions = skin->getMapDimensions(across, down, 2, 5);
-    button = new ElementButton("OK", dimensions, NULL, "PageData", NULL, NULL);
-    page->addButton(button);
+    this->addButton(new ElementButton("OK", dimensions, PageData::NAME));
 
     // Add label
-    page->addLabel(new ElementLabel("Data Sent", new Point(65, 140), false));
+    this->addLabel(new ElementLabel("Data Sent", new Point(65, 140), false));
 
     // Add rectangle DW
     uint8_t top = 40;
     uint8_t edg = 25;
     dimensions = new Dimensions(skin->buttonMargin + edg, top, skin->getScreenWidth() - (skin->buttonMargin * 2) - (edg * 2), skin->getScreenHeight() - top - (skin->buttonMargin * 2));
-    rectangle = new ElementRectangle("backdrop", dimensions);
-    page->addRectangle(rectangle);
-    
-    /* Don't do this, errors on display.
-    delete dimensions;
-    delete button;
-    */
-    return page;
+    this->addRectangle(new ElementRectangle("backdrop", dimensions));
   }
 };
 

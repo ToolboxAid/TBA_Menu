@@ -49,11 +49,8 @@ spi.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
 
 #include "pages/PageMain.h"
 
-// #define DEBUG
-
 void setup()
-{
- // Use serial port
+{ // Use serial port
   Serial.begin(115200);
   while (!Serial && (millis() <= 10000))
   {
@@ -71,19 +68,19 @@ void setup()
 
  /*override TBA default skin
   skin = new Skin( name,  rotate,
-        screenWidth,  screenHeight,
-        headerHeight,  headerFontTextSize,  headerTextColor,  headerBackGroundColor,  headerIconImage,
-        buttonTextColor,  buttonColor,  buttonShortColor,  buttonLongColor,  buttonBorderColor
+         screenWidth,  screenHeight,
+         headerHeight,  headerFontTextSize,  headerTextColor,  headerBackGroundColor,  headerIconImage,
+         buttonTextColor,  buttonColor,  buttonShortColor,  buttonLongColor,  buttonBorderColor
          buttonMargin,  buttonBorderWidth,  buttonPadding,  buttonRadius,
-        textFontSize,  textColor,  textBackgroundColor);  */
+         textFontSize,  textColor,  textBackgroundColor); */
 
-  Menu::getInstance()->init(*skin, "Main");
+  Menu::getInstance()->Initialize(skin, "ILI9341");
 
   ElementPage *page;
 
-  // Create the menu page
-  page = PageMain::create();
-  Menu::getInstance()->addPage(page);
+  // Create the page main
+  PageMain *pageMain = new PageMain();
+  Menu::getInstance()->addPage(pageMain);
 }
 
 void loop()

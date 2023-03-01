@@ -15,76 +15,48 @@
 
 #include <sstream>
 #include <string>
+
+#include "Skin.h"
+
 #include "Dimensions.h"
+#include "Point.h"
+#include "ElementButton.h"
+#include "ElementLabel.h"
 
-//#include "PageBase.h"
+#include "TBA_SupportFunction.h"
+extern TBA_SupportFunction supportFunction;
 
-class PageMain //: PageBase
+class PageMain : public ElementPage
 {
 private:
+  inline static const char *LABEL1 = "Show me some files";
+  inline static const char *LABEL2 = "File Select Examples";
+  inline static const char *BUTTONW = "w/ Header";
+  inline static const char *BUTTONWO = "w/o Header";
+
 protected:
 public:
+  inline static const char *NAME = "Main";
 
-//  PageMain() : PageBase(){}
-
-  static ElementPage *create(Skin *skin)
+  PageMain() : ElementPage(PageMain::NAME, 0, true, true, 0, NULL)
   {
-    Dimensions *dimensions;
-    ElementButton *button;
-    //ElementFile *fileElement;
-
-    // Create Page
-    ElementPage *page = new ElementPage("Main",
-    /* static func to exec */ NULL,
-    /* ms refrest seconds   */ 1,
-    /* display Header      */ true,
-    /* clear screen        */ true);
-
     // Add label
-    page->addLabel(new ElementLabel("Show me some files", new Point(10, 50)));
-    page->addLabel(new ElementLabel("File Select Examples", new Point(10, 90)));
+    this->addLabel(new ElementLabel(LABEL1, new Point(10, 50)));
+    this->addLabel(new ElementLabel(LABEL2, new Point(10, 90)));
 
-    dimensions = new Dimensions(15, 150, 290, 35);
-    button = new ElementButton("File Select w/ header",
-    /* X, Y, W, H             */ dimensions,
-    /* short press            */ NULL, //&StaticPage::pageMain,
-    /* new short current page */ "File Select w/ header",
-    /* long  press            */ NULL,
-    /* new long current page  */ NULL);
-    page->addButton(button);
-
-    dimensions = new Dimensions(15, 190, 290, 35);
-    button = new ElementButton("File Select w/o header",
-    /* X, Y, W, H             */ dimensions,
-    /* short press            */ NULL, //&StaticPage::pageMain,
-    /* new short current page */ "File Select w/o header",
-    /* long  press            */ NULL,
-    /* new long current page  */ NULL);
-    page->addButton(button);
-
-
-    /* Don't do this, errors on display.
-    delete dimensions;
-    delete button;
-    */
-
-    return page;
+    this->addButton(new ElementButton(BUTTONW, new Dimensions(15, 150, 290, 35), BUTTONW));
+    this->addButton(new ElementButton(BUTTONWO, new Dimensions(15, 190, 290, 35), BUTTONWO));
   }
 
-  /* Formating options...
-  Format	Type      bytes
-  ======  ========  =====
-  %c   	char      1/char
-  %i  	int       4
-  %u  	unsigned  4
-  %f  	float     4
-          double    8
-  %s  	string    1/char + 1 for terminater
-  */
-
-  static void pageRefresh()
-  { // Do some work on a specific variables page
-    // Serial.println("pageRefresh");
+  void load()
+  {
+    supportFunction.memoryInfo();
+  }
+  void refresh()
+  {
+  }
+  void exit()
+  {
   }
 };
 

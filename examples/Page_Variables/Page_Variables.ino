@@ -50,8 +50,6 @@ spi.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
 #include "pages/PageMain.h"
 #include "pages/PageVariable.h"
 
-// #define DEBUG
-
 void setup()
 {
  // Use serial port
@@ -69,25 +67,14 @@ void setup()
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
 
   Skin *skin = new Skin(); /* Using TBA default skin */
- /*override TBA default skin
-  skin = new Skin( name,  rotate,
-        screenWidth,  screenHeight,
-        headerHeight,  headerFontTextSize,  headerTextColor,  headerBackGroundColor,  headerIconImage,
-        buttonTextColor,  buttonColor,  buttonShortColor,  buttonLongColor,  buttonBorderColor
-         buttonMargin,  buttonBorderWidth,  buttonPadding,  buttonRadius,
-        textFontSize,  textColor,  textBackgroundColor);  */
 
-  Menu::getInstance()->init(*skin, "Main");
-
-  ElementPage *page;
+  Menu::getInstance()->Initialize(skin, "ILI9341");
 
   // Create the menu page
-  page = PageMain::create();
-  Menu::getInstance()->addPage(page);
+  Menu::getInstance()->addPage(new PageMain());
 
   // Create the variables page
-  page = PageVariable::create();
-  Menu::getInstance()->addPage(page);
+  Menu::getInstance()->addPage(new PageVariable());
 }
 
 void loop()

@@ -11,6 +11,7 @@
 
 #include "Arduino.h"
 
+#include "LCD.h"
 #include "GlobalConst.h"
 
 #include "Point.h"
@@ -22,28 +23,133 @@
 
 class ElementFile : public ElementButton
 {
+private:
+    char *nameBuffer;
+    boolean directory;
+
+protected:
 public:
     // Use this to create a Button of style : FILE
-    ElementFile(const char *name, Dimensions *dimensions,
-                void (*pShortFunction)(const char *), const char *shortPage,
-                // const char * rootDirectory,
-                const char *value, const char *icon)
-        : ElementButton(name, dimensions, pShortFunction, shortPage, NULL, NULL, icon, value, false)
+    ElementFile(const char *name, Dimensions *dimensions, const char *shortPage, const char *icon, boolean directory)
+        : ElementButton(name, dimensions, shortPage)
     {
-        this->rootDirectory = NULL; //rootDirectory;
         this->style = STYLE::FILE;
+        this->directory = directory;
+
+        nameBuffer = (char *)malloc(strlen(name) + 2);
+        memcpy(nameBuffer, name, strlen(name) + 1);
+        this->name = nameBuffer;
     }
 
     ~ElementFile()
     {
-        Serial.println("~ElementFile()");
-
-        rootDirectory = NULL; // = NULL;;
+        if (nameBuffer)
+        {
+            free(nameBuffer);
+        }
     }
 
-    const char *getRootDirectory()
+    //=============================================================================================================
+    uint16_t getFileStateBoarderColor()
     {
-        this->rootDirectory;
+        LCD *lcd = LCD::GetInstance();
+
+        uint16_t fileTextColor;
+
+        switch (this->state)
+        {
+        case ElementButton::STATE::UP:
+        case ElementButton::STATE::ROLLOFF:
+        case ElementButton::STATE::RELEASED:
+            fileTextColor = lcd->getSkin()->fileBorderColor;
+            break;
+        case ElementButton::STATE::SHORT:
+            fileTextColor = lcd->getSkin()->fileShortColor;
+            break;
+        case ElementButton::STATE::LONG:
+            fileTextColor = lcd->getSkin()->fileLongColor;
+            break;
+        default:
+            fileTextColor = Skin::rgb888torgb565(0xFF0000);
+            Serial.print(F("Invalid Button STATE: "));
+            Serial.print(this->getButtonState());
+            Serial.print(F(" for Button : "));
+            Serial.println(this->getName());
+            break;
+        }
+        return fileTextColor;
+    }
+    uint16_t getFileStateColor()
+    {
+        LCD *lcd = LCD::GetInstance();
+
+        uint16_t fileTextColor;
+
+        switch (this->state)
+        {
+        case ElementButton::STATE::UP:
+        case ElementButton::STATE::ROLLOFF:
+        case ElementButton::STATE::RELEASED:
+            fileTextColor = lcd->getSkin()->fileTextColor;
+            break;
+        case ElementButton::STATE::SHORT:
+            fileTextColor = lcd->getSkin()->fileShortColor;
+            break;
+        case ElementButton::STATE::LONG:
+            fileTextColor = lcd->getSkin()->fileLongColor;
+            break;
+        default:
+            fileTextColor = Skin::rgb888torgb565(0xFF0000);
+            Serial.print(F("Invalid Button STATE: "));
+            Serial.print(this->getButtonState());
+            Serial.print(F(" for Button : "));
+            Serial.println(this->getName());
+            break;
+        }
+        return fileTextColor;
+    }
+
+    void draw()
+    {
+        LCD *lcd = LCD::GetInstance();
+
+        // Draw Icon
+        if (!drawButtonIcon())
+        {
+            // Draw Name
+            tft.setTextSize(lcd->getSkin()->textFontSize);
+            tft.setTextColor(getFileStateColor(), lcd->getSkin()->fileBackColor, true);
+            tft.setTextDatum(TL_DATUM);
+
+            //(strlen(currentPage->getName()) * lcd->getSkin()->getFontWidth() * lcd->getSkin()->headerFontTextSize) / 2;
+            uint8_t end = strlen(this->getName());
+            uint8_t numChar = this->dimensions->getXW() / (6 * 2) - 1;
+
+            if (end > numChar)
+                end = numChar;
+
+            // give me some space
+            char *ptr;
+            ptr = (char *)malloc(end * sizeof(char) + 1);
+            memcpy(ptr, this->getName(), end);
+            ptr[end] = '\0';
+
+            tft.drawString(ptr, this->dimensions->getX() + 3, this->dimensions->getY() + 3);
+
+            // give space back
+            free(ptr);
+        }
+
+        tft.drawRoundRect(this->dimensions->getX() - 1, this->dimensions->getY() + 1,
+                          this->dimensions->getW(), this->dimensions->getH(),
+                          lcd->getSkin()->buttonRadius,
+                          getFileStateBoarderColor());
+    }
+    //=============================================================================================================
+
+    boolean isDirectory()
+    {
+        return this->directory;
     }
 
     void debugSerial(const char *debugLocation)
@@ -52,17 +158,20 @@ public:
         Serial.print(__FILENAME__);
         Serial.print(F("> "));
 
-        Serial.print(F(" root Dir: '"));
-        Serial.print(this->rootDirectory);
+        Serial.print(F(" Name: '"));
+        Serial.print(this->nameBuffer);
 
+        Serial.print(F("' isDirectory '"));
+        if (this->isStyleFile())
+            Serial.print(this->directory);
+        else
+        {
+            Serial.print(F("!"));
+        }
         Serial.print(F("' "));
 
         ElementButton::debugSerial(debugLocation);
     }
-
-protected:
-private:
-    char *rootDirectory;
 };
 
 #endif
