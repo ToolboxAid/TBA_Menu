@@ -56,18 +56,18 @@ public:
     // initialize chrVar = 100;
     char *chrVar = new char(' ');
 
-    // allocate space for the chrDisplay, len of 7i + 1 terminator \0
-    char *chrDisplay = new char[8]{'1', '2', '3', '4', '5', '6', '7', '\0'};
+    // allocate space for the chrLcdValue, len of 7i + 1 terminator \0
+    char *chrLcdValue = new char[8]{'1', '2', '3', '4', '5', '6', '7', '\0'};
 
     // create the variable element add it to the page
-    this->addVariable(new ElementVariable(chrVarName, (void *)chrVar, chrVarFormat, chrDisplay, new Point(165, 60)));
+    this->addVariable(new ElementVariable(chrVarName, (void *)chrVar, chrVarFormat, chrLcdValue, new Point(165, 60)));
   }
   void chrRefreshExample()
   { // char - stores single characters, such as 'a' or 'B'. Char values are surrounded by single quotes
     ElementVariable *element = getPageVariable(chrVarName);
     char *chrVarValue = (char *)element->getValue();
     *chrVarValue += 1;
-    sprintf(element->getDisplay(), element->getFormat(), (char)*chrVarValue);
+    sprintf(element->getLcdValue(), element->getFormat(), (char)*chrVarValue);
   }
 
   void intAdd()
@@ -79,19 +79,19 @@ public:
     // initialize intVar = 100;
     int *intVar = new int(100);
 
-    // allocate space for the intDisplay, len of 7i + 1 terminator \0
-    char *intDisplay = new char[8]{'1', '2', '3', '4', '5', '6', '7', '\0'};
+    // allocate space for the intLcdValue, len of 7i + 1 terminator \0
+    char *intLcdValue = new char[8]{'1', '2', '3', '4', '5', '6', '7', '\0'};
 
     // create the variable element add it to the page
-    this->addVariable(new ElementVariable(intVarName, (void *)intVar, intVarFormat, intDisplay, new Point(165, 80)));
+    this->addVariable(new ElementVariable(intVarName, (void *)intVar, intVarFormat, intLcdValue, new Point(165, 80)));
   }
   void intRefreshExample()
   { // int - stores integers (whole numbers), without decimals, such as 123 or -123
     ElementVariable *element = getPageVariable(intVarName);
     int *intVarValue = (int *)element->getValue();
     *intVarValue += 1;
-    // snprintf_P(element->getDisplay(), strlen(element->getDisplay()) + 1, element->getFormat(), *intVarValue);
-    sprintf(element->getDisplay(), element->getFormat(), (int)*intVarValue);
+    // snprintf_P(element->getLcdValue(), strlen(element->getLcdValue()) + 1, element->getFormat(), *intVarValue);
+    sprintf(element->getLcdValue(), element->getFormat(), (int)*intVarValue);
   }
 
   void fltAdd()
@@ -102,11 +102,11 @@ public:
     // Add Float variable  fltVar
     float *fltVar = new float(0.0);
 
-    // allocate space for the fltDisplay, len of 7i + 1 terminator
-    char *fltDisplay = new char[8]{'9', '2', '3', '4', '5', '6', '7', '\0'};
+    // allocate space for the fltLcdValue, len of 7i + 1 terminator
+    char *fltLcdValue = new char[8]{'9', '2', '3', '4', '5', '6', '7', '\0'};
 
     // create the variable element add it to the page
-    this->addVariable(new ElementVariable(fltVarName, (void *)fltVar, fltVarFormat, fltDisplay, new Point(165, 100)));
+    this->addVariable(new ElementVariable(fltVarName, (void *)fltVar, fltVarFormat, fltLcdValue, new Point(165, 100)));
   }
   void fltRefreshExample()
   { // float - stores floating point numbers, with decimals, such as 19.99 or -19.99
@@ -117,7 +117,7 @@ public:
     float fractpart, intpart;
     fractpart = modf((float)*fltVarValue, &intpart);
 
-    sprintf(element->getDisplay(), element->getFormat(), (int)intpart, (int)(fractpart * 10000));
+    sprintf(element->getLcdValue(), element->getFormat(), (int)intpart, (int)(fractpart * 10000));
   }
 
   void dblAdd()
@@ -128,11 +128,11 @@ public:
     // Add Double variable  dblVar
     double *dblVar = new double(0.0);
 
-    // allocate space for the dblDisplay, len of 7i + 1 terminator
-    char *dblDisplay = new char[8]{'8', '2', '3', '4', '5', '6', '7', '\0'};
+    // allocate space for the dblLcdValue, len of 7i + 1 terminator
+    char *dblLcdValue = new char[8]{'8', '2', '3', '4', '5', '6', '7', '\0'};
 
     // create the variable element add it to the page
-    this->addVariable(new ElementVariable(dblVarName, (void *)dblVar, dblVarFormat, dblDisplay, new Point(165, 120)));
+    this->addVariable(new ElementVariable(dblVarName, (void *)dblVar, dblVarFormat, dblLcdValue, new Point(165, 120)));
   }
   void dblRefreshExample()
   { // double - stores floating point numbers, with decimals, such as 19.99 or -19.99
@@ -142,8 +142,8 @@ public:
 
     double fractpart, intpart;
     fractpart = modf((double)*dblVarValue, &intpart);
-    // snprintf_P(element->getDisplay(), strlen(element->getDisplay()) , element->getFormat(), (int)intpart, (int)(fractpart * 1000));
-    sprintf(element->getDisplay(), element->getFormat(), (int)intpart, (int)(fractpart * 1000));
+    // snprintf_P(element->getLcdValue(), strlen(element->getLcdValue()) , element->getFormat(), (int)intpart, (int)(fractpart * 1000));
+    sprintf(element->getLcdValue(), element->getFormat(), (int)intpart, (int)(fractpart * 1000));
   }
 
   void strAdd()
@@ -153,11 +153,11 @@ public:
     // Add String variable  strVar
 
     double *strVar = new double(0.0);
-    // allocate space for the strDisplay, len of 7i + 1 terminator
-    char *strDisplay = new char[8]{'S', '2', '3', '4', '5', '6', '7', '\0'};
+    // allocate space for the strLcdValue, len of 7i + 1 terminator
+    char *strLcdValue = new char[8]{'S', '2', '3', '4', '5', '6', '7', '\0'};
 
     // create the variable element add it to the page
-    this->addVariable(new ElementVariable(strVarName, (void *)strVar, strVarFormat, strDisplay, new Point(165, 140)));
+    this->addVariable(new ElementVariable(strVarName, (void *)strVar, strVarFormat, strLcdValue, new Point(165, 140)));
   }
   void strRefreshExample() // Update String Variable Example
   {                        // string - stores text, such as "Hello", "World". String values are surrounded by double quotes
@@ -173,7 +173,7 @@ public:
     const char *offsetData = &(*(src + offset));
     size_t srcSize = strlen(offsetData); // 27 to 7
 
-    char *dest = element->getDisplay();
+    char *dest = element->getLcdValue();
     size_t destSize = strlen(dest); // 7
 
     if (srcSize <= destSize)
@@ -181,7 +181,7 @@ public:
     else
       offset++;
 
-    memcpy(element->getDisplay(), offsetData, destSize);
+    memcpy(element->getLcdValue(), offsetData, destSize);
   }
 
   void bolAdd()
@@ -191,17 +191,17 @@ public:
 
     // Add Boolean variable  bolVar
     boolean *bolVar = new boolean(0.0);
-    // allocate space for the bolDisplay, len of 7i + 1 terminator
-    char *bolDisplay = new char[8]{'T', '2', '3', '4', '5', '6', '7', '\0'};
+    // allocate space for the bolLcdValue, len of 7i + 1 terminator
+    char *bolLcdValue = new char[8]{'T', '2', '3', '4', '5', '6', '7', '\0'};
 
     // create the variable element add it to the page
-    this->addVariable(new ElementVariable(bolVarName, (void *)bolVar, bolVarFormat, bolDisplay, new Point(165, 160)));
+    this->addVariable(new ElementVariable(bolVarName, (void *)bolVar, bolVarFormat, bolLcdValue, new Point(165, 160)));
   }
   void bolRefreshExample()
   { // boolean - stores values with two states: true or false
     ElementVariable *element = getPageVariable(bolVarName);
     boolean *bolVarValue = (boolean *)element->getValue();
-    sprintf(element->getDisplay(), element->getFormat(), formatBool(*bolVarValue));
+    sprintf(element->getLcdValue(), element->getFormat(), formatBool(*bolVarValue));
     *bolVarValue = (rand() % 2);
   }
 

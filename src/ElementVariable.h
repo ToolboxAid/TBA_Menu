@@ -15,16 +15,16 @@ private:
     Point *point;
     void *value;
     const char *format;
-    char *display;
+    char *lcdValue;
 
 protected:
 public:
-    ElementVariable(const char *name, void *value, const char *format, char *display, Point *point) : ElementBase(name) //----->call base class
+    ElementVariable(const char *name, void *value, const char *format, char *lcdValue, Point *point) : ElementBase(name) //----->call base class
     {
         this->point = point;
         this->value = value;
         this->format = format;
-        this->display = display;
+        this->lcdValue = lcdValue;
     }
 
     ~ElementVariable()
@@ -34,8 +34,8 @@ public:
             delete value;
         if (format)
             delete format;
-        if (display)
-            delete display;
+        if (lcdValue)
+            delete lcdValue;
     }
 
     void draw()
@@ -47,7 +47,7 @@ public:
         tft.setTextDatum(TL_DATUM);
 
         tft.setCursor(this->point->getX(), this->point->getY());
-        tft.print(this->display);
+        tft.print(this->lcdValue);
     }
 
     void *getValue()
@@ -58,9 +58,9 @@ public:
     {
         return this->format;
     }
-    char *getDisplay()
+    char *getLcdValue()
     {
-        return this->display;
+        return this->lcdValue;
     }
 
     void debugSerial(const char *debugLocation)
@@ -77,10 +77,10 @@ public:
         Serial.print(F("' format: '"));
         Serial.print(format);
 
-        Serial.print(F("' display: '0x"));
-        Serial.print((unsigned int)display, HEX);
-        Serial.print(F("' display: '"));
-        Serial.print(display);
+        Serial.print(F("' lcdValue: '0x"));
+        Serial.print((unsigned int)lcdValue, HEX);
+        Serial.print(F("' lcdValue: '"));
+        Serial.print(lcdValue);
 
         Serial.print(F("' "));
 

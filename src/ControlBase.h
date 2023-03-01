@@ -1,5 +1,5 @@
-#ifndef ElementControlBase_h
-#define ElementControlBase_h
+#ifndef ControlBase_h
+#define ControlBase_h
 
 #include "Arduino.h"
 
@@ -12,7 +12,7 @@
 
 #include "GlobalConst.h"
 
-class ElementControlBase : public ElementBase
+class ControlBase : public ElementBase
 {
 private:
 
@@ -26,7 +26,7 @@ protected:
 
 public:
 //Skin *skin,
-    ElementControlBase(const char *name, Skin *skin) : ElementBase(name) //----->call base class
+    ControlBase(const char *name, Skin *skin) : ElementBase(name) //----->call base class
     {
         this->skin = skin;
 
@@ -36,7 +36,7 @@ public:
         LCD *lcd = LCD::GetInstance();
      }
 
-    ~ElementControlBase()
+    ~ControlBase()
     {
         // if (this->value)
         // {
