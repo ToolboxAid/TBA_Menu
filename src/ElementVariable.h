@@ -3,13 +3,13 @@
 
 #include "Arduino.h"
 
-#include "ElementBase.h"
+#include "ControlBase.h"
 #include "Point.h"
 
 #include "TBA_Macros.h"
 
 #include "GlobalConst.h"
-class ElementVariable : public ElementBase
+class ElementVariable : public ControlBase
 {
 private:
     Point *point;
@@ -19,7 +19,7 @@ private:
 
 protected:
 public:
-    ElementVariable(const char *name, void *value, const char *format, char *lcdValue, Point *point) : ElementBase(name) //----->call base class
+    ElementVariable(const char *name, void *value, const char *format, char *lcdValue, Point *point) : ControlBase(name) //----->call base class
     {
         this->point = point;
         this->value = value;
@@ -40,10 +40,8 @@ public:
 
     void draw()
     {
-        LCD *lcd = LCD::GetInstance();
-
-        tft.setTextColor(lcd->getSkin()->textColor, lcd->getSkin()->textBackgroundColor);
-        tft.setTextSize(lcd->getSkin()->textFontSize);
+        tft.setTextColor(getLCD()->getSkin()->textColor, getLCD()->getSkin()->textBackgroundColor);
+        tft.setTextSize(getLCD()->getSkin()->textFontSize);
         tft.setTextDatum(TL_DATUM);
 
         tft.setCursor(this->point->getX(), this->point->getY());
@@ -84,7 +82,7 @@ public:
 
         Serial.print(F("' "));
 
-        ElementBase::debugSerial(debugLocation);
+        ControlBase::debugSerial(debugLocation);
     }
 };
 

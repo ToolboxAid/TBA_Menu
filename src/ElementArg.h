@@ -3,31 +3,28 @@
 
 #include "Arduino.h"
 
-#include "ElementBase.h"
-#include "Point.h"
+#include "ControlBase.h"
 
 #include "TBA_Macros.h"
 
-class ElementArg : public ElementBase
+class ElementArg : public ControlBase
 {
 private:
     char *value;
 
 protected:
 public:
-    ElementArg(const char *name, const char *value) : ElementBase(name) //----->call base class
+    ElementArg(const char *name, const char *value) : ControlBase(name) //----->call base class
     {
         this->value = (char *)malloc(strlen(value) + 1);
         memcpy(this->value, value, strlen(value) + 1);
-        this->value = (char *)this->value;
+        this->value = (char *)this->value;// Todo, why is this here???
     }
 
     ~ElementArg()
     {
         if (this->value)
-        {
             free(this->value);
-        }
     }
 
     boolean hasValue()
@@ -56,7 +53,7 @@ public:
 
         Serial.print(F("' "));
 
-        ElementBase::debugSerial(debugLocation);
+        ControlBase::debugSerial(debugLocation);
     }
 };
 

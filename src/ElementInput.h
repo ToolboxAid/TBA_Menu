@@ -4,11 +4,11 @@
 #include "Arduino.h"
 #include "Dimensions.h"
 
-#include "ElementBase.h"
+#include "ControlBase.h"
 #include "TBA_Macros.h"
 
 #include "GlobalConst.h"
-class ElementInput : public ElementBase
+class ElementInput : public ControlBase
 {
 private:
     Dimensions *dimensions;
@@ -39,7 +39,7 @@ public:
     }
 
     ElementInput(const char *name, uint8_t length, JUSTIFICATION justification, Dimensions *dimensions)
-        : ElementBase(name) //----->call base class
+        : ControlBase(name) //----->call base class
     {
         this->length = length;
         this->size = 0;
@@ -58,27 +58,25 @@ public:
 
     void draw()
     {
-        LCD *lcd = LCD::GetInstance();
-
-        // tft.setTextColor(lcd->getSkin()->textColor, lcd->getSkin()->textBackgroundColor);// if drawing background color
-        tft.setTextColor(lcd->getSkin()->textColor);
-        tft.setTextSize(lcd->getSkin()->textFontSize);
+        // tft.setTextColor(getLCD()->getSkin()->textColor, getLCD()->getSkin()->textBackgroundColor);// if drawing background color
+        tft.setTextColor(getLCD()->getSkin()->textColor);
+        tft.setTextSize(getLCD()->getSkin()->textFontSize);
         tft.setTextDatum(CR_DATUM);
 
         u_int16_t TBA_GRAY = Skin::rgb888torgb565(0xBBBBBB);
         // Draw input outline
         tft.fillRoundRect(this->dimensions->getX(), this->dimensions->getY(),
                           this->dimensions->getW(), this->dimensions->getH(),
-                          lcd->getSkin()->buttonRadius,
+                          getLCD()->getSkin()->buttonRadius,
                           TBA_GRAY);
         // Draw input background
-        tft.fillRoundRect(this->dimensions->getX() + lcd->getSkin()->buttonBorderWidth, this->dimensions->getY() + lcd->getSkin()->buttonBorderWidth,
-                          this->dimensions->getW() - (lcd->getSkin()->buttonBorderWidth * 2), this->dimensions->getH() - (lcd->getSkin()->buttonBorderWidth * 2),
-                          lcd->getSkin()->buttonRadius,
+        tft.fillRoundRect(this->dimensions->getX() + getLCD()->getSkin()->buttonBorderWidth, this->dimensions->getY() + getLCD()->getSkin()->buttonBorderWidth,
+                          this->dimensions->getW() - (getLCD()->getSkin()->buttonBorderWidth * 2), this->dimensions->getH() - (getLCD()->getSkin()->buttonBorderWidth * 2),
+                          getLCD()->getSkin()->buttonRadius,
                           TFT_WHITE);
         // Draw the String
         tft.drawString(this->input,
-                       this->dimensions->getX() + this->dimensions->getW() - lcd->getSkin()->buttonBorderWidth - lcd->getSkin()->buttonPadding,
+                       this->dimensions->getX() + this->dimensions->getW() - getLCD()->getSkin()->buttonBorderWidth - getLCD()->getSkin()->buttonPadding,
                        this->dimensions->getY() + (this->dimensions->getH() / 2));
     }
 
@@ -201,7 +199,7 @@ public:
 
         dimensions->debugSerial("NO_CR");
 
-        ElementBase::debugSerial(debugLocation);
+        ControlBase::debugSerial(debugLocation);
     }
 };
 

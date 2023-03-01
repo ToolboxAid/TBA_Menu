@@ -7,8 +7,6 @@
 #include <mutex>
 #include <thread>
 
-#include "GlobalConst.h"
-
 /* The SPIFFS (FLASH file system) is used
    to hold touch screen calibration data
 */
@@ -17,7 +15,6 @@
 
 #include "TBA_FileSystem.h"
 
-// #include "ElementPage.h"
 #include "Skin.h"
 #include "Point.h"
 
@@ -88,16 +85,14 @@ public:
     /** Other static methods should be defined outside the class. */
 
     Point *getScreenTouchPoint(boolean &pressed);
+
+    const char *getName();
+
+    Skin *getSkin();
+
     void debugSerial(const char *debugLocation);
 
-    const char *getName()
-    {
-        return this->name;
-    }
-    Skin *getSkin()
-    {
-        return this->skin;
-    }
+
 };
 
 LCD *LCD::thisLCD{nullptr};
@@ -252,6 +247,16 @@ Point *LCD::getScreenTouchPoint(boolean &pressed)
     // point = new Point();
     // return point;
 }
+
+    const char *LCD::getName()
+    {
+        return this->name;
+    }
+
+    Skin *LCD::getSkin()
+    {
+        return this->skin;
+    }
 
 void LCD::debugSerial(const char *debugLocation)
 {

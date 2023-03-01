@@ -13,7 +13,7 @@
 
 #include "Arduino.h"
 
-const char * TAG = "v1.1.47";
+const char * TAG = "v1.1.48";
 
 #include <TFT_eSPI.h>       // Hardware-specific library
 TFT_eSPI tft = TFT_eSPI();  // Instance library

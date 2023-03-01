@@ -8,7 +8,7 @@
 
 #include "GlobalConst.h"
 
-#include "ElementBase.h"
+#include "ControlBase.h"
 #include "Skin.h"
 
 #include "LCD.h"
@@ -16,7 +16,7 @@
 
 #include "TBA_Macros.h"
 
-class ElementHeader : public ElementBase
+class ElementHeader : public ControlBase
 {
 private:
     boolean displayHeader;
@@ -31,7 +31,7 @@ private:
 protected:
 public:
     // Skin *skin,
-    ElementHeader(const char *name, boolean displayHeader) : ElementBase(name) //----->call base class
+    ElementHeader(const char *name, boolean displayHeader) : ControlBase(name) //----->call base class
     {
         this->displayHeader = displayHeader;
         this->skin = skin;
@@ -51,24 +51,22 @@ public:
 
     uint16_t drawIcon()
     {
-        LCD *lcd = LCD::GetInstance();
-
         uint16_t iconOffset = 0;
-        if (lcd->getSkin()->headerIconImage)
+        if (getLCD()->getSkin()->headerIconImage)
         {
             int rc, filecount = 0;
 
             // for (int i = 0; i < sizeof(buffer) / (sizeof(buffer[0])); i++)
             // {
-            //   buffer[i] = lcd->getSkin()->headerIconImage[i];
+            //   buffer[i] = getLCD()->getSkin()->headerIconImage[i];
             // }
             // rc = png.open(buffer, myOpen, myClose, myRead, mySeek, PNGDraw);
 
-            rc = png.open(lcd->getSkin()->headerIconImage, myOpen, myClose, myRead, mySeek, PNGDraw);
+            rc = png.open(getLCD()->getSkin()->headerIconImage, myOpen, myClose, myRead, mySeek, PNGDraw);
             if (rc == PNG_SUCCESS)
             {
-                iconOffset = lcd->getSkin()->getHeaderWidth() / 2;
-                iconOffset -= (strlen(this->getName()) * lcd->getSkin()->getFontWidth() * lcd->getSkin()->headerFontTextSize) / 2;
+                iconOffset = getLCD()->getSkin()->getHeaderWidth() / 2;
+                iconOffset -= (strlen(this->getName()) * getLCD()->getSkin()->getFontWidth() * getLCD()->getSkin()->headerFontTextSize) / 2;
                 iconOffset -= (png.getWidth() / 2) + 2;
 
                 tft.setCursor(iconOffset, 0);
@@ -82,7 +80,7 @@ public:
             else
             {
                 Serial.print(" Header Icon open failure : ");
-                Serial.println(lcd->getSkin()->headerIconImage);
+                Serial.println(getLCD()->getSkin()->headerIconImage);
             }
         }
         return iconOffset;
@@ -90,20 +88,18 @@ public:
 
     void draw()
     {
-        LCD *lcd = LCD::GetInstance();
-
         if (this->getDisplayHeader())
         {
-            tft.fillRect(0, 0, lcd->getSkin()->getHeaderWidth(), lcd->getSkin()->getHeaderHeight(), lcd->getSkin()->headerBackGroundColor);
-            tft.setTextColor(lcd->getSkin()->headerTextColor, lcd->getSkin()->headerBackGroundColor);
-            tft.setTextSize(lcd->getSkin()->headerFontTextSize);
+            tft.fillRect(0, 0, getLCD()->getSkin()->getHeaderWidth(), getLCD()->getSkin()->getHeaderHeight(), getLCD()->getSkin()->headerBackGroundColor);
+            tft.setTextColor(getLCD()->getSkin()->headerTextColor, getLCD()->getSkin()->headerBackGroundColor);
+            tft.setTextSize(getLCD()->getSkin()->headerFontTextSize);
 
             uint16_t iconOffset = drawIcon();
             // Text last so it may be on top of Icon
             tft.setTextDatum(CC_DATUM);
             tft.drawString(this->getName(),
-                           (lcd->getSkin()->getHeaderWidth() / 2) + iconOffset,
-                            lcd->getSkin()->getHeaderHeight() / 2);
+                           (getLCD()->getSkin()->getHeaderWidth() / 2) + iconOffset,
+                            getLCD()->getSkin()->getHeaderHeight() / 2);
         }
     }
 
@@ -124,7 +120,7 @@ public:
 
         // Serial.print(F("' "));
 
-        ElementBase::debugSerial(debugLocation);
+        ControlBase::debugSerial(debugLocation);
     }
 };
 
