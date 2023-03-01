@@ -29,9 +29,7 @@ public:
     ~ControlBase()
     {
         // if (this->value)
-        // {
         //     free(this->value);
-        // }
     }
 
     virtual void draw()

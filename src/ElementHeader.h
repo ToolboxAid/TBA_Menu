@@ -44,9 +44,7 @@ public:
     ~ElementHeader()
     {
         // if (this->value)
-        // {
         //     free(this->value);
-        // }
     }
 
     uint16_t drawIcon()
@@ -99,7 +97,7 @@ public:
             tft.setTextDatum(CC_DATUM);
             tft.drawString(this->getName(),
                            (getLCD()->getSkin()->getHeaderWidth() / 2) + iconOffset,
-                            getLCD()->getSkin()->getHeaderHeight() / 2);
+                           getLCD()->getSkin()->getHeaderHeight() / 2);
         }
     }
 

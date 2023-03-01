@@ -26,9 +26,7 @@ public:
     ~ElementLabel()
     {
         if (this->point)
-        {
             free(this->point);
-        }
     }
 
     void draw()
