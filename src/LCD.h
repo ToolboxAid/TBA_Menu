@@ -59,6 +59,9 @@ private:
     inline static const char *CALIBRATION_FILE_REV2 = "/TouchCal.R2.Data";
     inline static const char *CALIBRATION_FILE_REV3 = "/TouchCal.R3.Data";
 
+    void touch_calibrate_setup();
+    void touch_calibrate(const char *calibrationFile);
+
 protected:
     LCD(const char *name, Skin *skin) : name(name), skin(skin)
     {
@@ -76,13 +79,14 @@ public:
     /** These static method(s) that controls the access to the singleton
      *  instance. On the first run, it creates a singleton object and places it
      *  into the static field. On subsequent runs, it returns the client existing
-     *  object stored in the static field. */
+     *  object stored in the static field.
+     *  You must Initialize prior to GetInstance (will display error if out of order)
+     *  */
     static LCD *Initialize(const char *name, Skin *skin);
     static LCD *GetInstance();
 
     /** Other static methods should be defined outside the class. */
-    void touch_calibrate_setup();
-    void touch_calibrate(const char *calibrationFile);
+
     Point *getScreenTouchPoint(boolean &pressed);
     void debugSerial(const char *debugLocation);
 
@@ -149,7 +153,7 @@ void LCD::touch_calibrate(const char *calibrationFile)
     if (SPIFFS.exists(calibrationFile))
     {
         if (REPEAT_CAL)
-        {   // Delete if we want to re-calibrate
+        { // Delete if we want to re-calibrate
             SPIFFS.remove(calibrationFile);
         }
         else

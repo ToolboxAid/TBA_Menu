@@ -3,21 +3,18 @@
 
 #include "Arduino.h"
 
-#include "ElementBase.h"
-#include "ElementHeader.h"
-#include "Point.h"
-#include "Skin.h"
-
-
-#include "DisplayICON.h"
-
-#include "TBA_Macros.h"
-
 #include "SPI.h"
 #include <TFT_eSPI.h> // Hardware-specific library
 
-#include "LCD.h"
 #include "GlobalConst.h"
+
+#include "ElementBase.h"
+#include "Skin.h"
+
+#include "LCD.h"
+#include "LCDicon.h"
+
+#include "TBA_Macros.h"
 
 class ElementHeader : public ElementBase
 {

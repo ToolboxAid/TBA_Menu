@@ -12,8 +12,9 @@
 #include "Arduino.h"
 
 #include "GlobalConst.h"
+
 #include "LCD.h"
-#include "DisplayICON.h"
+#include "LCDicon.h"
 
 #include "Point.h"
 #include "Dimensions.h"

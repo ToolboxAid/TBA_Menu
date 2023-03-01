@@ -1,13 +1,13 @@
 /*
-  DisplayICON.h - Library for DisplayICON code.
+  LCDicon.h - Library for LCDicon code.
   Created by Mr Q, December 2, 2022.
   Released into the public domain.
 */
 
 #pragma once
 
-#ifndef DisplayICON_h
-#define DisplayICON_h
+#ifndef LCDicon_h
+#define LCDicon_h
 
 #include "GlobalConst.h"
 
@@ -48,6 +48,7 @@ int32_t mySeek(PNGFILE *handle, int32_t position)
     return 0;
   return myfile.seek(position);
 }
+
 // Function to draw pixels to the display
 void PNGDraw(PNGDRAW *pDraw)
 {
