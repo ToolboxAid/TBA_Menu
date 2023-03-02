@@ -41,7 +41,6 @@ private:
   LinkListPlus *rectangleListPlus = new LinkListPlus();
   LinkListPlus *variableListPlus = new LinkListPlus();
 
-  boolean displayHeader;
   boolean clrScreen;
 
   uint8_t refreshTimer = 1; // seconds
@@ -63,14 +62,14 @@ public:
   ControlPage(
       const char *name,
       uint16_t refreshTimer,
-      boolean displayHeader,
+      boolean headerVisible,
       boolean clearScreen,
       uint8_t backPageDelay,
-      const char *backPage) : ControlBase(name)
+      const char *backPage,
+      const char *headerIcon) : ControlBase(name)
   {
-    this->controlHeader = new ControlHeader(name, displayHeader);
+    this->controlHeader = new ControlHeader(name, headerVisible, headerIcon);
     this->refreshTimer = refreshTimer;
-    this->displayHeader = displayHeader;
     this->clrScreen = clearScreen;
     this->backPageDelay = backPageDelay;
     this->backPage = backPage;
@@ -218,9 +217,9 @@ public:
     drawVariables();
   }
 
-  boolean getDisplayHeader()
+  boolean isVisible()
   {
-    return this->displayHeader;
+    return this->controlHeader->isVisible();
   }
 
   uint16_t addButton(ControlButton *button)
@@ -489,8 +488,6 @@ public:
     Serial.print(__FILENAME__);
     Serial.print(F("> "));
 
-    Serial.print("displayHeader: '");
-    Serial.print(this->displayHeader);
 
     Serial.print("' clearScreen: '");
     Serial.print(this->clrScreen);
@@ -509,6 +506,7 @@ public:
 
     Serial.print("' ");
 
+    this->controlHeader->debugSerial("NO_CR");
     ControlBase::debugSerial(debugLocation);
   }
 };

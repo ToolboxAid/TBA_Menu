@@ -65,7 +65,7 @@ public:
     uint8_t size = 25; // U & D button size;
     uint16_t top = 0;
 
-    if (this->getDisplayHeader())
+    if (this->isVisible())
     {
       top = skin->getHeaderHeight();
     }

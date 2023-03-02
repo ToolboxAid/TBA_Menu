@@ -33,7 +33,7 @@ void setup()
  /*override TBA default skin
   skin = new Skin( name,  rotate,
          screenWidth,  screenHeight,
-         headerHeight,  headerFontTextSize,  headerTextColor,  headerBackGroundColor,  headerIconImage,
+         headerHeight,  headerFontTextSize,  headerTextColor,  headerBackGroundColor,
          buttonTextColor,  buttonColor,  buttonShortColor,  buttonLongColor,  buttonBorderColor
          buttonMargin,  buttonBorderWidth,  buttonPadding,  buttonRadius,
          textFontSize,  textColor,  textBackgroundColor); */

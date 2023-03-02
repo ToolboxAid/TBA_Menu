@@ -168,7 +168,7 @@ boolean Menu::hasPageChange()
     this->currentPage = this->newPage;
     this->currentPage->load();
     this->currentPage->setInputs();
-    this->traversMenuLists(); // ------------------ TODO: remove this
+// ------------------ TODO: remove this    this->traversMenuLists(); 
 
     this->pageLoadTime = millis();
     this->clearArgs();
