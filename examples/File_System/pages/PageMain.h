@@ -35,7 +35,7 @@ protected:
 public:
   inline static const char *NAME = "Main";
 
-  PageMain() : ControlPage(PageMain::NAME, 0, true, true, 0, NULL)
+  PageMain() : ControlPage(PageMain::NAME, 0, true, true, 0, NULL, NULL)
   {
     // Add label
     this->addLabel(new ControlLabel(LABEL1, new Point(10, 50)));

@@ -49,7 +49,7 @@ public:
   uint8_t filesLoadedCnt; // # files in directory
 
   PageFileSelectControl(const char *name, uint8_t backPageDelay, const char *backPage, Skin *skin, const char *parentDirectory, boolean displayHeader = false)
-      : ControlPage(name, 0, displayHeader, true, backPageDelay, backPage)
+      : ControlPage(name, 0, displayHeader, true, backPageDelay, backPage, NULL)
   {
     while (!backPage)
     { // loop forever.
@@ -65,7 +65,7 @@ public:
     uint8_t size = 25; // U & D button size;
     uint16_t top = 0;
 
-    if (this->getDisplayHeader())
+    if (this->isVisible())
     {
       top = skin->getHeaderHeight();
     }

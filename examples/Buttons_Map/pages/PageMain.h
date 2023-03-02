@@ -34,7 +34,7 @@ public:
   inline static const char *BUTTON4X4 = "4x4";
   inline static const char *BUTTON4X8 = "4x8";
 
-  PageMain(uint8_t across, uint8_t down, Skin *skin) : ControlPage(PageMain::NAME, 0, true, true, 0, NULL)
+  PageMain(uint8_t across, uint8_t down, Skin *skin) : ControlPage(PageMain::NAME, 0, true, true, 0, NULL, NULL)
   {
     // Add labels
     this->addLabel(new ControlLabel(PageMain::LABEL1, new Point(10, 40)));

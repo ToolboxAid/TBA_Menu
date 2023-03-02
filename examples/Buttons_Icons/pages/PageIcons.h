@@ -26,7 +26,7 @@ private:
 
 protected:
 public:
-  PageIcons(uint8_t across, uint8_t down, Skin *skin) : ControlPage(PageIcons::NAME, 1, false, true, 0, NULL)
+  PageIcons(uint8_t across, uint8_t down, Skin *skin) : ControlPage(PageIcons::NAME, 1, false, true, 0, NULL,NULL)
   {
     Dimensions *dimensions;
     ControlButton *button;

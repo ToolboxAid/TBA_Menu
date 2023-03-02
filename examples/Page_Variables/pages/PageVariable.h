@@ -204,7 +204,7 @@ public:
     *bolVarValue = (rand() % 2);
   }
 
-  PageVariable() : ControlPage(PageVariable::NAME, 1, true, true, 200, PageVariable::MAIN)
+  PageVariable() : ControlPage(PageVariable::NAME, 1, true, true, 200, PageVariable::MAIN, NULL)
   {
     chrAdd();
     intAdd();
