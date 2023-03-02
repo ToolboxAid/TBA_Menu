@@ -29,7 +29,7 @@ private:
 
 protected:
 public:
-  PageTBA(const char *frontPage, Skin *skin) : ControlPage(PageTBA::NAME, 0, true, true, 5, frontPage, "/TBA_40x25.png")
+  PageTBA(const char *frontPage) : ControlPage(PageTBA::NAME, 0, true, true, 5, frontPage, "/TBA_40x25.png")
   {
     uint16_t textOffset = skin->getScreenWidth() / 2;
     textOffset -= (18 * 6 * 2) / 2;

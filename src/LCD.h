@@ -270,9 +270,6 @@ void LCD::debugSerial(const char *debugLocation)
     Serial.print(F(" thisLCD '0x"));
     Serial.print((unsigned int)(thisLCD), HEX);
 
-    // // Serial.print(" H W: '");
-    // // Serial.print (this->thisLCD->skin->getHeaderWidth());
-
     Serial.print(F("' debug Loc: '"));
     Serial.print(debugLocation);
     Serial.print(F("' "));

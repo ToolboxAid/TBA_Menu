@@ -113,7 +113,7 @@ void Menu::Initialize(Skin *skin, const char *lcdName = "ILI9341", const char *f
   LCD::Initialize(lcdName, skin);
 
   // Add TBA Page & Set to current
-  PageTBA *tbaPage = new PageTBA(frontPage, skin);
+  PageTBA *tbaPage = new PageTBA(frontPage);
   addPage((ControlPage *)tbaPage);
   this->newPage = tbaPage;
   this->currentPage = NULL;

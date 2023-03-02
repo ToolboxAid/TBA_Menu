@@ -21,7 +21,7 @@ private:
 
 protected:
 public:
-  PageMap(const char *name, uint8_t across, uint8_t down, Skin *skin) : ControlPage(name, 0, false, true, 0, NULL, NULL)
+  PageMap(const char *name, uint8_t across, uint8_t down, Skin *skin__) : ControlPage(name, 0, false, true, 0, NULL, NULL)
   {
     char *buffer = new char[4]{' ', ' ', ' ', '\0'};
     snprintf_P(buffer, sizeof(buffer), PSTR("%ix%i"), across, down);

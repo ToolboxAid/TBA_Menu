@@ -57,25 +57,25 @@ public:
 
     void draw()
     {
-        // tft.setTextColor(getLCD()->getSkin()->textColor, getLCD()->getSkin()->textBackgroundColor);// if drawing background color
-        tft.setTextColor(getLCD()->getSkin()->textColor);
-        tft.setTextSize(getLCD()->getSkin()->textFontSize);
+        // tft.setTextColor(skin->textColor, skin->textBackgroundColor);// if drawing background color
+        tft.setTextColor(skin->textColor);
+        tft.setTextSize(skin->textFontSize);
         tft.setTextDatum(CR_DATUM);
 
         u_int16_t TBA_GRAY = Skin::rgb888torgb565(0xBBBBBB);
         // Draw input outline
         tft.fillRoundRect(this->dimensions->getX(), this->dimensions->getY(),
                           this->dimensions->getW(), this->dimensions->getH(),
-                          getLCD()->getSkin()->buttonRadius,
+                          skin->buttonRadius,
                           TBA_GRAY);
         // Draw input background
-        tft.fillRoundRect(this->dimensions->getX() + getLCD()->getSkin()->buttonBorderWidth, this->dimensions->getY() + getLCD()->getSkin()->buttonBorderWidth,
-                          this->dimensions->getW() - (getLCD()->getSkin()->buttonBorderWidth * 2), this->dimensions->getH() - (getLCD()->getSkin()->buttonBorderWidth * 2),
-                          getLCD()->getSkin()->buttonRadius,
+        tft.fillRoundRect(this->dimensions->getX() + skin->buttonBorderWidth, this->dimensions->getY() + skin->buttonBorderWidth,
+                          this->dimensions->getW() - (skin->buttonBorderWidth * 2), this->dimensions->getH() - (skin->buttonBorderWidth * 2),
+                          skin->buttonRadius,
                           TFT_WHITE);
         // Draw the String
         tft.drawString(this->input,
-                       this->dimensions->getX() + this->dimensions->getW() - getLCD()->getSkin()->buttonBorderWidth - getLCD()->getSkin()->buttonPadding,
+                       this->dimensions->getX() + this->dimensions->getW() - skin->buttonBorderWidth - skin->buttonPadding,
                        this->dimensions->getY() + (this->dimensions->getH() / 2));
     }
 

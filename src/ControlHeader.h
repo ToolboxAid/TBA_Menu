@@ -38,8 +38,8 @@ public:
             rc = png.open(this->icon, myOpen, myClose, myRead, mySeek, PNGDraw);
             if (rc == PNG_SUCCESS)
             {
-                iconOffset = getLCD()->getSkin()->getHeaderWidth() / 2;
-                iconOffset -= (strlen(this->getName()) * getLCD()->getSkin()->getFontWidth() * getLCD()->getSkin()->headerFontTextSize) / 2;
+                iconOffset = skin->getHeaderWidth() / 2;
+                iconOffset -= (strlen(this->getName()) * skin->getFontWidth() * skin->headerFontTextSize) / 2;
                 iconOffset -= (png.getWidth() / 2) + 2;
 
                 tft.setCursor(iconOffset, 0);
@@ -68,16 +68,16 @@ public:
     {
         if (this->visible)
         {
-            tft.fillRect(0, 0, getLCD()->getSkin()->getHeaderWidth(), getLCD()->getSkin()->getHeaderHeight(), getLCD()->getSkin()->headerBackGroundColor);
-            tft.setTextColor(getLCD()->getSkin()->headerTextColor, getLCD()->getSkin()->headerBackGroundColor);
-            tft.setTextSize(getLCD()->getSkin()->headerFontTextSize);
+            tft.fillRect(0, 0, skin->getHeaderWidth(), skin->getHeaderHeight(), skin->headerBackGroundColor);
+            tft.setTextColor(skin->headerTextColor, skin->headerBackGroundColor);
+            tft.setTextSize(skin->headerFontTextSize);
 
             uint16_t iconOffset = drawIcon();
             // Text last so it may be on top of Icon
             tft.setTextDatum(CC_DATUM);
             tft.drawString(this->getName(),
-                           (getLCD()->getSkin()->getHeaderWidth() / 2) + iconOffset,
-                           getLCD()->getSkin()->getHeaderHeight() / 2);
+                           (skin->getHeaderWidth() / 2) + iconOffset,
+                           skin->getHeaderHeight() / 2);
         }    
     }
 

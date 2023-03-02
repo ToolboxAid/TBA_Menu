@@ -9,6 +9,8 @@
 
 #include "TBA_Macros.h"
 
+#include "Skin.h"
+
 #include "GlobalTFT.h"
 
 class ControlBase : public ElementBase
@@ -16,6 +18,7 @@ class ControlBase : public ElementBase
 private:
 protected:
     LCD *lcd;
+    static Skin *skin;
 
 public:
     ControlBase(const char *name) : ElementBase(name) //----->call base class
@@ -31,6 +34,23 @@ public:
         // if (this->value)
         //     free(this->value);
     }
+
+    static void setSkin(Skin *skin_)
+    {
+        skin = skin_;
+    }
+    static Skin *getSkin1()
+    {
+        if (!skin)
+            skin = new Skin();
+        return skin;
+    }
+    // Skin *getSkin()
+    // {
+    //     if (!skin)
+    //         skin = new Skin();
+    //     return skin;
+    // }
 
     virtual void draw()
     {
@@ -61,5 +81,7 @@ public:
         ElementBase::debugSerial(debugLocation);
     }
 };
+
+Skin *ControlBase::skin;
 
 #endif

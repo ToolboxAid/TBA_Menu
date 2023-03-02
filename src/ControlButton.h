@@ -150,13 +150,13 @@ public:
         case ControlButton::STATE::UP:
         case ControlButton::STATE::ROLLOFF:
         case ControlButton::STATE::RELEASED:
-            buttonColor = getLCD()->getSkin()->buttonColor;
+            buttonColor = skin->buttonColor;
             break;
         case ControlButton::STATE::SHORT:
-            buttonColor = getLCD()->getSkin()->buttonShortColor;
+            buttonColor = skin->buttonShortColor;
             break;
         case ControlButton::STATE::LONG:
-            buttonColor = getLCD()->getSkin()->buttonLongColor;
+            buttonColor = skin->buttonLongColor;
             break;
         default:
             buttonColor = Skin::rgb888torgb565(0xFF0000);
@@ -172,25 +172,25 @@ public:
     {
         if (!this->isHidden())
         {
-            tft.setTextSize(getLCD()->getSkin()->textFontSize);
+            tft.setTextSize(skin->textFontSize);
 
             uint16_t buttonColor = getStateColor();
 
             // Draw button outline
             tft.fillRoundRect(this->dimensions->getX(), this->dimensions->getY(),
                               this->dimensions->getW(), this->dimensions->getH(),
-                              getLCD()->getSkin()->buttonRadius, getLCD()->getSkin()->buttonBorderColor);
+                              skin->buttonRadius, skin->buttonBorderColor);
 
             // Draw button background
-            tft.fillRoundRect(this->dimensions->getX() + getLCD()->getSkin()->buttonBorderWidth, this->dimensions->getY() + getLCD()->getSkin()->buttonBorderWidth,
-                              this->dimensions->getW() - (getLCD()->getSkin()->buttonBorderWidth * 2), this->dimensions->getH() - (getLCD()->getSkin()->buttonBorderWidth * 2),
-                              getLCD()->getSkin()->buttonRadius, buttonColor);
+            tft.fillRoundRect(this->dimensions->getX() + skin->buttonBorderWidth, this->dimensions->getY() + skin->buttonBorderWidth,
+                              this->dimensions->getW() - (skin->buttonBorderWidth * 2), this->dimensions->getH() - (skin->buttonBorderWidth * 2),
+                              skin->buttonRadius, buttonColor);
 
             // Draw Icon
             if (!drawButtonIcon())
             {
                 // Draw Name
-                tft.setTextColor(getLCD()->getSkin()->buttonTextColor, buttonColor);
+                tft.setTextColor(skin->buttonTextColor, buttonColor);
                 tft.setTextDatum(CC_DATUM);
                 tft.drawString(this->getName(),
                                this->dimensions->getX() + (this->dimensions->getW() / 2),

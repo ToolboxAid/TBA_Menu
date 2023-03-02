@@ -94,7 +94,7 @@ public:
   {
     if (this->clrScreen)
     { // Clear the screen
-      tft.fillScreen(getLCD()->getSkin()->textBackgroundColor);
+      tft.fillScreen(skin->textBackgroundColor);
     }
   }
 
