@@ -4,7 +4,6 @@
 #include "Arduino.h"
 
 #include "ElementBase.h"
-#include "Skin.h"
 
 #include "LCD.h"
 #include "GlobalConst.h"
