@@ -15,14 +15,15 @@
 #include <string>
 
 #include "Dimensions.h"
+#include "Point.h"
 
-#include "ElementLabel.h"
-#include "ElementButton.h"
+#include "ControlLabel.h"
+#include "ControlButton.h"
 
 #include "TBA_SupportFunction.h"
 TBA_SupportFunction supportFunction = TBA_SupportFunction();
 
-class PageMain : public ElementPage
+class PageMain : public ControlPage
 {
 private:
   inline static const char *NAME = "Main";
@@ -34,12 +35,12 @@ private:
 
 protected:
 public:
-  PageMain() : ElementPage(PageMain::NAME, 3, true, true, 0, NULL)
+  PageMain() : ControlPage(PageMain::NAME, 3, true, true, 0, NULL)
   {
-    this->addLabel(new ElementLabel(PageMain::LABEL1, new Point(10, 60)));
-    this->addLabel(new ElementLabel(PageMain::LABEL2, new Point(10, 90)));
-    this->addLabel(new ElementLabel(PageMain::LABEL3, new Point(10, 140)));
-    this->addButton(new ElementButton(PageMain::BUTTON, new Dimensions(80, 190, 160, 30), PageMain::SHORT));
+    this->addLabel(new ControlLabel(PageMain::LABEL1, new Point(10, 60)));
+    this->addLabel(new ControlLabel(PageMain::LABEL2, new Point(10, 90)));
+    this->addLabel(new ControlLabel(PageMain::LABEL3, new Point(10, 140)));
+    this->addButton(new ControlButton(PageMain::BUTTON, new Dimensions(80, 190, 160, 30), PageMain::SHORT));
   }
 
   void load()

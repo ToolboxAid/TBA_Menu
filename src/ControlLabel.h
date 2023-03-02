@@ -1,5 +1,5 @@
-#ifndef ElementLabel_h
-#define ElementLabel_h
+#ifndef ControlLabel_h
+#define ControlLabel_h
 
 #include "Arduino.h"
 #include "Point.h"
@@ -7,7 +7,7 @@
 #include "ControlBase.h"
 #include "TBA_Macros.h"
 
-class ElementLabel : public ControlBase
+class ControlLabel : public ControlBase
 {
 
 private:
@@ -16,13 +16,13 @@ private:
 
 protected:
 public:
-    ElementLabel(const char *name, Point *point, boolean drawBackgroundColor = true) : ControlBase(name)
+    ControlLabel(const char *name, Point *point, boolean drawBackgroundColor = true) : ControlBase(name)
     {
         this->point = point;
         this->drawBackgroundColor = drawBackgroundColor;
     }
 
-    ~ElementLabel()
+    ~ControlLabel()
     {
         if (this->point)
             free(this->point);

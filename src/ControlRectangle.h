@@ -1,5 +1,5 @@
-#ifndef ElementRectangle_h
-#define ElementRectangle_h
+#ifndef ControlRectangle_h
+#define ControlRectangle_h
 
 #include "Arduino.h"
 
@@ -9,7 +9,7 @@
 
 #include "LCD.h"
 
-class ElementRectangle : public ControlBase
+class ControlRectangle : public ControlBase
 {
 
 private:
@@ -17,12 +17,12 @@ private:
 
 protected:
 public:
-    ElementRectangle(const char *name, Dimensions *dimensions) : ControlBase(name)
+    ControlRectangle(const char *name, Dimensions *dimensions) : ControlBase(name)
     {
         this->dimensions = dimensions;
     }
 
-    ~ElementRectangle()
+    ~ControlRectangle()
     {
         if (this->dimensions)
         {

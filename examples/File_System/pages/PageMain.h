@@ -17,13 +17,13 @@
 
 #include "Dimensions.h"
 #include "Point.h"
-#include "ElementButton.h"
-#include "ElementLabel.h"
+#include "ControlButton.h"
+#include "ControlLabel.h"
 
 #include "TBA_SupportFunction.h"
 extern TBA_SupportFunction supportFunction;
 
-class PageMain : public ElementPage
+class PageMain : public ControlPage
 {
 private:
   inline static const char *LABEL1 = "Show me some files";
@@ -35,14 +35,14 @@ protected:
 public:
   inline static const char *NAME = "Main";
 
-  PageMain() : ElementPage(PageMain::NAME, 0, true, true, 0, NULL)
+  PageMain() : ControlPage(PageMain::NAME, 0, true, true, 0, NULL)
   {
     // Add label
-    this->addLabel(new ElementLabel(LABEL1, new Point(10, 50)));
-    this->addLabel(new ElementLabel(LABEL2, new Point(10, 90)));
+    this->addLabel(new ControlLabel(LABEL1, new Point(10, 50)));
+    this->addLabel(new ControlLabel(LABEL2, new Point(10, 90)));
 
-    this->addButton(new ElementButton(BUTTONW, new Dimensions(15, 150, 290, 35), BUTTONW));
-    this->addButton(new ElementButton(BUTTONWO, new Dimensions(15, 190, 290, 35), BUTTONWO));
+    this->addButton(new ControlButton(BUTTONW, new Dimensions(15, 150, 290, 35), BUTTONW));
+    this->addButton(new ControlButton(BUTTONWO, new Dimensions(15, 190, 290, 35), BUTTONWO));
   }
 
   void load()

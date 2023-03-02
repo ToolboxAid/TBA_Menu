@@ -14,11 +14,11 @@
 #include "Skin.h"
 
 #include "Dimensions.h"
-#include "ElementButton.h"
-#include "ElementLabel.h"
-#include "ElementRectangle.h"
+#include "ControlButton.h"
+#include "ControlLabel.h"
+#include "ControlRectangle.h"
 
-class PageOK : public ElementPage
+class PageOK : public ControlPage
 {
 private:
     uint16_t labelID;
@@ -27,11 +27,11 @@ private:
 
 protected:
 public:
-    PageOK(Skin *skin) : ElementPage(NAME, 0, false, false, 10, "Main")
+    PageOK(Skin *skin) : ControlPage(NAME, 0, false, false, 10, "Main")
     {
         Dimensions *dimensions;
-        ElementButton *button;
-        ElementRectangle *rectangle;
+        ControlButton *button;
+        ControlRectangle *rectangle;
 
         // button layout
         uint8_t across = 3;
@@ -40,30 +40,42 @@ public:
         // =============================================================================
         // Add buttons: clear, Back, Send
         dimensions = skin->getMapDimensions(across, down, 2, 5);
-        this->addButton(new ElementButton("OK", dimensions, "Main"));
+        this->addButton(new ControlButton("OK", dimensions, "Main"));
 
         // Add label
-        this->addLabel(new ElementLabel(LABEL1, new Point(40, 60), false));
+        this->addLabel(new ControlLabel(LABEL1, new Point(40, 60), false));
 
         // Add rectangle DW
         uint8_t top = 40;
         uint8_t edg = 25;
         dimensions = new Dimensions(skin->buttonMargin + edg, top, skin->getScreenWidth() - (skin->buttonMargin * 2) - (edg * 2), skin->getScreenHeight() - top - (skin->buttonMargin * 2));
-        this->addRectangle(new ElementRectangle("backdrop", dimensions));
+        this->addRectangle(new ControlRectangle("backdrop", dimensions));
     }
 
     void load()
     {
-        ElementArg *arg = Menu::getInstance()->searchArg("buttonSelected");
-        if (arg)
+        ElementArg *argPath = Menu::getInstance()->searchArg("pathSelected");
+        if (argPath)
         {
-            ElementLabel *label = new ElementLabel((const char *)arg->getValue(), new Point(40, 90), false);
-            this->addLabel(label);
-            this->labelID = label->getIdentity();
+            ControlLabel *label = new ControlLabel((const char *)argPath->getValue(), new Point(40, 90), false);
+            argPath->debugSerial("argPath");
         }
         else
         {
-            Serial.println("arg 'buttonSelected' Failed");
+            Serial.println("Arg 'pathSelected' Failed");
+        }
+        
+        ElementArg *argFile = Menu::getInstance()->searchArg("fileSelected");
+        if (argFile)
+        {
+            ControlLabel *label = new ControlLabel((const char *)argFile->getValue(), new Point(40, 90), false);
+            this->addLabel(label);
+            this->labelID = label->getIdentity();
+            argFile->debugSerial("argFile");
+        }
+        else
+        {
+            Serial.println("Arg 'fileSelected' Failed");
         }
     }
 

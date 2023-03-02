@@ -14,7 +14,7 @@
 #include <sstream>
 #include <string>
 
-class PageIcons : public ElementPage
+class PageIcons : public ControlPage
 {
 private:
   inline static const char *NAME = "Icons";
@@ -26,10 +26,10 @@ private:
 
 protected:
 public:
-  PageIcons(uint8_t across, uint8_t down, Skin *skin) : ElementPage(PageIcons::NAME, 1, false, true, 0, NULL)
+  PageIcons(uint8_t across, uint8_t down, Skin *skin) : ControlPage(PageIcons::NAME, 1, false, true, 0, NULL)
   {
     Dimensions *dimensions;
-    ElementButton *button;
+    ControlButton *button;
 
     char *buffer = new char[4]{' ', ' ', ' ', '\0'};
     snprintf_P(buffer, sizeof(buffer), PSTR("%ix%i"), across, down);
@@ -52,7 +52,7 @@ public:
         buffer = new char[4]{' ', ' ', ' ', '\0'};
         snprintf_P(buffer, sizeof(buffer), PSTR("%ix%i"), x, y);
 
-        this->addButton(new ElementButton((const char *)buffer, skin->getMapDimensions(across, down, x, y), PageIcons::MAIN, NULL, NULL, icon));
+        this->addButton(new ControlButton((const char *)buffer, skin->getMapDimensions(across, down, x, y), PageIcons::MAIN, NULL, NULL, icon));
       }
     }
   }

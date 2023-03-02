@@ -1,5 +1,5 @@
-#ifndef ElementVariable_h
-#define ElementVariable_h
+#ifndef ControlVariable_h
+#define ControlVariable_h
 
 #include "Arduino.h"
 
@@ -8,7 +8,7 @@
 
 #include "TBA_Macros.h"
 
-class ElementVariable : public ControlBase
+class ControlVariable : public ControlBase
 {
 private:
     Point *point;
@@ -18,7 +18,7 @@ private:
 
 protected:
 public:
-    ElementVariable(const char *name, void *value, const char *format, char *lcdValue, Point *point) : ControlBase(name) //----->call base class
+    ControlVariable(const char *name, void *value, const char *format, char *lcdValue, Point *point) : ControlBase(name) //----->call base class
     {
         this->point = point;
         this->value = value;
@@ -26,7 +26,7 @@ public:
         this->lcdValue = lcdValue;
     }
 
-    ~ElementVariable()
+    ~ControlVariable()
     {
         delete point;
         if (value)

@@ -14,10 +14,12 @@
 #include "GlobalConst.h"
 #include "Skin.h"
 
+#include "Dimensions.h"
+
 #include <sstream>
 #include <string>
 
-class PageTBA : public ElementPage
+class PageTBA : public ControlPage
 {
 private:
   inline static const char *NAME = "Toolbox Aid";
@@ -27,19 +29,19 @@ private:
 
 protected:
 public:
-  PageTBA(const char *frontPage, Skin *skin) : ElementPage(PageTBA::NAME, 0, true, true, 5, frontPage)
+  PageTBA(const char *frontPage, Skin *skin) : ControlPage(PageTBA::NAME, 0, true, true, 5, frontPage)
   {
     uint16_t textOffset = skin->getScreenWidth() / 2;
     textOffset -= (18 * 6 * 2) / 2;
 
-    this->addLabel(new ElementLabel(PageTBA::LABEL1, new Point(textOffset, 80)));
-    this->addLabel(new ElementLabel(PageTBA::LABEL2, new Point(textOffset, 145)));
+    this->addLabel(new ControlLabel(PageTBA::LABEL1, new Point(textOffset, 80)));
+    this->addLabel(new ControlLabel(PageTBA::LABEL2, new Point(textOffset, 145)));
 
     textOffset = skin->getScreenWidth() / 2;
     textOffset -= (7 * 6 * 2) / 2;
-    this->addLabel(new ElementLabel(TAG, new Point(textOffset, 210)));
+    this->addLabel(new ControlLabel(TAG, new Point(textOffset, 210)));
 
-    this->addButton(new ElementButton(PageTBA::BUTTON, new Dimensions(0, 0, skin->getScreenWidth(), skin->getScreenHeight()), frontPage, frontPage, NULL, NULL, true));
+    this->addButton(new ControlButton(PageTBA::BUTTON, new Dimensions(0, 0, skin->getScreenWidth(), skin->getScreenHeight()), frontPage, frontPage, NULL, NULL, true));
   }
 };
 

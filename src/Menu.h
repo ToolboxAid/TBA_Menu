@@ -32,10 +32,10 @@ SSD1963_800, SSD1963_800ALT, ILI9225, GC9A01.
 
 #include "ElementBase.h"
 
-#include "ElementPage.h"
+#include "ControlPage.h"
 #include "ElementArg.h"
-#include "ElementButton.h"
-#include "ElementRectangle.h"
+#include "ControlButton.h"
+#include "ControlRectangle.h"
 #include "LinkListPlus.h"
 
 #include "PageTBA.h"
@@ -61,8 +61,8 @@ private:
   LinkListPlus *argsListPlus = new LinkListPlus();
 
   unsigned long pageLoadTime = 0;
-  ElementPage *currentPage = NULL;
-  ElementPage *newPage = NULL;
+  ControlPage *currentPage = NULL;
+  ControlPage *newPage = NULL;
 
   // Store the touch coordinates
   uint16_t t_x = 0, t_y = 0;
@@ -81,22 +81,22 @@ public:
 
   void Initialize(Skin *skin, const char *lcd, const char *frontPage);
 
-  uint16_t addPage(ElementPage *page);
+  uint16_t addPage(ControlPage *page);
 
   void checkMenuActions();
 
-  ElementVariable *getPageVariable(const char *name);
+  ControlVariable *getPageVariable(const char *name);
 
-  ElementInput *getPageInput(const char *name);
+  ControlInput *getPageInput(const char *name);
 
-  ElementRectangle *getPageRectangle(const char *name);
+  ControlRectangle *getPageRectangle(const char *name);
   boolean removePageRectangle(const char *name);
 
   void clearArgs();
   uint16_t addArg(ElementArg *);
   ElementArg *searchArg(const char *);
 
-  ElementPage *getCurrentPage();
+  ControlPage *getCurrentPage();
   void setNewPage(const char *newPage);
 
   void debugSerial(const char *debugLocation);
@@ -114,12 +114,12 @@ void Menu::Initialize(Skin *skin, const char *lcdName = "ILI9341", const char *f
 
   // Add TBA Page & Set to current
   PageTBA *tbaPage = new PageTBA(frontPage, skin);
-  addPage((ElementPage *)tbaPage);
+  addPage((ControlPage *)tbaPage);
   this->newPage = tbaPage;
   this->currentPage = NULL;
 }
 
-uint16_t Menu::addPage(ElementPage *page)
+uint16_t Menu::addPage(ControlPage *page)
 {
   return this->pageListPlus->insertAtEnd(((ElementBase *)page));
 }
@@ -134,13 +134,13 @@ void Menu::traversMenuLists()
   Serial.println(currentPage->getName());
 
   // Menu owned items
-  Serial.println("- - - - - - - - - -ElementPage- - - - - - - - - -");
+  Serial.println("- - - - - - - - - -ControlPage- - - - - - - - - -");
   pageListPlus->setCurrentToHead();
-  ElementPage *page = (ElementPage *)pageListPlus->getNext();
+  ControlPage *page = (ControlPage *)pageListPlus->getNext();
   while (page)
   {
-    page->debugSerial("traversLists - 'ElementPage'");
-    page = (ElementPage *)pageListPlus->getNext();
+    page->debugSerial("traversLists - 'ControlPage'");
+    page = (ControlPage *)pageListPlus->getNext();
   }
 
   Serial.println("- - - - - - - - - -ElementArg- - - - - - - - - -");
@@ -184,7 +184,7 @@ boolean Menu::hasPageBack()
   {
     if (millis() > (this->pageLoadTime + (this->currentPage->getBackPageDelay() * 1000)))
     {
-      ElementPage *findPage = (ElementPage *)this->pageListPlus->searchName(this->currentPage->getBackPage());
+      ControlPage *findPage = (ControlPage *)this->pageListPlus->searchName(this->currentPage->getBackPage());
       if (findPage)
       {
         this->newPage = findPage;
@@ -211,7 +211,7 @@ void Menu::validPages(const char *message, const char *findPage)
 
   Serial.println("Valid Pages are: ");
   this->pageListPlus->setCurrentToHead();
-  ElementPage *page = (ElementPage *)this->pageListPlus->getNext();
+  ControlPage *page = (ControlPage *)this->pageListPlus->getNext();
   while (page)
   {
     Serial.print("ID: '");
@@ -220,7 +220,7 @@ void Menu::validPages(const char *message, const char *findPage)
     Serial.print(page->getName());
     Serial.print("'");
     Serial.println();
-    page = (ElementPage *)this->pageListPlus->getNext();
+    page = (ControlPage *)this->pageListPlus->getNext();
   }
   Serial.print("' Size: '");
   Serial.print(this->pageListPlus->getNodeCount());
@@ -241,11 +241,11 @@ void Menu::checkMenuActions()
   boolean redrawPage = false;
 
   this->currentPage->resetButtonIterator();
-  ElementButton *button = this->currentPage->nextButton();
+  ControlButton *button = this->currentPage->nextButton();
   while (button)
   {
 
-    ElementButton::STATE triggerState = ElementButton::STATE::UP;
+    ControlButton::STATE triggerState = ControlButton::STATE::UP;
 
     if (button->hasStateChange(point, pressed, triggerState))
     {
@@ -253,23 +253,23 @@ void Menu::checkMenuActions()
       if (button->isStyleButton())
         button->draw();
       else
-        ((ElementFile *)button)->draw(); //???????????????????? Is this needed????
+        ((ControlFile *)button)->draw(); //???????????????????? Is this needed????
 
       if (button->isRELEASED())
       {
 #ifdef DEBUG
         Serial.println("* * * * * * * * button->isRELEASED() * * * * * * * *");
         if (button->isStyleFile())
-          ((ElementFile *)button)->debugSerial("ElementFile * * ");
+          ((ControlFile *)button)->debugSerial("ControlFile * * ");
         else
-          button->debugSerial("ElementButton");
+          button->debugSerial("ControlButton");
 #endif
         button->resetButton();
-        if (triggerState == ElementButton::STATE::SHORT)
+        if (triggerState == ControlButton::STATE::SHORT)
         { // Short Press
           if (button->hasShortPage())
           {
-            ElementPage *findPage = (ElementPage *)this->pageListPlus->searchName(button->getShortPage());
+            ControlPage *findPage = (ControlPage *)this->pageListPlus->searchName(button->getShortPage());
             if (findPage)
             {
               this->newPage = findPage;
@@ -288,7 +288,7 @@ void Menu::checkMenuActions()
         { // Long Press
           if (button->hasLongPage())
           {
-            ElementPage *findPage = (ElementPage *)this->pageListPlus->searchName(button->getLongPage());
+            ControlPage *findPage = (ControlPage *)this->pageListPlus->searchName(button->getLongPage());
             if (findPage)
             {
               this->newPage = findPage;
@@ -331,17 +331,17 @@ void Menu::checkMenuActions()
   delete point; // delete anything we use NEW on.
 }
 
-ElementVariable *Menu::getPageVariable(const char *name)
+ControlVariable *Menu::getPageVariable(const char *name)
 { // This is the only way to get access to current page
   return this->currentPage->getPageVariable(name);
 }
 
-ElementInput *Menu::getPageInput(const char *name)
+ControlInput *Menu::getPageInput(const char *name)
 { // This is the only way to get access to current page
   return this->currentPage->getPageInput(name);
 }
 
-ElementRectangle *Menu::getPageRectangle(const char *name)
+ControlRectangle *Menu::getPageRectangle(const char *name)
 { // This is the only way to get access to current page
   return this->currentPage->getPageRectangle(name);
 }
@@ -375,7 +375,7 @@ void Menu::clearArgs()
   }
 }
 
-ElementPage *Menu::getCurrentPage()
+ControlPage *Menu::getCurrentPage()
 {
   return this->currentPage;
 }
@@ -384,7 +384,7 @@ void Menu::setNewPage(const char *page)
 {
   if (page)
   {
-    this->newPage = (ElementPage *)pageListPlus->searchName(page);
+    this->newPage = (ControlPage *)pageListPlus->searchName(page);
     if (!this->newPage)
     {
       validPages("setNewPage not found: ", page);

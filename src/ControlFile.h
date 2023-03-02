@@ -6,8 +6,8 @@
     4) Change to a different current Page when long press
 */
 
-#ifndef ElementFile_h
-#define ElementFile_h
+#ifndef ControlFile_h
+#define ControlFile_h
 
 #include "Arduino.h"
 
@@ -16,11 +16,11 @@
 #include "Point.h"
 #include "Dimensions.h"
 
-#include "ElementButton.h"
+#include "ControlButton.h"
 
 #include "TBA_Macros.h"
 
-class ElementFile : public ElementButton
+class ControlFile : public ControlButton
 {
 private:
     char *nameBuffer;
@@ -29,8 +29,8 @@ private:
 protected:
 public:
     // Use this to create a Button of style : FILE
-    ElementFile(const char *name, Dimensions *dimensions, const char *shortPage, const char *icon, boolean directory)
-        : ElementButton(name, dimensions, shortPage)
+    ControlFile(const char *name, Dimensions *dimensions, const char *shortPage, const char *icon, boolean directory)
+        : ControlButton(name, dimensions, shortPage)
     {
         this->style = STYLE::FILE;
         this->directory = directory;
@@ -40,7 +40,7 @@ public:
         this->name = nameBuffer;
     }
 
-    ~ElementFile()
+    ~ControlFile()
     {
         if (nameBuffer)
             free(nameBuffer);
@@ -53,15 +53,15 @@ public:
 
         switch (this->state)
         {
-        case ElementButton::STATE::UP:
-        case ElementButton::STATE::ROLLOFF:
-        case ElementButton::STATE::RELEASED:
+        case ControlButton::STATE::UP:
+        case ControlButton::STATE::ROLLOFF:
+        case ControlButton::STATE::RELEASED:
             fileTextColor = getLCD()->getSkin()->fileBorderColor;
             break;
-        case ElementButton::STATE::SHORT:
+        case ControlButton::STATE::SHORT:
             fileTextColor = getLCD()->getSkin()->fileShortColor;
             break;
-        case ElementButton::STATE::LONG:
+        case ControlButton::STATE::LONG:
             fileTextColor = getLCD()->getSkin()->fileLongColor;
             break;
         default:
@@ -80,15 +80,15 @@ public:
 
         switch (this->state)
         {
-        case ElementButton::STATE::UP:
-        case ElementButton::STATE::ROLLOFF:
-        case ElementButton::STATE::RELEASED:
+        case ControlButton::STATE::UP:
+        case ControlButton::STATE::ROLLOFF:
+        case ControlButton::STATE::RELEASED:
             fileTextColor = getLCD()->getSkin()->fileTextColor;
             break;
-        case ElementButton::STATE::SHORT:
+        case ControlButton::STATE::SHORT:
             fileTextColor = getLCD()->getSkin()->fileShortColor;
             break;
-        case ElementButton::STATE::LONG:
+        case ControlButton::STATE::LONG:
             fileTextColor = getLCD()->getSkin()->fileLongColor;
             break;
         default:

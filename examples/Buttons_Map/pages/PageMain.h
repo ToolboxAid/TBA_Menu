@@ -11,15 +11,15 @@
 
 #include "Arduino.h"
 
-#include "Dimensions.h"
+#include "Point.h"
 
-#include "ElementLabel.h"
-#include "ElementButton.h"
+#include "ControlLabel.h"
+#include "ControlButton.h"
 
 #include "TBA_SupportFunction.h"
 TBA_SupportFunction supportFunction = TBA_SupportFunction();
 
-class PageMain : public ElementPage
+class PageMain : public ControlPage
 {
 private:
   inline static const char *LABEL1 = "This page is a Button Map";
@@ -34,22 +34,22 @@ public:
   inline static const char *BUTTON4X4 = "4x4";
   inline static const char *BUTTON4X8 = "4x8";
 
-  PageMain(uint8_t across, uint8_t down, Skin *skin) : ElementPage(PageMain::NAME, 0, true, true, 0, NULL)
+  PageMain(uint8_t across, uint8_t down, Skin *skin) : ControlPage(PageMain::NAME, 0, true, true, 0, NULL)
   {
     // Add labels
-    this->addLabel(new ElementLabel(PageMain::LABEL1, new Point(10, 40)));
-    this->addLabel(new ElementLabel(PageMain::LABEL2, new Point(5, 180)));
-    this->addLabel(new ElementLabel(PageMain::LABEL3, new Point(5, 200)));
-    this->addLabel(new ElementLabel(PageMain::LABEL4, new Point(5, 220)));
+    this->addLabel(new ControlLabel(PageMain::LABEL1, new Point(10, 40)));
+    this->addLabel(new ControlLabel(PageMain::LABEL2, new Point(5, 180)));
+    this->addLabel(new ControlLabel(PageMain::LABEL3, new Point(5, 200)));
+    this->addLabel(new ControlLabel(PageMain::LABEL4, new Point(5, 220)));
 
     // 3x3 - createMapPage(3,3);
-    this->addButton(new ElementButton(PageMain::BUTTON3X3, skin->getMapDimensions(across, down, 1, down - 2), PageMain::BUTTON3X3));
+    this->addButton(new ControlButton(PageMain::BUTTON3X3, skin->getMapDimensions(across, down, 1, down - 2), PageMain::BUTTON3X3));
 
     // 4x4 - createMapPage(4,4);
-    this->addButton(new ElementButton(PageMain::BUTTON4X4, skin->getMapDimensions(across, down, 2, down - 1), PageMain::BUTTON4X4));
+    this->addButton(new ControlButton(PageMain::BUTTON4X4, skin->getMapDimensions(across, down, 2, down - 1), PageMain::BUTTON4X4));
 
     // 4x8 - createMapPage(4,8);
-    this->addButton(new ElementButton(PageMain::BUTTON4X8, skin->getMapDimensions(across, down, 3, down - 0), PageMain::BUTTON4X8));
+    this->addButton(new ControlButton(PageMain::BUTTON4X8, skin->getMapDimensions(across, down, 3, down - 0), PageMain::BUTTON4X8));
   }
 
   void load()

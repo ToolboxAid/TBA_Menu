@@ -1,5 +1,5 @@
-#ifndef ElementInput_h
-#define ElementInput_h
+#ifndef ControlInput_h
+#define ControlInput_h
 
 #include "Arduino.h"
 #include "Dimensions.h"
@@ -7,7 +7,7 @@
 #include "ControlBase.h"
 #include "TBA_Macros.h"
 
-class ElementInput : public ControlBase
+class ControlInput : public ControlBase
 {
 private:
     Dimensions *dimensions;
@@ -26,8 +26,8 @@ public:
 
     JUSTIFICATION justification;
 
-    ElementInput(const char *name, uint8_t length, JUSTIFICATION justification, Dimensions *dimensions, const char *input)
-        : ElementInput(name, length, justification, dimensions) //----->call below ElementInput constructor
+    ControlInput(const char *name, uint8_t length, JUSTIFICATION justification, Dimensions *dimensions, const char *input)
+        : ControlInput(name, length, justification, dimensions) //----->call below ControlInput constructor
     {
         // Save the new input
         int loop = 0;
@@ -37,7 +37,7 @@ public:
         }
     }
 
-    ElementInput(const char *name, uint8_t length, JUSTIFICATION justification, Dimensions *dimensions)
+    ControlInput(const char *name, uint8_t length, JUSTIFICATION justification, Dimensions *dimensions)
         : ControlBase(name) //----->call base class
     {
         this->length = length;
@@ -49,7 +49,7 @@ public:
         this->clear();
     }
 
-    ~ElementInput()
+    ~ControlInput()
     {
         // if (this->input)
         //     free (this->input);
