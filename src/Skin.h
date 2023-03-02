@@ -185,7 +185,7 @@ public:
        uint8_t buttonMargin, uint8_t buttonBorderWidth, uint8_t buttonPadding, uint8_t buttonRadius,
        uint8_t textFontSize, uint16_t textColor, uint16_t textBackgroundColor)
   {
-    Serial.println("Skin");
+    Serial.println("Skin");  //TODO: remove this
 
     this->name = name;
 
