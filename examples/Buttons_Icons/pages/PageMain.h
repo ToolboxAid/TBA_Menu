@@ -39,7 +39,7 @@ protected:
 public:
   inline static const char *NAME = "Main";
 
-  PageMain() : ControlPage(PageMain::NAME, 0, true, true, 0, NULL)
+  PageMain() : ControlPage(PageMain::NAME, 0, true, true, 0, NULL,NULL)
   {
     this->addLabel(new ControlLabel(PageMain::LABEL1, new Point(10, 100)));
     this->addButton(new ControlButton(PageMain::BUTTON, new Dimensions(50, 190, 225, 25), "Icons"));

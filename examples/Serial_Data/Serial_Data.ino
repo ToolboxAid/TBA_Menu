@@ -42,7 +42,7 @@ void setup()
   /* NOT using TBA skin */
   Skin *skin = new Skin("NotTBA", Skin::ROTATE::SD_UP,
                         240, 320,
-                        50 - 5, 3, TBA_ORANGE, TBA_PURPLE, NULL,
+                        50 - 5, 3, TBA_ORANGE, TBA_PURPLE,
                         TBA_ORANGE, TBA_PURPLE, TBA_SHORT, TBA_LONG, TBA_GRAY,
                         5, 2, 3, 4,
                         2, TBA_PURPLE, TBA_ORANGE);

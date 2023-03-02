@@ -32,7 +32,7 @@ private:
 
 protected:
 public:
-  PageMain() : ControlPage(PageMain::NAME, 0, true, true, 0, NULL)
+  PageMain() : ControlPage(PageMain::NAME, 0, true, true, 0, NULL, NULL)
   {
     // Add labels
     this->addLabel(new ControlLabel("The below button will", new Point(10, 60)));

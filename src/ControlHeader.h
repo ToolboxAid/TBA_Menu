@@ -30,7 +30,6 @@ public:
     }
     uint16_t drawIcon()
     {
-        Serial.println(".....");
         uint16_t iconOffset = 0;
         if (this->icon && this->icon[0] != '\0')
         {
