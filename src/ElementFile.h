@@ -12,7 +12,7 @@
 #include "Arduino.h"
 
 #include "LCD.h"
-#include "GlobalConst.h"
+#include "GlobalTFT.h"
 
 #include "Point.h"
 #include "Dimensions.h"

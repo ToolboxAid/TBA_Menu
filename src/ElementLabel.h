@@ -7,7 +7,7 @@
 #include "ControlBase.h"
 #include "TBA_Macros.h"
 
-#include "GlobalConst.h"
+#include "GlobalTFT.h"
 class ElementLabel : public ControlBase
 {
 

@@ -11,7 +11,6 @@
 
 #include "Arduino.h"
 
-#include "GlobalConst.h"
 
 #include <sstream>
 #include <string>

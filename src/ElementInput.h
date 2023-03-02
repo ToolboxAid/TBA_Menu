@@ -4,10 +4,11 @@
 #include "Arduino.h"
 #include "Dimensions.h"
 
+#include "GlobalTFT.h"
+
 #include "ControlBase.h"
 #include "TBA_Macros.h"
 
-#include "GlobalConst.h"
 class ElementInput : public ControlBase
 {
 private:

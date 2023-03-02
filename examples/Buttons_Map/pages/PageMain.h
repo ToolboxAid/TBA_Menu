@@ -11,8 +11,6 @@
 
 #include "Arduino.h"
 
-#include "GlobalConst.h"
-
 #include "Dimensions.h"
 
 #include "ElementLabel.h"

@@ -11,7 +11,6 @@
 
 #include "Arduino.h"
 
-#include "GlobalConst.h"
 #include "Skin.h"
 
 #include "PageFileSelectControl.h"

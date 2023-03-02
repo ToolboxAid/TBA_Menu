@@ -11,12 +11,9 @@
 
 #include "Arduino.h"
 
-#include "GlobalConst.h"
-
 #include <sstream>
 #include <string>
 
-#include "Skin.h"
 
 #include "Dimensions.h"
 #include "Point.h"

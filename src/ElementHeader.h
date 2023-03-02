@@ -3,10 +3,7 @@
 
 #include "Arduino.h"
 
-#include "SPI.h"
-#include <TFT_eSPI.h> // Hardware-specific library
-
-#include "GlobalConst.h"
+#include "GlobalTFT.h"
 
 #include "ControlBase.h"
 #include "Skin.h"

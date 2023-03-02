@@ -13,6 +13,9 @@
 #include "FS.h"
 #include <SPI.h>
 
+
+#include "GlobalTFT.h"
+
 #include "TBA_FileSystem.h"
 
 #include "Skin.h"

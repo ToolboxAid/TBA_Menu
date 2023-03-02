@@ -11,7 +11,7 @@
 
 #include "Arduino.h"
 
-#include "GlobalConst.h"
+#include "GlobalTFT.h"
 
 #include "LCD.h"
 #include "LCDicon.h"
@@ -22,6 +22,8 @@
 #include "ControlBase.h"
 
 #include "TBA_Macros.h"
+
+
 
 class ElementButton : public ControlBase
 {

@@ -6,7 +6,6 @@
 #include "ElementBase.h"
 
 #include "LCD.h"
-#include "GlobalConst.h"
 
 #include "TBA_Macros.h"
 

@@ -2,12 +2,13 @@
 #define ElementRectangle_h
 
 #include "Arduino.h"
-#include "Dimensions.h"
 
+#include "GlobalTFT.h"
+
+#include "Dimensions.h"
 #include "ControlBase.h"
 #include "TBA_Macros.h"
 
-#include "GlobalConst.h"
 #include "LCD.h"
 
 class ElementRectangle : public ControlBase

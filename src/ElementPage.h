@@ -11,6 +11,8 @@
 
 #include "Arduino.h"
 
+#include "GlobalTFT.h"
+
 #include "LinkListPlus.h"
 
 #include "ControlBase.h"
@@ -24,7 +26,6 @@
 
 #include "TBA_Macros.h"
 
-#include "GlobalConst.h"
 //#include "LCD.h"
 
 // Required for ConvertString & ConvertChar
