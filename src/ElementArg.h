@@ -3,18 +3,18 @@
 
 #include "Arduino.h"
 
-#include "ControlBase.h"
+#include "ElementBase.h"
 
 #include "TBA_Macros.h"
 
-class ElementArg : public ControlBase
+class ElementArg : public ElementBase
 {
 private:
     char *value;
 
 protected:
 public:
-    ElementArg(const char *name, const char *value) : ControlBase(name) //----->call base class
+    ElementArg(const char *name, const char *value) : ElementBase(name) //----->call base class
     {
         this->value = (char *)malloc(strlen(value) + 1);
         memcpy(this->value, value, strlen(value) + 1);
@@ -53,7 +53,7 @@ public:
 
         Serial.print(F("' "));
 
-        ControlBase::debugSerial(debugLocation);
+        ElementBase::debugSerial(debugLocation);
     }
 };
 
