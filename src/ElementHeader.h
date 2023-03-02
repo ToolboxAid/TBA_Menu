@@ -3,8 +3,6 @@
 
 #include "Arduino.h"
 
-#include "GlobalTFT.h"
-
 #include "ControlBase.h"
 #include "Skin.h"
 
@@ -19,11 +17,6 @@ private:
     boolean displayHeader;
     Skin *skin;
     //    const char * icon;
-
-    boolean getDisplayHeader()
-    {
-        return this->displayHeader;
-    }
 
 protected:
 public:
@@ -83,7 +76,7 @@ public:
 
     void draw()
     {
-        if (this->getDisplayHeader())
+        if (this->displayHeader)
         {
             tft.fillRect(0, 0, getLCD()->getSkin()->getHeaderWidth(), getLCD()->getSkin()->getHeaderHeight(), getLCD()->getSkin()->headerBackGroundColor);
             tft.setTextColor(getLCD()->getSkin()->headerTextColor, getLCD()->getSkin()->headerBackGroundColor);

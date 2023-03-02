@@ -11,8 +11,6 @@
 
 #include "Arduino.h"
 
-#include "GlobalTFT.h"
-
 #include "LinkListPlus.h"
 
 #include "ControlBase.h"

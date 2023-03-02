@@ -3,8 +3,6 @@
 
 #include "Arduino.h"
 
-#include "GlobalTFT.h"
-
 #include "Dimensions.h"
 #include "ControlBase.h"
 #include "TBA_Macros.h"

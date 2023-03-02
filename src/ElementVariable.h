@@ -8,7 +8,6 @@
 
 #include "TBA_Macros.h"
 
-#include "GlobalTFT.h"
 class ElementVariable : public ControlBase
 {
 private:

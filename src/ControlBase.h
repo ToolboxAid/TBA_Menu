@@ -9,6 +9,8 @@
 
 #include "TBA_Macros.h"
 
+#include "GlobalTFT.h"
+
 class ControlBase : public ElementBase
 {
 private:
