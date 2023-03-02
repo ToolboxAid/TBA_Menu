@@ -32,7 +32,6 @@ public:
   uint8_t headerFontTextSize;
   uint16_t headerTextColor;
   uint16_t headerBackGroundColor;
-  const char *headerIconImage;
 
   // uint8_t  text;
   uint8_t textFontSize;
@@ -147,8 +146,7 @@ public:
     this->headerFontTextSize = 3;
     this->headerTextColor = TBA_ORANGE;
     this->headerBackGroundColor = TBA_PURPLE;
-    this->headerIconImage = "/TBA_40x25.png";
-
+  
     // Button
     this->buttonTextColor = TBA_ORANGE;
     this->buttonColor = TBA_PURPLE;
@@ -180,7 +178,7 @@ public:
 
   Skin(const char *name, uint8_t rotate,
        uint16_t screenWidth, uint16_t screenHeight,
-       uint8_t headerHeight, uint8_t headerFontTextSize, uint16_t headerTextColor, uint16_t headerBackGroundColor, const char *headerIconImage,
+       uint8_t headerHeight, uint8_t headerFontTextSize, uint16_t headerTextColor, uint16_t headerBackGroundColor, 
        uint16_t buttonTextColor, uint16_t buttonColor, uint16_t buttonShortColor, uint16_t buttonLongColor, uint16_t buttonBorderColor,
        uint8_t buttonMargin, uint8_t buttonBorderWidth, uint8_t buttonPadding, uint8_t buttonRadius,
        uint8_t textFontSize, uint16_t textColor, uint16_t textBackgroundColor)
@@ -211,7 +209,6 @@ public:
     this->headerFontTextSize = headerFontTextSize;
     this->headerTextColor = headerTextColor;
     this->headerBackGroundColor = headerBackGroundColor;
-    this->headerIconImage = headerIconImage;
 
     // Button
     this->buttonTextColor = buttonTextColor;
@@ -281,9 +278,6 @@ public:
 
     Serial.print("' headerBackGroundColor': '");
     Serial.print(this->headerBackGroundColor);
-
-    Serial.print("' headerIconImage: '");
-    Serial.print(this->headerIconImage);
 
     Serial.print("' H W: '");
     Serial.print(this->getHeaderWidth());

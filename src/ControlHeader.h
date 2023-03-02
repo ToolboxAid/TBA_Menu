@@ -14,43 +14,28 @@
 class ControlHeader : public ControlBase
 {
 private:
-    boolean displayHeader;
-    Skin *skin;
-    //    const char * icon;
+    boolean visible;
+    const char *icon;
 
 protected:
 public:
-    // Skin *skin,
-    ControlHeader(const char *name, boolean displayHeader) : ControlBase(name) //----->call base class
+    ControlHeader(const char *name, boolean visible, const char *icon) : ControlBase(name) //----->call base class
     {
-        this->displayHeader = displayHeader;
-        this->skin = skin;
-
-        // this->value = (char *)malloc(strlen(value) + 1);
-        // memcpy(this->value, value, strlen(value) + 1);
-        // this->value = (char *)this->value;
+        this->visible = visible;
+        this->icon = icon;
     }
 
     ~ControlHeader()
     {
-        // if (this->value)
-        //     free(this->value);
     }
-
     uint16_t drawIcon()
     {
         uint16_t iconOffset = 0;
-        if (getLCD()->getSkin()->headerIconImage)
+        if (this->icon && this->icon[0] != '\0')
         {
             int rc, filecount = 0;
 
-            // for (int i = 0; i < sizeof(buffer) / (sizeof(buffer[0])); i++)
-            // {
-            //   buffer[i] = getLCD()->getSkin()->headerIconImage[i];
-            // }
-            // rc = png.open(buffer, myOpen, myClose, myRead, mySeek, PNGDraw);
-
-            rc = png.open(getLCD()->getSkin()->headerIconImage, myOpen, myClose, myRead, mySeek, PNGDraw);
+            rc = png.open(this->icon, myOpen, myClose, myRead, mySeek, PNGDraw);
             if (rc == PNG_SUCCESS)
             {
                 iconOffset = getLCD()->getSkin()->getHeaderWidth() / 2;
@@ -68,15 +53,20 @@ public:
             else
             {
                 Serial.print(" Header Icon open failure : ");
-                Serial.println(getLCD()->getSkin()->headerIconImage);
+                Serial.println(this->icon);
             }
         }
         return iconOffset;
     }
 
+    boolean isVisible()
+    {
+        return this->visible;
+    }
+
     void draw()
     {
-        if (this->displayHeader)
+        if (this->visible)
         {
             tft.fillRect(0, 0, getLCD()->getSkin()->getHeaderWidth(), getLCD()->getSkin()->getHeaderHeight(), getLCD()->getSkin()->headerBackGroundColor);
             tft.setTextColor(getLCD()->getSkin()->headerTextColor, getLCD()->getSkin()->headerBackGroundColor);
@@ -88,7 +78,7 @@ public:
             tft.drawString(this->getName(),
                            (getLCD()->getSkin()->getHeaderWidth() / 2) + iconOffset,
                            getLCD()->getSkin()->getHeaderHeight() / 2);
-        }
+        }    
     }
 
     void debugSerial(const char *debugLocation)
@@ -97,16 +87,13 @@ public:
         Serial.print(__FILENAME__);
         Serial.print(F("> "));
 
+        Serial.print(F("visible: '"));
+        Serial.print(this->visible);
+
         // Serial.print(F(" value: '0x"));
-        // Serial.print((unsigned int)this->value, HEX);
+        // Serial.print((unsigned int)this->visible, HEX);
 
-        // Serial.print(F("' value: '"));
-        // if (hasValue())
-        //     Serial.print(this->value);
-        // else
-        //     Serial.print("isNULL");
-
-        // Serial.print(F("' "));
+        Serial.print(F("' "));
 
         ControlBase::debugSerial(debugLocation);
     }

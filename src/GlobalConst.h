@@ -13,7 +13,7 @@
 
 #include "Arduino.h"
 
-const char * TAG = "v1.1.49-05";
+const char * TAG = "v1.1.49-08";
 char buffer[256];
 
 #endif

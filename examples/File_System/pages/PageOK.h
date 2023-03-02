@@ -27,7 +27,7 @@ private:
 
 protected:
 public:
-    PageOK(Skin *skin) : ControlPage(NAME, 0, false, false, 10, "Main")
+    PageOK(Skin *skin) : ControlPage(NAME, 0, false, false, 10, "Main",NULL)
     {
         Dimensions *dimensions;
         ControlButton *button;

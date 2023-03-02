@@ -37,7 +37,7 @@ public:
   inline static const char *NAME = "PageData";
   inline static const char *inputName = "inputData";
 
-  PageData(Skin *skin) : ControlPage(PageData::NAME, 0, true, true, 0, NULL)
+  PageData(Skin *skin) : ControlPage(PageData::NAME, 0, true, true, 0, NULL, NULL)
   {
     Dimensions *dimensions;
     const char *icon;

@@ -35,7 +35,8 @@ private:
 
 protected:
 public:
-  PageMain() : ControlPage(PageMain::NAME, 3, true, true, 0, NULL)
+
+  PageMain() : ControlPage(PageMain::NAME, 3, true, true, 0, NULL, "/TBA_40x25.png")
   {
     this->addLabel(new ControlLabel(PageMain::LABEL1, new Point(10, 60)));
     this->addLabel(new ControlLabel(PageMain::LABEL2, new Point(10, 90)));
