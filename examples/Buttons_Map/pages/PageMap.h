@@ -11,18 +11,18 @@
 
 #include "Arduino.h"
 
-class PageMap : public ElementPage
+#include "ControlButton.h"
+
+
+class PageMap : public ControlPage
 {
 private:
   inline static const char *MAIN = "Main";
 
 protected:
 public:
-  PageMap(const char *name, uint8_t across, uint8_t down, Skin *skin) : ElementPage(name, 0, false, true, 0, NULL)
+  PageMap(const char *name, uint8_t across, uint8_t down, Skin *skin) : ControlPage(name, 0, false, true, 0, NULL)
   {
-    Dimensions *dimensions;
-    ElementButton *button;
-
     char *buffer = new char[4]{' ', ' ', ' ', '\0'};
     snprintf_P(buffer, sizeof(buffer), PSTR("%ix%i"), across, down);
     // const char *label = buffer;
@@ -39,9 +39,7 @@ public:
         snprintf_P(buffer, sizeof(buffer), PSTR("%ix%i"), x, y);
 
         // Add button
-        dimensions = skin->getMapDimensions(across, down, x, y);
-
-        button = new ElementButton((const char *)buffer, dimensions, PageMap::MAIN);
+        ControlButton *button = new ControlButton((const char *)buffer, skin->getMapDimensions(across, down, x, y), PageMap::MAIN);
         this->addButton(button);
       }
     }

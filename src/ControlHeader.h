@@ -1,5 +1,5 @@
-#ifndef ElementHeader_h
-#define ElementHeader_h
+#ifndef ControlHeader_h
+#define ControlHeader_h
 
 #include "Arduino.h"
 
@@ -11,7 +11,7 @@
 
 #include "TBA_Macros.h"
 
-class ElementHeader : public ControlBase
+class ControlHeader : public ControlBase
 {
 private:
     boolean displayHeader;
@@ -21,7 +21,7 @@ private:
 protected:
 public:
     // Skin *skin,
-    ElementHeader(const char *name, boolean displayHeader) : ControlBase(name) //----->call base class
+    ControlHeader(const char *name, boolean displayHeader) : ControlBase(name) //----->call base class
     {
         this->displayHeader = displayHeader;
         this->skin = skin;
@@ -31,7 +31,7 @@ public:
         // this->value = (char *)this->value;
     }
 
-    ~ElementHeader()
+    ~ControlHeader()
     {
         // if (this->value)
         //     free(this->value);

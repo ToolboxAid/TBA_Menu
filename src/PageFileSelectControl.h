@@ -19,15 +19,15 @@
 
 #include "Dimensions.h"
 #include "ElementArg.h"
-#include "ElementButton.h"
-#include "ElementFile.h"
-#include "ElementInput.h"
-#include "ElementPage.h"
-#include "ElementRectangle.h"
+#include "ControlButton.h"
+#include "ControlFile.h"
+#include "ControlInput.h"
+#include "ControlPage.h"
+#include "ControlRectangle.h"
 
 // #define FAKE_FILE_SYSTEM
 // #define DEBUG
-class PageFileSelectControl : public ElementPage
+class PageFileSelectControl : public ControlPage
 {
 private:
   inline static const char *CURRENT_DIRECTORY = "currentDirectory";
@@ -49,7 +49,7 @@ public:
   uint8_t filesLoadedCnt; // # files in directory
 
   PageFileSelectControl(const char *name, uint8_t backPageDelay, const char *backPage, Skin *skin, const char *parentDirectory, boolean displayHeader = false)
-      : ElementPage(name, 0, displayHeader, true, backPageDelay, backPage)
+      : ControlPage(name, 0, displayHeader, true, backPageDelay, backPage)
   {
     while (!backPage)
     { // loop forever.
@@ -73,33 +73,33 @@ public:
     // =============================================================================
     // Add input directory name
     dimensions = new Dimensions(skin->buttonMargin, top + skin->buttonMargin, skin->getScreenWidth() - (skin->buttonMargin * 1) - (skin->buttonBorderWidth * 2), CURRENT_DIRECTORY_SIZE);
-    this->addInput(new ElementInput(CURRENT_DIRECTORY, CURRENT_DIRECTORY_SIZE, ElementInput::JUSTIFICATION::LEFT, dimensions, currentDirectory.c_str()));
+    this->addInput(new ControlInput(CURRENT_DIRECTORY, CURRENT_DIRECTORY_SIZE, ControlInput::JUSTIFICATION::LEFT, dimensions, currentDirectory.c_str()));
 
     // =============================================================================
     // Add rectangles back drop
     top = dimensions->getY() + dimensions->getH() + skin->buttonMargin;
     dimensions = new Dimensions(skin->buttonMargin, top, skin->getScreenWidth() - size - (skin->buttonMargin * 2) - (skin->buttonBorderWidth * 2), skin->getScreenHeight() - top - (skin->buttonMargin * 1));
-    this->addRectangle(new ElementRectangle(BACKDROP, dimensions));
+    this->addRectangle(new ControlRectangle(BACKDROP, dimensions));
 
     // =========================================================================
     // --------------------------- Scrole Bar ----------------------------------
     // Add button: UP
     dimensions = new Dimensions(skin->getScreenWidth() - size - skin->buttonMargin, top, size, size);
-    this->addButton(new ElementButton(UP, dimensions, NULL));
+    this->addButton(new ControlButton(UP, dimensions, NULL));
     uint8_t scrollBarTop = dimensions->getY() + dimensions->getH();
 
     // Add button DW
     dimensions = new Dimensions(skin->getScreenWidth() - size - skin->buttonMargin, skin->getScreenHeight() - size - skin->buttonMargin, size, size);
-    this->addButton(new ElementButton(DOWN, dimensions, NULL));
+    this->addButton(new ControlButton(DOWN, dimensions, NULL));
     uint8_t scrollBarHeight = skin->getScreenHeight() - scrollBarTop - size - skin->buttonMargin; // top + skin->buttonMargin;
 
     // Add rectangle sideBar bar (between U & D) - also used to cal slider
     dimensions = new Dimensions(skin->getScreenWidth() - size - skin->buttonMargin, scrollBarTop, size, scrollBarHeight);
-    this->addRectangle(new ElementRectangle(SIDEBAR, dimensions));
+    this->addRectangle(new ControlRectangle(SIDEBAR, dimensions));
 
     // Add rectangle slider (position box)
     dimensions = new Dimensions(skin->getScreenWidth() - size, top + size, size - 10, size);
-    this->addRectangle(new ElementRectangle(SLIDER, dimensions));
+    this->addRectangle(new ControlRectangle(SLIDER, dimensions));
   }
 
   // This method needs to be implemented by the users.
@@ -122,7 +122,7 @@ public:
     filesLoadedCnt = 0;
 
     // Adjust backDrop is used to call file location on the screen.
-    ElementRectangle *backDrop = getPageRectangle(BACKDROP);
+    ControlRectangle *backDrop = getPageRectangle(BACKDROP);
 
     if (!backDrop)
     {
@@ -144,15 +144,15 @@ public:
                                               height);
 
       if (strcmp(this->currentDirectory.c_str(), parentDirectory) == 0)
-        addFile(new ElementFile("..", dimensions, this->backPage, NULL, true));
+        addFile(new ControlFile("..", dimensions, this->backPage, NULL, true));
       else
-        addFile(new ElementFile("..", dimensions, NULL, NULL, true));
+        addFile(new ControlFile("..", dimensions, NULL, NULL, true));
 
       screenPos++;
       filesLoadedCnt++;
     }
 
-    ElementInput *findInput = getPageInput(CURRENT_DIRECTORY);
+    ControlInput *findInput = getPageInput(CURRENT_DIRECTORY);
     if (findInput)
     {
       findInput->clear();
@@ -182,9 +182,9 @@ public:
           screenPos++;
 
           if (entry.isDirectory())
-            addFile(new ElementFile(entry.name(), dimensions, NULL, NULL, entry.isDirectory()));
+            addFile(new ControlFile(entry.name(), dimensions, NULL, NULL, entry.isDirectory()));
           else
-            addFile(new ElementFile(entry.name(), dimensions, "PageOK", NULL, entry.isDirectory()));
+            addFile(new ControlFile(entry.name(), dimensions, "PageOK", NULL, entry.isDirectory()));
         }
         filesLoadedCnt++;
       }
@@ -202,16 +202,16 @@ public:
         screenPos++;
 
         if (rand() % 4)
-          addFile(new ElementFile("file", dimensions, "PageOK", NULL, false));
+          addFile(new ControlFile("file", dimensions, "PageOK", NULL, false));
         else
-          addFile(new ElementFile("dir", dimensions, NULL, NULL, true));
+          addFile(new ControlFile("dir", dimensions, NULL, NULL, true));
       }
       filesLoadedCnt++;
       simFiles--;
     }
 #endif
 
-    ElementRectangle *sidebar = getPageRectangle(SIDEBAR);
+    ControlRectangle *sidebar = getPageRectangle(SIDEBAR);
     if (!sidebar)
     { // sideBar is what we place the slider on.
       Serial.println("Rectangle not found: 'sideBar'");
@@ -234,7 +234,7 @@ public:
 
     // Add new slider
     Dimensions *dimensions = new Dimensions(sidebar->getDimensions()->getX() + 4, perY, sidebar->getDimensions()->getW() - 8, perH);
-    ElementRectangle *slider = new ElementRectangle(SLIDER, dimensions);
+    ControlRectangle *slider = new ControlRectangle(SLIDER, dimensions);
     if (!addRectangle(slider))
     {
       Serial.println("Rect add failed:  'slider'");
@@ -332,12 +332,16 @@ public:
   }
   boolean fileSelect(const char *name) // boolean return is for redraw screen
   {
-    ElementArg *arg = new ElementArg((const char *)"buttonSelected", name);
-    (PageFileSelectControl *)Menu::getInstance()->addArg(arg);
+    ElementArg *argPath = new ElementArg((const char *)"pathSelected", currentDirectory.c_str());
+    (PageFileSelectControl *)Menu::getInstance()->addArg(argPath);
+
+    ElementArg *argFile = new ElementArg((const char *)"fileSelected", name);
+    (PageFileSelectControl *)Menu::getInstance()->addArg(argFile);
+
     return false;
   }
 
-  boolean buttonShortPress(ElementButton *button)
+  boolean buttonShortPress(ControlButton *button)
   {
     if (strcmp(UP, button->getName()) == 0)
       return upButton();
@@ -346,18 +350,18 @@ public:
 
     if (button->isStyleFile())
     {
-      ElementFile *elementFile = (ElementFile *)button;
-      if (elementFile->isDirectory())
+      ControlFile *file = (ControlFile *)button;
+      if (file->isDirectory())
       {
         return dirSelect(button->getName());
       }
       else
       {
-        return fileSelect(name);
+        return fileSelect(button->getName());
       }
     }
     else
-    { // ElementFile not found
+    { // ControlFile not found
       Serial.print("buttonShortPress is NOT a ***FILE*** '");
       Serial.print(button->getName());
       Serial.print("' value '");

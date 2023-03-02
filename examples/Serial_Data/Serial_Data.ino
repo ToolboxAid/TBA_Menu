@@ -11,8 +11,6 @@
 
 #include "Menu.h"
 
-#include "ElementPage.h"
-
 #include "pages/PageData.h"
 #include "pages/PageOK.h"
 
@@ -72,7 +70,7 @@ void serialEvent()
       {
         serialBuffer[serialOffset] = '\0'; // Append a null terminator
 
-        ElementInput *findInput = Menu::getInstance()->getCurrentPage()->getPageInput(PageData::inputName);
+        ControlInput *findInput = Menu::getInstance()->getCurrentPage()->getPageInput(PageData::inputName);
         if (findInput)
         {
           findInput->clear();

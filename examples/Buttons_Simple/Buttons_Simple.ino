@@ -11,8 +11,6 @@
 
 #include "Menu.h"
 
-#include "ElementPage.h"
-
 #include "pages/PageMain.h"
 
 void setup()
@@ -41,8 +39,6 @@ void setup()
          textFontSize,  textColor,  textBackgroundColor); */
 
   Menu::getInstance()->Initialize(skin, "ILI9341");
-
-  ElementPage *page;
 
   // Create the page main
   PageMain *pageMain = new PageMain();

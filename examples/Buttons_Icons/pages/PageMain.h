@@ -16,9 +16,10 @@
 #include <string>
 
 #include "Dimensions.h"
+#include "Point.h"
 
-#include "ElementLabel.h"
-#include "ElementButton.h"
+#include "ControlLabel.h"
+#include "ControlButton.h"
 
 #include "TBA_FileSystem.h"
 TBA_FileSystem fileSystem = TBA_FileSystem();
@@ -26,7 +27,7 @@ TBA_FileSystem fileSystem = TBA_FileSystem();
 #include "TBA_SupportFunction.h"
 TBA_SupportFunction supportFunction = TBA_SupportFunction();
 
-class PageMain : public ElementPage
+class PageMain : public ControlPage
 {
 private:
   inline static const char *LABEL1 = "Show me Buttons w/ Icons!";
@@ -38,10 +39,10 @@ protected:
 public:
   inline static const char *NAME = "Main";
 
-  PageMain() : ElementPage(PageMain::NAME, 0, true, true, 0, NULL)
+  PageMain() : ControlPage(PageMain::NAME, 0, true, true, 0, NULL)
   {
-    this->addLabel(new ElementLabel(PageMain::LABEL1, new Point(10, 100)));
-    this->addButton(new ElementButton(PageMain::BUTTON, new Dimensions(50, 190, 225, 25), "Icons"));
+    this->addLabel(new ControlLabel(PageMain::LABEL1, new Point(10, 100)));
+    this->addButton(new ControlButton(PageMain::BUTTON, new Dimensions(50, 190, 225, 25), "Icons"));
   }
 
 void load()

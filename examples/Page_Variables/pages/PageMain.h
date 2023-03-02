@@ -14,13 +14,13 @@
 #include "Point.h"
 #include "Dimensions.h"
 
-#include "ElementButton.h"
-#include "ElementLabel.h"
+#include "ControlButton.h"
+#include "ControlLabel.h"
 
 #include "TBA_SupportFunction.h"
 TBA_SupportFunction supportFunction = TBA_SupportFunction();
 
-class PageMain : public ElementPage
+class PageMain : public ControlPage
 {
 private:
   inline static const char *NAME = "Main";
@@ -32,16 +32,16 @@ private:
 
 protected:
 public:
-  PageMain() : ElementPage(PageMain::NAME, 0, true, true, 0, NULL)
+  PageMain() : ControlPage(PageMain::NAME, 0, true, true, 0, NULL)
   {
     // Add labels
-    this->addLabel(new ElementLabel("The below button will", new Point(10, 60)));
-    this->addLabel(new ElementLabel("show you the Vars Example", new Point(10, 80)));
+    this->addLabel(new ControlLabel("The below button will", new Point(10, 60)));
+    this->addLabel(new ControlLabel("show you the Vars Example", new Point(10, 80)));
 
-    this->addButton(new ElementButton(PageMain::VALUE,new Dimensions(40, 130, 240, 30),PageMain::VARS));
+    this->addButton(new ControlButton(PageMain::VALUE,new Dimensions(40, 130, 240, 30),PageMain::VARS));
 
-    this->addLabel(new ElementLabel("FYI:", new Point(10, 190)));
-    this->addLabel(new ElementLabel("Vars Page uses refresh()", new Point(10, 210)));
+    this->addLabel(new ControlLabel("FYI:", new Point(10, 190)));
+    this->addLabel(new ControlLabel("Vars Page uses refresh()", new Point(10, 210)));
   }
 
   void load()

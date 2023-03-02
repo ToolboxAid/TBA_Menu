@@ -6,21 +6,21 @@
     2) contain all the information about a page (Name, buttons, label, arguments, variables.)
 */
 
-#ifndef ElementPage_h
-#define ElementPage_h
+#ifndef ControlPage_h
+#define ControlPage_h
 
 #include "Arduino.h"
 
 #include "LinkListPlus.h"
 
 #include "ControlBase.h"
-#include "ElementButton.h"
-#include "ElementFile.h"
-#include "ElementHeader.h"
-#include "ElementInput.h"
-#include "ElementLabel.h"
-#include "ElementRectangle.h"
-#include "ElementVariable.h"
+#include "ControlButton.h"
+#include "ControlFile.h"
+#include "ControlHeader.h"
+#include "ControlInput.h"
+#include "ControlLabel.h"
+#include "ControlRectangle.h"
+#include "ControlVariable.h"
 
 #include "TBA_Macros.h"
 
@@ -31,10 +31,10 @@
 #include <sstream>
 #include <string>
 
-class ElementPage : public ControlBase
+class ControlPage : public ControlBase
 {
 private:
-  ElementHeader *elementHeader;
+  ControlHeader *controlHeader;
   LinkListPlus *buttonListPlus = new LinkListPlus();
   LinkListPlus *inputListPlus = new LinkListPlus();
   LinkListPlus *labelListPlus = new LinkListPlus();
@@ -57,10 +57,10 @@ public:
   virtual void refresh(){};
   virtual void exit(){};
 
-  virtual boolean buttonShortPress(ElementButton *button) { return false; };
-  virtual boolean buttonLongPress(ElementButton *button) { return false; };
+  virtual boolean buttonShortPress(ControlButton *button) { return false; };
+  virtual boolean buttonLongPress(ControlButton *button) { return false; };
 
-  ElementPage(
+  ControlPage(
       const char *name,
       uint16_t refreshTimer,
       boolean displayHeader,
@@ -68,7 +68,7 @@ public:
       uint8_t backPageDelay,
       const char *backPage) : ControlBase(name)
   {
-    this->elementHeader = new ElementHeader(name, displayHeader);
+    this->controlHeader = new ControlHeader(name, displayHeader);
     this->refreshTimer = refreshTimer;
     this->displayHeader = displayHeader;
     this->clrScreen = clearScreen;
@@ -76,7 +76,7 @@ public:
     this->backPage = backPage;
   }
 
-  ~ElementPage()
+  ~ControlPage()
   {
     // TODO: Below not complete, does it need to be as we are not deleting pages yet?
     //  delete buttonListPlus;
@@ -102,12 +102,12 @@ public:
   void clearFiles()
   {
     this->buttonListPlus->setCurrentToHead();
-    ElementButton *button = this->nextButton();
+    ControlButton *button = this->nextButton();
     while (button)
     {
       if (button->isStyleFile())
       {
-        ElementFile *file = ((ElementFile *)button);
+        ControlFile *file = ((ControlFile *)button);
         this->buttonListPlus->deleteID(file->getIdentity());
       }
 
@@ -119,7 +119,7 @@ public:
   void drawLabels()
   {
     this->labelListPlus->setCurrentToHead();
-    ElementLabel *label = this->nextLabel();
+    ControlLabel *label = this->nextLabel();
     while (label)
     {
       label->draw();
@@ -129,7 +129,7 @@ public:
   void drawVariables()
   {
     this->variableListPlus->setCurrentToHead();
-    ElementVariable *variable = this->nextVariable();
+    ControlVariable *variable = this->nextVariable();
     while (variable)
     {
       variable->draw();
@@ -139,7 +139,7 @@ public:
   void drawInputs()
   {
     this->inputListPlus->setCurrentToHead();
-    ElementInput *input = this->nextInput();
+    ControlInput *input = this->nextInput();
     while (input)
     {
       if (input->getInputChange())
@@ -154,7 +154,7 @@ public:
   {
     this->inputListPlus->setCurrentToHead();
     // iterator
-    ElementInput *input = this->nextInput();
+    ControlInput *input = this->nextInput();
     while (input)
     {
       input->setInputChange();
@@ -164,7 +164,7 @@ public:
   void drawRectangles()
   {
     this->rectangleListPlus->setCurrentToHead();
-    ElementRectangle *rectangle = this->nextRectangle();
+    ControlRectangle *rectangle = this->nextRectangle();
     while (rectangle)
     {
       rectangle->draw();
@@ -174,12 +174,12 @@ public:
   void drawFiles()
   {
     this->buttonListPlus->setCurrentToHead();
-    ElementButton *button = this->nextButton();
+    ControlButton *button = this->nextButton();
     while (button)
     {
       if (button->isStyleFile())
       {
-        ElementFile *file = (ElementFile *)button;
+        ControlFile *file = (ControlFile *)button;
         file->draw();
       }
       button = this->nextButton();
@@ -188,7 +188,7 @@ public:
   void drawButtons()
   {
     this->buttonListPlus->setCurrentToHead();
-    ElementButton *button = this->nextButton();
+    ControlButton *button = this->nextButton();
     while (button)
     {
       if (button->isStyleButton())
@@ -204,7 +204,7 @@ public:
     // Clear the screen if required
     clearScreen();
 
-    this->elementHeader->draw();
+    this->controlHeader->draw();
 
     drawRectangles();
 
@@ -223,34 +223,34 @@ public:
     return this->displayHeader;
   }
 
-  uint16_t addButton(ElementButton *elementButton)
+  uint16_t addButton(ControlButton *button)
   {
-    return this->buttonListPlus->insertAtEnd((ElementBase *)elementButton);
+    return this->buttonListPlus->insertAtEnd((ElementBase *)button);
   }
-  uint16_t addFile(ElementFile *elementFile)
+  uint16_t addFile(ControlFile *file)
   {
-    return this->buttonListPlus->insertAtEnd((ElementBase *)elementFile);
+    return this->buttonListPlus->insertAtEnd((ElementBase *)file);
   }
-  uint16_t addInput(ElementInput *inputElement)
+  uint16_t addInput(ControlInput *input)
   {
-    return this->inputListPlus->insertAtEnd((ElementBase *)inputElement);
+    return this->inputListPlus->insertAtEnd((ElementBase *)input);
   }
-  uint16_t addLabel(ElementLabel *labelElement)
+  uint16_t addLabel(ControlLabel *label)
   {
-    return this->labelListPlus->insertAtEnd((ElementBase *)labelElement);
+    return this->labelListPlus->insertAtEnd((ElementBase *)label);
   }
-  uint16_t addRectangle(ElementRectangle *rectangleElement)
+  uint16_t addRectangle(ControlRectangle *rectangle)
   {
-    return this->rectangleListPlus->insertAtEnd((ElementBase *)rectangleElement);
+    return this->rectangleListPlus->insertAtEnd((ElementBase *)rectangle);
   }
-  uint16_t addVariable(ElementVariable *variableElement)
+  uint16_t addVariable(ControlVariable *variable)
   {
-    return this->variableListPlus->insertAtEnd((ElementBase *)variableElement);
+    return this->variableListPlus->insertAtEnd((ElementBase *)variable);
   }
 
-  ElementInput *getPageInput(const char *name)
+  ControlInput *getPageInput(const char *name)
   {
-    ElementInput *findInput = (ElementInput *)this->inputListPlus->searchName(name);
+    ControlInput *findInput = (ControlInput *)this->inputListPlus->searchName(name);
     if (findInput)
     {
       return findInput;
@@ -262,9 +262,9 @@ public:
 
     return NULL;
   }
-  ElementRectangle *getPageRectangle(const char *name)
+  ControlRectangle *getPageRectangle(const char *name)
   {
-    ElementRectangle *findRect = (ElementRectangle *)this->rectangleListPlus->searchName(name);
+    ControlRectangle *findRect = (ControlRectangle *)this->rectangleListPlus->searchName(name);
     if (findRect)
     {
       return findRect;
@@ -275,9 +275,9 @@ public:
 
     return NULL;
   }
-  ElementVariable *getPageVariable(const char *name)
+  ControlVariable *getPageVariable(const char *name)
   {
-    ElementVariable *findVariable = (ElementVariable *)this->variableListPlus->searchName(name);
+    ControlVariable *findVariable = (ControlVariable *)this->variableListPlus->searchName(name);
     if (findVariable)
     {
       return findVariable;
@@ -289,25 +289,25 @@ public:
     return NULL;
   }
 
-  ElementButton *nextButton()
+  ControlButton *nextButton()
   {
-    return (ElementButton *)this->buttonListPlus->getNext();
+    return (ControlButton *)this->buttonListPlus->getNext();
   }
-  ElementInput *nextInput()
+  ControlInput *nextInput()
   {
-    return (ElementInput *)this->inputListPlus->getNext();
+    return (ControlInput *)this->inputListPlus->getNext();
   }
-  ElementLabel *nextLabel()
+  ControlLabel *nextLabel()
   {
-    return (ElementLabel *)this->labelListPlus->getNext();
+    return (ControlLabel *)this->labelListPlus->getNext();
   }
-  ElementRectangle *nextRectangle()
+  ControlRectangle *nextRectangle()
   {
-    return (ElementRectangle *)this->rectangleListPlus->getNext();
+    return (ControlRectangle *)this->rectangleListPlus->getNext();
   }
-  ElementVariable *nextVariable()
+  ControlVariable *nextVariable()
   {
-    return (ElementVariable *)this->variableListPlus->getNext();
+    return (ControlVariable *)this->variableListPlus->getNext();
   }
 
   boolean removeInput(uint16_t identity)
@@ -440,45 +440,45 @@ public:
     resetButtonIterator();
 
     Serial.println("- - - - - - - - - -Element Button- - - - - - - - - -");
-    ElementButton *button = (ElementButton *)nextButton();
+    ControlButton *button = (ControlButton *)nextButton();
     while (button)
     {
       if (button->isStyleFile())
-        ((ElementFile *)button)->debugSerial("ElementFile * * ");
+        ((ControlFile *)button)->debugSerial("ControlFile * * ");
       else
-        button->debugSerial("ElementButton");
-      button = (ElementButton *)nextButton();
+        button->debugSerial("ControlButton");
+      button = (ControlButton *)nextButton();
     }
 
     Serial.println("- - - - - - - - - -Element Input- - - - - - - - - -");
-    ElementInput *input = nextInput();
+    ControlInput *input = nextInput();
     while (input)
     {
-      input->debugSerial("ElementInput");
+      input->debugSerial("ControlInput");
       input = nextInput();
     }
 
     Serial.println("- - - - - - - - - -Element Label- - - - - - - - - -");
-    ElementLabel *label = nextLabel();
+    ControlLabel *label = nextLabel();
     while (label)
     {
-      label->debugSerial("ElementLabel");
+      label->debugSerial("ControlLabel");
       label = nextLabel();
     }
 
     Serial.println("- - - - - - - - - -Element Rectangle- - - - - - - - - -");
-    ElementRectangle *rectangle = nextRectangle();
+    ControlRectangle *rectangle = nextRectangle();
     while (rectangle)
     {
-      rectangle->debugSerial("ElementRectangle");
+      rectangle->debugSerial("ControlRectangle");
       rectangle = nextRectangle();
     }
 
     Serial.println("- - - - - - - - - -Element Variable- - - - - - - - - -");
-    ElementVariable *variable = nextVariable();
+    ControlVariable *variable = nextVariable();
     while (variable)
     {
-      variable->debugSerial("traversLists - ElementVariable");
+      variable->debugSerial("traversLists - ControlVariable");
       variable = nextVariable();
     }
   }

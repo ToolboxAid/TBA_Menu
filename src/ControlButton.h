@@ -6,8 +6,8 @@
     4) Change to a different current Page when long press
 */
 
-#ifndef ElementButton_h
-#define ElementButton_h
+#ifndef ControlButton_h
+#define ControlButton_h
 
 #include "Arduino.h"
 
@@ -23,7 +23,7 @@
 
 
 
-class ElementButton : public ControlBase
+class ControlButton : public ControlBase
 {
 public:
     enum STATE
@@ -63,17 +63,17 @@ protected:
 
 public:
     // Filename will be loaded to ->name
-    ElementButton(const char *name, Dimensions *dimensions, const char *shortPage)
-        : ElementButton(name, dimensions, shortPage, NULL, NULL)
+    ControlButton(const char *name, Dimensions *dimensions, const char *shortPage)
+        : ControlButton(name, dimensions, shortPage, NULL, NULL)
     { /* calls below larger constructor first */
     }
 
-    ElementButton(const char *name, Dimensions *dimensions, const char *shortPage, const char *longPage, const char *value)
-        : ElementButton(name, dimensions, shortPage, longPage, value, NULL, false)
+    ControlButton(const char *name, Dimensions *dimensions, const char *shortPage, const char *longPage, const char *value)
+        : ControlButton(name, dimensions, shortPage, longPage, value, NULL, false)
     { /* calls below larger constructor first */
     }
 
-    ElementButton(const char *name, Dimensions *dimensions, const char *shortPage, const char *longPage, const char *value, const char *icon, boolean hidden = false)
+    ControlButton(const char *name, Dimensions *dimensions, const char *shortPage, const char *longPage, const char *value, const char *icon, boolean hidden = false)
         : ControlBase(name)
     {
         this->dimensions = dimensions;
@@ -88,12 +88,12 @@ public:
 
         this->hidden = hidden;
 
-        this->state = ElementButton::STATE::UP; // this->state = (ElementButton::STATE)random(0,6); //this->state = (ElementButton::STATE)random(0,5);
+        this->state = ControlButton::STATE::UP; // this->state = (ControlButton::STATE)random(0,6); //this->state = (ControlButton::STATE)random(0,5);
 
         this->style = STYLE::BUTTON;
     }
 
-    ~ElementButton()
+    ~ControlButton()
     {
         // Serial.print(" dim 1 '0x");
         // Serial.print((unsigned int)&dimensions, HEX);
@@ -147,15 +147,15 @@ public:
 
         switch (this->state)
         {
-        case ElementButton::STATE::UP:
-        case ElementButton::STATE::ROLLOFF:
-        case ElementButton::STATE::RELEASED:
+        case ControlButton::STATE::UP:
+        case ControlButton::STATE::ROLLOFF:
+        case ControlButton::STATE::RELEASED:
             buttonColor = getLCD()->getSkin()->buttonColor;
             break;
-        case ElementButton::STATE::SHORT:
+        case ControlButton::STATE::SHORT:
             buttonColor = getLCD()->getSkin()->buttonShortColor;
             break;
-        case ElementButton::STATE::LONG:
+        case ControlButton::STATE::LONG:
             buttonColor = getLCD()->getSkin()->buttonLongColor;
             break;
         default:
@@ -227,39 +227,39 @@ public:
         return this->value;
     }
 
-    ElementButton::STATE getButtonState()
+    ControlButton::STATE getButtonState()
     {
         return this->state;
     }
 
     boolean isUP()
     {
-        return (this->state == ElementButton::STATE::UP);
+        return (this->state == ControlButton::STATE::UP);
     }
     boolean isSHORT()
     {
-        return (this->state == ElementButton::STATE::SHORT);
+        return (this->state == ControlButton::STATE::SHORT);
     }
     boolean isLONG()
     {
-        return (this->state == ElementButton::STATE::LONG);
+        return (this->state == ControlButton::STATE::LONG);
     }
     boolean isROLLOFF()
     {
-        return (this->state == ElementButton::STATE::ROLLOFF);
+        return (this->state == ControlButton::STATE::ROLLOFF);
     }
     boolean isRELEASED()
     {
-        return ((this->state == ElementButton::STATE::RELEASED));
+        return ((this->state == ControlButton::STATE::RELEASED));
     }
 
     boolean isStyleButton()
     {
-        return (this->style == ElementButton::STYLE::BUTTON);
+        return (this->style == ControlButton::STYLE::BUTTON);
     }
     boolean isStyleFile()
     {
-        return (this->style == ElementButton::STYLE::FILE);
+        return (this->style == ControlButton::STYLE::FILE);
     }
 
     boolean isHidden()
@@ -290,14 +290,14 @@ public:
 
     void resetButton()
     {
-        this->state = ElementButton::STATE::UP;
+        this->state = ControlButton::STATE::UP;
     }
 
     /* UP = 0, SHORT, LONG, ROLLOFF, RELEASED */
-    boolean hasStateChange(Point *point, boolean isPressed, ElementButton::STATE &triggerState)
+    boolean hasStateChange(Point *point, boolean isPressed, ControlButton::STATE &triggerState)
     {
         boolean stateChange = false;
-        triggerState = ElementButton::STATE::UP;
+        triggerState = ControlButton::STATE::UP;
 
         if (point->getX() > dimensions->getX() && point->getX() < dimensions->getXW() &&
             point->getY() > dimensions->getY() && point->getY() < dimensions->getYH())
@@ -307,14 +307,14 @@ public:
                 if (isUP())
                 {
                     pressedTime = millis();
-                    this->state = ElementButton::STATE::SHORT;
+                    this->state = ControlButton::STATE::SHORT;
                     stateChange = true;
                 }
                 else if (isSHORT() && millis() > pressedTime + deboundDelay)
                 {
                     if (this->hasLongPage())
                     {
-                        this->state = ElementButton::STATE::LONG;
+                        this->state = ControlButton::STATE::LONG;
                         stateChange = true;
                     }
                 }
@@ -326,7 +326,7 @@ public:
                     // On button but not pressed
                     // Set current state for return. (is short or long)
                     triggerState = this->state;
-                    this->state = ElementButton::STATE::RELEASED;
+                    this->state = ControlButton::STATE::RELEASED;
                     stateChange = true;
                 }
             }
@@ -335,7 +335,7 @@ public:
         { // Nothing pressed, did we rolloff?
             if (isSHORT() || isLONG())
             {
-                this->state = ElementButton::STATE::ROLLOFF;
+                this->state = ControlButton::STATE::ROLLOFF;
                 stateChange = true;
             }
         }
@@ -388,7 +388,7 @@ public:
     }
 };
 
-uint16_t ElementButton::deboundDelay = 1000;
-unsigned long ElementButton::pressedTime = 0;
+uint16_t ControlButton::deboundDelay = 1000;
+unsigned long ControlButton::pressedTime = 0;
 
 #endif

@@ -11,9 +11,7 @@
 
 #include "Menu.h"
 
-#include "ElementPage.h"
-
-#include "LinkListPlus.h"
+#include "ControlPage.h"
 
 #include "pages/PageMain.h"
 #include "pages/PageMap.h"
