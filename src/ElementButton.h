@@ -11,19 +11,19 @@
 
 #include "Arduino.h"
 
-#include "GlobalConst.h"
-
 #include "LCD.h"
 #include "LCDicon.h"
 
 #include "Point.h"
 #include "Dimensions.h"
 
-#include "ElementBase.h"
+#include "ControlBase.h"
 
 #include "TBA_Macros.h"
 
-class ElementButton : public ElementBase
+
+
+class ElementButton : public ControlBase
 {
 public:
     enum STATE
@@ -74,7 +74,7 @@ public:
     }
 
     ElementButton(const char *name, Dimensions *dimensions, const char *shortPage, const char *longPage, const char *value, const char *icon, boolean hidden = false)
-        : ElementBase(name)
+        : ControlBase(name)
     {
         this->dimensions = dimensions;
 
@@ -143,8 +143,6 @@ public:
 
     uint16_t getStateColor()
     {
-        LCD *lcd = LCD::GetInstance();
-
         uint16_t buttonColor;
 
         switch (this->state)
@@ -152,13 +150,13 @@ public:
         case ElementButton::STATE::UP:
         case ElementButton::STATE::ROLLOFF:
         case ElementButton::STATE::RELEASED:
-            buttonColor = lcd->getSkin()->buttonColor;
+            buttonColor = getLCD()->getSkin()->buttonColor;
             break;
         case ElementButton::STATE::SHORT:
-            buttonColor = lcd->getSkin()->buttonShortColor;
+            buttonColor = getLCD()->getSkin()->buttonShortColor;
             break;
         case ElementButton::STATE::LONG:
-            buttonColor = lcd->getSkin()->buttonLongColor;
+            buttonColor = getLCD()->getSkin()->buttonLongColor;
             break;
         default:
             buttonColor = Skin::rgb888torgb565(0xFF0000);
@@ -172,31 +170,27 @@ public:
     }
     void draw()
     {
-        LCD *lcd = LCD::GetInstance();
-
         if (!this->isHidden())
         {
-            LCD *lcd = LCD::GetInstance();
-
-            tft.setTextSize(lcd->getSkin()->textFontSize);
+            tft.setTextSize(getLCD()->getSkin()->textFontSize);
 
             uint16_t buttonColor = getStateColor();
 
             // Draw button outline
             tft.fillRoundRect(this->dimensions->getX(), this->dimensions->getY(),
                               this->dimensions->getW(), this->dimensions->getH(),
-                              lcd->getSkin()->buttonRadius, lcd->getSkin()->buttonBorderColor);
+                              getLCD()->getSkin()->buttonRadius, getLCD()->getSkin()->buttonBorderColor);
 
             // Draw button background
-            tft.fillRoundRect(this->dimensions->getX() + lcd->getSkin()->buttonBorderWidth, this->dimensions->getY() + lcd->getSkin()->buttonBorderWidth,
-                              this->dimensions->getW() - (lcd->getSkin()->buttonBorderWidth * 2), this->dimensions->getH() - (lcd->getSkin()->buttonBorderWidth * 2),
-                              lcd->getSkin()->buttonRadius, buttonColor);
+            tft.fillRoundRect(this->dimensions->getX() + getLCD()->getSkin()->buttonBorderWidth, this->dimensions->getY() + getLCD()->getSkin()->buttonBorderWidth,
+                              this->dimensions->getW() - (getLCD()->getSkin()->buttonBorderWidth * 2), this->dimensions->getH() - (getLCD()->getSkin()->buttonBorderWidth * 2),
+                              getLCD()->getSkin()->buttonRadius, buttonColor);
 
             // Draw Icon
             if (!drawButtonIcon())
             {
                 // Draw Name
-                tft.setTextColor(lcd->getSkin()->buttonTextColor, buttonColor);
+                tft.setTextColor(getLCD()->getSkin()->buttonTextColor, buttonColor);
                 tft.setTextDatum(CC_DATUM);
                 tft.drawString(this->getName(),
                                this->dimensions->getX() + (this->dimensions->getW() / 2),
@@ -390,7 +384,7 @@ public:
         Serial.print(this->state);
 
         Serial.print(F("' "));
-        ElementBase::debugSerial(debugLocation);
+        ControlBase::debugSerial(debugLocation);
     }
 };
 

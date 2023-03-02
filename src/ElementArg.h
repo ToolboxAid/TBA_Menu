@@ -4,7 +4,6 @@
 #include "Arduino.h"
 
 #include "ElementBase.h"
-#include "Point.h"
 
 #include "TBA_Macros.h"
 
@@ -19,15 +18,13 @@ public:
     {
         this->value = (char *)malloc(strlen(value) + 1);
         memcpy(this->value, value, strlen(value) + 1);
-        this->value = (char *)this->value;
+        this->value = (char *)this->value; // Todo, why is this here???
     }
 
     ~ElementArg()
     {
         if (this->value)
-        {
             free(this->value);
-        }
     }
 
     boolean hasValue()

@@ -9,7 +9,7 @@
 #ifndef LCDicon_h
 #define LCDicon_h
 
-#include "GlobalConst.h"
+#include "GlobalTFT.h"
 
 // A simple image slideshow which reads all the .JPG files from the root
 // directory of a SD card and shows each for 1 second on an ILI9341 display.

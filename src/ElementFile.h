@@ -12,7 +12,6 @@
 #include "Arduino.h"
 
 #include "LCD.h"
-#include "GlobalConst.h"
 
 #include "Point.h"
 #include "Dimensions.h"
@@ -44,16 +43,12 @@ public:
     ~ElementFile()
     {
         if (nameBuffer)
-        {
             free(nameBuffer);
-        }
     }
 
     //=============================================================================================================
     uint16_t getFileStateBoarderColor()
     {
-        LCD *lcd = LCD::GetInstance();
-
         uint16_t fileTextColor;
 
         switch (this->state)
@@ -61,13 +56,13 @@ public:
         case ElementButton::STATE::UP:
         case ElementButton::STATE::ROLLOFF:
         case ElementButton::STATE::RELEASED:
-            fileTextColor = lcd->getSkin()->fileBorderColor;
+            fileTextColor = getLCD()->getSkin()->fileBorderColor;
             break;
         case ElementButton::STATE::SHORT:
-            fileTextColor = lcd->getSkin()->fileShortColor;
+            fileTextColor = getLCD()->getSkin()->fileShortColor;
             break;
         case ElementButton::STATE::LONG:
-            fileTextColor = lcd->getSkin()->fileLongColor;
+            fileTextColor = getLCD()->getSkin()->fileLongColor;
             break;
         default:
             fileTextColor = Skin::rgb888torgb565(0xFF0000);
@@ -81,8 +76,6 @@ public:
     }
     uint16_t getFileStateColor()
     {
-        LCD *lcd = LCD::GetInstance();
-
         uint16_t fileTextColor;
 
         switch (this->state)
@@ -90,13 +83,13 @@ public:
         case ElementButton::STATE::UP:
         case ElementButton::STATE::ROLLOFF:
         case ElementButton::STATE::RELEASED:
-            fileTextColor = lcd->getSkin()->fileTextColor;
+            fileTextColor = getLCD()->getSkin()->fileTextColor;
             break;
         case ElementButton::STATE::SHORT:
-            fileTextColor = lcd->getSkin()->fileShortColor;
+            fileTextColor = getLCD()->getSkin()->fileShortColor;
             break;
         case ElementButton::STATE::LONG:
-            fileTextColor = lcd->getSkin()->fileLongColor;
+            fileTextColor = getLCD()->getSkin()->fileLongColor;
             break;
         default:
             fileTextColor = Skin::rgb888torgb565(0xFF0000);
@@ -111,17 +104,15 @@ public:
 
     void draw()
     {
-        LCD *lcd = LCD::GetInstance();
-
         // Draw Icon
         if (!drawButtonIcon())
         {
             // Draw Name
-            tft.setTextSize(lcd->getSkin()->textFontSize);
-            tft.setTextColor(getFileStateColor(), lcd->getSkin()->fileBackColor, true);
+            tft.setTextSize(getLCD()->getSkin()->textFontSize);
+            tft.setTextColor(getFileStateColor(), getLCD()->getSkin()->fileBackColor, true);
             tft.setTextDatum(TL_DATUM);
 
-            //(strlen(currentPage->getName()) * lcd->getSkin()->getFontWidth() * lcd->getSkin()->headerFontTextSize) / 2;
+            //(strlen(currentPage->getName()) * getLCD()->getSkin()->getFontWidth() * getLCD()->getSkin()->headerFontTextSize) / 2;
             uint8_t end = strlen(this->getName());
             uint8_t numChar = this->dimensions->getXW() / (6 * 2) - 1;
 
@@ -142,7 +133,7 @@ public:
 
         tft.drawRoundRect(this->dimensions->getX() - 1, this->dimensions->getY() + 1,
                           this->dimensions->getW(), this->dimensions->getH(),
-                          lcd->getSkin()->buttonRadius,
+                          getLCD()->getSkin()->buttonRadius,
                           getFileStateBoarderColor());
     }
     //=============================================================================================================
@@ -170,7 +161,7 @@ public:
         }
         Serial.print(F("' "));
 
-        ElementButton::debugSerial(debugLocation);
+        ControlBase::debugSerial(debugLocation);
     }
 };
 

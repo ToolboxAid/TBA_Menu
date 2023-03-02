@@ -13,26 +13,25 @@
 
 #include "LinkListPlus.h"
 
+#include "ControlBase.h"
 #include "ElementButton.h"
 #include "ElementFile.h"
 #include "ElementHeader.h"
 #include "ElementInput.h"
 #include "ElementLabel.h"
 #include "ElementRectangle.h"
-#include "ElementBase.h"
 #include "ElementVariable.h"
 
 #include "TBA_Macros.h"
 
-#include "GlobalConst.h"
-#include "LCD.h"
+//#include "LCD.h"
 
 // Required for ConvertString & ConvertChar
 // #include <iostream>
 #include <sstream>
 #include <string>
 
-class ElementPage : public ElementBase
+class ElementPage : public ControlBase
 {
 private:
   ElementHeader *elementHeader;
@@ -67,7 +66,7 @@ public:
       boolean displayHeader,
       boolean clearScreen,
       uint8_t backPageDelay,
-      const char *backPage) : ElementBase(name)
+      const char *backPage) : ControlBase(name)
   {
     this->elementHeader = new ElementHeader(name, displayHeader);
     this->refreshTimer = refreshTimer;
@@ -96,7 +95,7 @@ public:
   {
     if (this->clrScreen)
     { // Clear the screen
-      tft.fillScreen(LCD::GetInstance()->getSkin()->textBackgroundColor);
+      tft.fillScreen(getLCD()->getSkin()->textBackgroundColor);
     }
   }
 
@@ -510,7 +509,7 @@ public:
 
     Serial.print("' ");
 
-    ElementBase::debugSerial(debugLocation);
+    ControlBase::debugSerial(debugLocation);
   }
 };
 

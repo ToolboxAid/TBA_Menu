@@ -11,8 +11,6 @@
 
 #include "Arduino.h"
 
-#include "GlobalConst.h"
-
 class PageMap : public ElementPage
 {
 private:

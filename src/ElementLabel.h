@@ -4,11 +4,10 @@
 #include "Arduino.h"
 #include "Point.h"
 
-#include "ElementBase.h"
+#include "ControlBase.h"
 #include "TBA_Macros.h"
 
-#include "GlobalConst.h"
-class ElementLabel : public ElementBase
+class ElementLabel : public ControlBase
 {
 
 private:
@@ -17,7 +16,7 @@ private:
 
 protected:
 public:
-    ElementLabel(const char *name, Point *point, boolean drawBackgroundColor = true) : ElementBase(name)
+    ElementLabel(const char *name, Point *point, boolean drawBackgroundColor = true) : ControlBase(name)
     {
         this->point = point;
         this->drawBackgroundColor = drawBackgroundColor;
@@ -26,25 +25,21 @@ public:
     ~ElementLabel()
     {
         if (this->point)
-        {
             free(this->point);
-        }
     }
 
     void draw()
     {
-        LCD *lcd = LCD::GetInstance();
-
-        tft.setTextSize(lcd->getSkin()->textFontSize);
+        tft.setTextSize(getLCD()->getSkin()->textFontSize);
         tft.setTextDatum(TL_DATUM);
 
         if (this->drawBackgroundColor)
         {
-            tft.setTextColor(lcd->getSkin()->textColor, lcd->getSkin()->textBackgroundColor);
+            tft.setTextColor(getLCD()->getSkin()->textColor, getLCD()->getSkin()->textBackgroundColor);
         }
         else
         {
-            tft.setTextColor(lcd->getSkin()->textColor);
+            tft.setTextColor(getLCD()->getSkin()->textColor);
         }
         tft.setCursor(this->point->getX(), this->point->getY());
         tft.print(this->getName());
@@ -58,7 +53,7 @@ public:
 
         this->point->debugSerial("NO_CR");
 
-        ElementBase::debugSerial(debugLocation);
+        ControlBase::debugSerial(debugLocation);
     }
 };
 

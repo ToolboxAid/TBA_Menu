@@ -4,48 +4,41 @@
 #include "Arduino.h"
 
 #include "ElementBase.h"
-#include "Skin.h"
-
-#include "TBA_Macros.h"
 
 #include "LCD.h"
 
-#include "GlobalConst.h"
+#include "TBA_Macros.h"
+
+#include "GlobalTFT.h"
 
 class ControlBase : public ElementBase
 {
 private:
-
-    boolean getDisplayHeader()
-    {
-        return this->displayHeader;
-    }
-
 protected:
-    Skin *skin;
+    LCD *lcd;
 
 public:
-//Skin *skin,
-    ControlBase(const char *name, Skin *skin) : ElementBase(name) //----->call base class
+    ControlBase(const char *name) : ElementBase(name) //----->call base class
     {
-        this->skin = skin;
-
         // this->value = (char *)malloc(strlen(value) + 1);
         // memcpy(this->value, value, strlen(value) + 1);
         // this->value = (char *)this->value;
-        LCD *lcd = LCD::GetInstance();
-     }
+        lcd = LCD::GetInstance();
+    }
 
     ~ControlBase()
     {
         // if (this->value)
-        // {
         //     free(this->value);
-        // }
     }
 
     virtual void draw()
     {
+    }
+
+    LCD *getLCD()
+    {
+        return this->lcd;
     }
 
     void debugSerial(const char *debugLocation)
