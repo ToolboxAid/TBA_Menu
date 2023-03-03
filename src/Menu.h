@@ -110,7 +110,8 @@ Menu *Menu::thisMenu = NULL;
 void Menu::Initialize(Skin *skin, const char *lcdName = "ILI9341", const char *frontPage = "Main")
 {
   // Init LCD
-  LCD::Initialize(lcdName, skin);
+  LCD::Initialize(lcdName, skin->getRotation());
+  //TODO: load skin to ControlBase
 
   // Add TBA Page & Set to current
   PageTBA *tbaPage = new PageTBA(frontPage);

@@ -35,22 +35,8 @@ public:
         //     free(this->value);
     }
 
-    static void setSkin(Skin *skin_)
-    {
-        skin = skin_;
-    }
-    static Skin *getSkin1()
-    {
-        if (!skin)
-            skin = new Skin();
-        return skin;
-    }
-    // Skin *getSkin()
-    // {
-    //     if (!skin)
-    //         skin = new Skin();
-    //     return skin;
-    // }
+    static void setMySkin(Skin *skin_);
+    static Skin *getMySkin();
 
     virtual void draw()
     {
@@ -83,5 +69,17 @@ public:
 };
 
 Skin *ControlBase::skin;
+
+void ControlBase::setMySkin(Skin *skin_)
+{
+    skin = skin_;
+}
+
+Skin* ControlBase::getMySkin()
+{
+    if (!skin)
+        skin = new Skin();
+    return skin;
+}
 
 #endif

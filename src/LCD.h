@@ -13,13 +13,15 @@
 #include "FS.h"
 #include <SPI.h>
 
-
 #include "GlobalTFT.h"
 
 #include "TBA_FileSystem.h"
 
 #include "Skin.h"
+
 #include "Point.h"
+
+// #include "ControlBase.h"
 
 /* Set REPEAT_CAL to true instead of false to run calibration
    again, otherwise it will only be done once.
@@ -44,7 +46,7 @@ private:
     static std::mutex mutex_;
 
     const char *name;
-    Skin *skin;
+    uint8_t rotation;
 
     /* This is the file name used to store the calibration data
        You can change this to create new calibration files.
@@ -63,10 +65,10 @@ private:
     void touch_calibrate(const char *calibrationFile);
 
 protected:
-    LCD(const char *name, Skin *skin) : name(name), skin(skin)
+    LCD(const char *name, uint8_t rotation) : name(name), rotation(rotation)
     {
         // this->name = name;
-        // this->skin = skin;
+        // this->rotation = rotation;
     }
     ~LCD() {}
 
@@ -82,7 +84,7 @@ public:
      *  object stored in the static field.
      *  You must Initialize prior to GetInstance (will display error if out of order)
      *  */
-    static LCD *Initialize(const char *name, Skin *skin);
+    static LCD *Initialize(const char *name, uint8_t rotation);
     static LCD *GetInstance();
 
     /** Other static methods should be defined outside the class. */
@@ -91,11 +93,7 @@ public:
 
     const char *getName();
 
-    Skin *getSkin();
-
     void debugSerial(const char *debugLocation);
-
-
 };
 
 LCD *LCD::thisLCD{nullptr};
@@ -108,10 +106,9 @@ void LCD::touch_calibrate_setup()
 
     // Initialise the TFT screen
     tft.init();
-    tft.setRotation(this->skin->getRotation());
 
-    // Calibrate the touch screen and determin the scaling factors
-    switch (this->skin->getRotation())
+    tft.setRotation(this->rotation);
+    switch (this->rotation)
     {
     case Skin::ROTATE::SD_UP:
         touch_calibrate(CALIBRATION_FILE_UP);
@@ -208,14 +205,14 @@ void LCD::touch_calibrate(const char *calibrationFile)
 
 /** The first time we call GetInstance we will lock the storage location
  *  and then we make sure again that the variable is null and then we
- *  set the name and skin. */
-LCD *LCD::Initialize(const char *name, Skin *skin)
+ *  set the name and rotation. */
+LCD *LCD::Initialize(const char *name, uint8_t rotation)
 {
     std::lock_guard<std::mutex> lock(mutex_);
     if (thisLCD == nullptr)
     {
         TBA_FileSystem fileSystem = TBA_FileSystem(); // init SPIFFS & SD
-        thisLCD = new LCD(name, skin);
+        thisLCD = new LCD(name, rotation);
         thisLCD->touch_calibrate_setup();
     }
     return thisLCD;
@@ -251,15 +248,10 @@ Point *LCD::getScreenTouchPoint(boolean &pressed)
     // return point;
 }
 
-    const char *LCD::getName()
-    {
-        return this->name;
-    }
-
-    Skin *LCD::getSkin()
-    {
-        return this->skin;
-    }
+const char *LCD::getName()
+{
+    return this->name;
+}
 
 void LCD::debugSerial(const char *debugLocation)
 {
