@@ -56,13 +56,13 @@ public:
         case ControlButton::STATE::UP:
         case ControlButton::STATE::ROLLOFF:
         case ControlButton::STATE::RELEASED:
-            fileTextColor = getLCD()->getSkin()->fileBorderColor;
+            fileTextColor = skin->fileBorderColor;
             break;
         case ControlButton::STATE::SHORT:
-            fileTextColor = getLCD()->getSkin()->fileShortColor;
+            fileTextColor = skin->fileShortColor;
             break;
         case ControlButton::STATE::LONG:
-            fileTextColor = getLCD()->getSkin()->fileLongColor;
+            fileTextColor = skin->fileLongColor;
             break;
         default:
             fileTextColor = Skin::rgb888torgb565(0xFF0000);
@@ -83,13 +83,13 @@ public:
         case ControlButton::STATE::UP:
         case ControlButton::STATE::ROLLOFF:
         case ControlButton::STATE::RELEASED:
-            fileTextColor = getLCD()->getSkin()->fileTextColor;
+            fileTextColor = skin->fileTextColor;
             break;
         case ControlButton::STATE::SHORT:
-            fileTextColor = getLCD()->getSkin()->fileShortColor;
+            fileTextColor = skin->fileShortColor;
             break;
         case ControlButton::STATE::LONG:
-            fileTextColor = getLCD()->getSkin()->fileLongColor;
+            fileTextColor = skin->fileLongColor;
             break;
         default:
             fileTextColor = Skin::rgb888torgb565(0xFF0000);
@@ -108,11 +108,11 @@ public:
         if (!drawButtonIcon())
         {
             // Draw Name
-            tft.setTextSize(getLCD()->getSkin()->textFontSize);
-            tft.setTextColor(getFileStateColor(), getLCD()->getSkin()->fileBackColor, true);
+            tft.setTextSize(skin->textFontSize);
+            tft.setTextColor(getFileStateColor(), skin->fileBackColor, true);
             tft.setTextDatum(TL_DATUM);
 
-            //(strlen(currentPage->getName()) * getLCD()->getSkin()->getFontWidth() * getLCD()->getSkin()->headerFontTextSize) / 2;
+            //(strlen(currentPage->getName()) * skin->getFontWidth() * skin->headerFontTextSize) / 2;
             uint8_t end = strlen(this->getName());
             uint8_t numChar = this->dimensions->getXW() / (6 * 2) - 1;
 
@@ -133,7 +133,7 @@ public:
 
         tft.drawRoundRect(this->dimensions->getX() - 1, this->dimensions->getY() + 1,
                           this->dimensions->getW(), this->dimensions->getH(),
-                          getLCD()->getSkin()->buttonRadius,
+                          skin->buttonRadius,
                           getFileStateBoarderColor());
     }
     //=============================================================================================================

@@ -32,21 +32,20 @@ void setup()
   Serial.println(TAG);
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
 
-  Skin *skin = new Skin(); /* Using TBA default skin */
-
-  Menu::getInstance()->Initialize(skin, "ILI9341", PageMain::NAME);
+  /* Using TBA default skin */
+  Menu::getInstance()->Initialize(new Skin(), "ILI9341", PageMain::NAME);
 
   // Create the menu page
-  Menu::getInstance()->addPage(new PageMain(3,4,skin));
+  Menu::getInstance()->addPage(new PageMain(3,4));
 
   // Create the 3x3 map page
-  Menu::getInstance()->addPage(new PageMap(PageMain::BUTTON3X3, 3, 3, skin));
+  Menu::getInstance()->addPage(new PageMap(PageMain::BUTTON3X3, 3, 3));
 
   // Create the 4x4 map page
-  Menu::getInstance()->addPage(new PageMap(PageMain::BUTTON4X4, 4, 4, skin));
+  Menu::getInstance()->addPage(new PageMap(PageMain::BUTTON4X4, 4, 4));
 
   // Create the 4x8 map page
-  Menu::getInstance()->addPage(new PageMap(PageMain::BUTTON4X8, 4, 8, skin));
+  Menu::getInstance()->addPage(new PageMap(PageMain::BUTTON4X8, 4, 8));
 }
 
 void loop()

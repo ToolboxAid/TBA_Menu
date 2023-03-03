@@ -30,16 +30,16 @@ public:
 
     void draw()
     {
-        tft.setTextSize(getLCD()->getSkin()->textFontSize);
+        tft.setTextSize(skin->textFontSize);
         tft.setTextDatum(TL_DATUM);
 
         if (this->drawBackgroundColor)
         {
-            tft.setTextColor(getLCD()->getSkin()->textColor, getLCD()->getSkin()->textBackgroundColor);
+            tft.setTextColor(skin->textColor, skin->textBackgroundColor);
         }
         else
         {
-            tft.setTextColor(getLCD()->getSkin()->textColor);
+            tft.setTextColor(skin->textColor);
         }
         tft.setCursor(this->point->getX(), this->point->getY());
         tft.print(this->getName());

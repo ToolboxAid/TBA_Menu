@@ -13,6 +13,8 @@
 
 #include "pages/PageMain.h"
 
+#include "ControlBase.h"
+
 void setup()
 { // Use serial port
   Serial.begin(115200);
@@ -31,7 +33,7 @@ void setup()
   Skin *skin = new Skin(); /* Using TBA default skin */
 
  /*override TBA default skin
-  skin = new Skin( name,  rotate,
+   skin = new Skin( name,  rotate,
          screenWidth,  screenHeight,
          headerHeight,  headerFontTextSize,  headerTextColor,  headerBackGroundColor,
          buttonTextColor,  buttonColor,  buttonShortColor,  buttonLongColor,  buttonBorderColor

@@ -29,7 +29,7 @@ private:
 protected:
 public:
   
-  PageOK(Skin *skin) : ControlPage(PageOK::NAME, 0, true, true, 0, NULL, NULL)
+  PageOK() : ControlPage(PageOK::NAME, 0, true, true, 0, NULL, NULL)
   {
     Dimensions *dimensions;
 

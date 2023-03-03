@@ -31,9 +31,8 @@ void setup()
   Serial.println(TAG);
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
 
-  Skin *skin = new Skin(); /* Using TBA default skin */
-
-  Menu::getInstance()->Initialize(skin, "ILI9341");
+  /* Using TBA default skin */
+  Menu::getInstance()->Initialize(new Skin(), "ILI9341");
 
   // Create the menu page
   Menu::getInstance()->addPage(new PageMain());
