@@ -99,21 +99,6 @@ public:
     return rgb;
   }
 
-  // This could go in the Button class?
-  Dimensions *getMapDimensions(uint8_t buttonsAcross, uint8_t buttonsDown, uint8_t buttonAcross, uint8_t buttonDown)
-  {
-    uint16_t width = (this->screenWidth - (this->buttonMargin * (buttonsAcross + 1)));
-    uint16_t buttonWidth = width / buttonsAcross;
-    uint16_t left = (buttonAcross * this->buttonMargin) + ((buttonAcross - 1) * buttonWidth);
-
-    uint16_t height = (this->screenHeight - (this->buttonMargin * (buttonsDown + 1)));
-    uint16_t buttonHeight = height / buttonsDown;
-    uint16_t top = (buttonDown * this->buttonMargin) + ((buttonDown - 1) * buttonHeight);
-
-    Dimensions *dimension = new Dimensions(left, top, buttonWidth, buttonHeight);
-    return dimension;
-  }
-
   Skin()
   { // This skin is the default for TBA Menu
     // Purple    Orange  other   other
@@ -254,6 +239,21 @@ public:
   uint8_t getFontHeight()
   {
     return this->fontHeight;
+  }
+
+  // This could go in the Button class?
+  Dimensions *getMapDimensions(uint8_t buttonsAcross, uint8_t buttonsDown, uint8_t buttonAcross, uint8_t buttonDown)
+  {
+    uint16_t width = (this->screenWidth - (this->buttonMargin * (buttonsAcross + 1)));
+    uint16_t buttonWidth = width / buttonsAcross;
+    uint16_t left = (buttonAcross * this->buttonMargin) + ((buttonAcross - 1) * buttonWidth);
+
+    uint16_t height = (this->screenHeight - (this->buttonMargin * (buttonsDown + 1)));
+    uint16_t buttonHeight = height / buttonsDown;
+    uint16_t top = (buttonDown * this->buttonMargin) + ((buttonDown - 1) * buttonHeight);
+
+    Dimensions *dimension = new Dimensions(left, top, buttonWidth, buttonHeight);
+    return dimension;
   }
 
   void debugSerial(const char *debugLocation)
