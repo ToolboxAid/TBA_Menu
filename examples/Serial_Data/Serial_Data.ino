@@ -50,10 +50,10 @@ void setup()
   Menu::getInstance()->Initialize(skin, "ILI9341", PageData::NAME);
 
   // Create the data page
-  Menu::getInstance()->addPage(new PageData(skin));
+  Menu::getInstance()->addPage(new PageData());
 
   // Create the OK page
-  Menu::getInstance()->addPage(new PageOK(skin));
+  Menu::getInstance()->addPage(new PageOK());
 }
 
 uint16_t serialOffset = 0;

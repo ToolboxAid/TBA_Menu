@@ -25,7 +25,7 @@ private:
 
 protected:
 public:
-  PageFileSelectControlWithHeader(Skin *skin) : PageFileSelectControl(NAME, 250, PageMain::NAME, skin, "/", true)
+  PageFileSelectControlWithHeader() : PageFileSelectControl(NAME, 250, PageMain::NAME, "/", true)
   {
   }
 

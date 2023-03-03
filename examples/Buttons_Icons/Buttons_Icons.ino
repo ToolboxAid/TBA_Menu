@@ -29,15 +29,14 @@ void setup()
   Serial.println(TAG);
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
 
-  Skin *skin = new Skin(); /* Using TBA default skin */
-
-  Menu::getInstance()->Initialize(skin, "ILI9341", PageMain::NAME);
+  /* Using TBA default skin */
+  Menu::getInstance()->Initialize(NULL, "ILI9341", PageMain::NAME);
 
   // Create the main page
   Menu::getInstance()->addPage(new PageMain());
 
   // Create the 2x2 map page
-  Menu::getInstance()->addPage(new PageIcons(2, 2, skin));
+  Menu::getInstance()->addPage(new PageIcons(2, 2));
 }
 
 void loop()

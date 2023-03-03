@@ -48,7 +48,7 @@ public:
   uint8_t pageSize;       // # files per page
   uint8_t filesLoadedCnt; // # files in directory
 
-  PageFileSelectControl(const char *name, uint8_t backPageDelay, const char *backPage, Skin *skin, const char *parentDirectory, boolean displayHeader = false)
+  PageFileSelectControl(const char *name, uint8_t backPageDelay, const char *backPage, const char *parentDirectory, boolean displayHeader = false)
       : ControlPage(name, 0, displayHeader, true, backPageDelay, backPage, NULL)
   {
     while (!backPage)

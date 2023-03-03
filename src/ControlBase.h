@@ -33,7 +33,6 @@ public:
     }
 
     static void setSkin(Skin *skin_);
-    static Skin *getMySkin();
 
     virtual void draw()
     {
@@ -70,13 +69,6 @@ Skin *ControlBase::skin;
 void ControlBase::setSkin(Skin *skin_)
 {
     skin = skin_;
-}
-
-Skin* ControlBase::getMySkin()
-{
-    if (!skin)
-        skin = new Skin();
-    return skin;
 }
 
 #endif

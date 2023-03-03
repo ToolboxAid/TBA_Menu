@@ -39,21 +39,19 @@ void setup()
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
 
   /* Using TBA default skin */
-  Skin *skin = new Skin(); 
-
-  Menu::getInstance()->Initialize(skin, "ILI9341", PageMain::NAME);
+  Menu::getInstance()->Initialize(new Skin(), "ILI9341", PageMain::NAME);
 
   // Create the Main page
   Menu::getInstance()->addPage(new PageMain());
 
   // Create the File page w/ header
-  Menu::getInstance()->addPage(new PageFileSelectControlWithHeader(skin));
+  Menu::getInstance()->addPage(new PageFileSelectControlWithHeader());
 
   // // Create the File page w/o header
-  Menu::getInstance()->addPage(new PageFileSelectControlWithOutHeader(skin));
+  Menu::getInstance()->addPage(new PageFileSelectControlWithOutHeader());
 
   // Create the OK page
-  Menu::getInstance()->addPage(new PageOK(skin));
+  Menu::getInstance()->addPage(new PageOK());
 
   // Show memory differences
   supportFunction.memoryInfo();

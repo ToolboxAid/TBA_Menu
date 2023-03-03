@@ -40,7 +40,7 @@ void setup()
          buttonMargin,  buttonBorderWidth,  buttonPadding,  buttonRadius,
          textFontSize,  textColor,  textBackgroundColor); */
 
-  Menu::getInstance()->Initialize(skin, "ILI9341");// TODO: remove skin
+  Menu::getInstance()->Initialize(skin, "ILI9341");
 
   // Create the page main
   PageMain *pageMain = new PageMain();

@@ -110,6 +110,9 @@ Menu *Menu::thisMenu = NULL;
 
 void Menu::Initialize(Skin *skin, const char *lcdName = "ILI9341", const char *frontPage = "Main")
 {
+  if (!skin)
+    skin = new Skin(); // Use default skin
+
   // Init LCD & control
   LCD::Initialize(lcdName, skin->getRotate());
   ControlBase::setSkin(skin);

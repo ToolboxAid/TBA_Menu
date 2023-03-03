@@ -25,7 +25,7 @@ private:
 
 protected:
 public:
-  PageFileSelectControlWithOutHeader(Skin *skin) : PageFileSelectControl(NAME, 250, PageMain::NAME, skin, "/gcode")
+  PageFileSelectControlWithOutHeader() : PageFileSelectControl(NAME, 250, PageMain::NAME, "/gcode")
   {
   }
 
