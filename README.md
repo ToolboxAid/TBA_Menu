@@ -47,9 +47,9 @@ In settings.json add "C_Cpp.intelliSenseEngine" to "Tag Parser", don't forget th
 Modify => C:\Users\<user>\Documents\Arduino\libraries\TFT_eSPI\User_Setup_Select.h
 Line ::: Action     ::: Info
 ```
-  30 ::: comment    ::: // #include <User_Setup.h>           // Default setup is root library folder
-  79 ::: un-comment ::: #include <User_Setups/Setup42_ILI9341_ESP32.h>           // Setup file for ESP32 and SPI ILI9341 240x320
-  80 ::: add        ::: #define TOUCH_CS 21     // Chip select pin (T_CS) of touch screen
+  30 ::: comment    ::: // #include <User_Setup.h>                      // Default setup is root library folder
+  79 ::: un-comment ::: #include <User_Setups/Setup42_ILI9341_ESP32.h>  // Setup file for ESP32 and SPI ILI9341 240x320
+  80 ::: add        ::: #define TOUCH_CS 21                             // Chip select pin (T_CS) of touch screen
 ```
 
 ### VSPI (the pins I am using.)
@@ -59,7 +59,7 @@ Line ::: Action     ::: Info
 * #define TFT_CS   15  // Chip select control pin
 * #define TFT_DC    2  // Data Command control pin
 * #define TFT_RST   4  // Reset pin (could connect to RST pin)
-* `#444444` //#define TFT_RST  -1// Set TFT_RST to -1 if display RESET is connected to ESP32 board RST
+* [#444444] //#define TFT_RST  -1// Set TFT_RST to -1 if display RESET is connected to ESP32 board RST [#FFFFFF]
 * #define TOUCH_CS 21     // Chip select pin (T_CS) of touch screen
 
 ### HSPI (Not Tested)
