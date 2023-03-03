@@ -12,13 +12,32 @@
 
 class Skin
 {
+public:
+  /* The rotation parameter can be 0, 1, 2 or 3. (Based on SD location)
+  NOTE: If you change the rotation, you need to re-calibrate
+  Rotation value 0 sets the display to a portrait (tall) mode
+  Rotation 1 is landscape (wide) mode
+  Rotation value 2 is also a portrait mode
+  While rotation 3 is also landscape mode  */
+  enum ROTATE
+  { // Do not change order.
+    SD_UP = 0,
+    SD_LEFT,
+    SD_DOWN,
+    SD_RIGHT,
+    Reverse0,
+    Reverse1,
+    Reverse2,
+    Reverse3
+  };
+
 private:
 
 protected:
 public:
    uint16_t screenWidth;
   uint16_t screenHeight;
-  uint8_t rotate;
+  Skin::ROTATE rotate;
 
   uint8_t fontWidth;
   uint8_t fontHeight;
@@ -61,24 +80,6 @@ public:
   uint16_t rectangleBackColor;
   uint16_t rectangleBorderColor;
   uint8_t rectangleRadius = 0;
-
-  /* The rotation parameter can be 0, 1, 2 or 3. (Based on SD location)
-  NOTE: If you change the rotation, you need to re-calibrate
-  Rotation value 0 sets the display to a portrait (tall) mode
-  Rotation 1 is landscape (wide) mode
-  Rotation value 2 is also a portrait mode
-  While rotation 3 is also landscape mode  */
-  enum ROTATE
-  { // Do not change order.
-    SD_UP = 0,
-    SD_LEFT,
-    SD_DOWN,
-    SD_RIGHT,
-    Reverse0,
-    Reverse1,
-    Reverse2,
-    Reverse3
-  };
 
   static uint16_t rgb888torgb565(u_int32_t color)
   {
@@ -176,7 +177,7 @@ public:
     this->textBackgroundColor = TBA_ORANGE;
   }
 
-  Skin(const char *name, uint8_t rotate,
+  Skin(const char *name, Skin::ROTATE rotate,
        uint16_t screenWidth, uint16_t screenHeight,
        uint8_t headerHeight, uint8_t headerFontTextSize, uint16_t headerTextColor, uint16_t headerBackGroundColor, 
        uint16_t buttonTextColor, uint16_t buttonColor, uint16_t buttonShortColor, uint16_t buttonLongColor, uint16_t buttonBorderColor,
@@ -187,15 +188,6 @@ public:
 
     this->name = name;
 
-    // Set the rotation before we calibrate
-    if (rotate < 0 || rotate > 7) // if not 0-7, loop forever
-    {
-      while (true) // the forever loop
-      {
-        Serial.println("Valid values are: 0, 1, 2, 3, & REVs...");
-        delay(1000);
-      }
-    }
     this->rotate = rotate;
 
     this->screenWidth = screenWidth;
@@ -234,7 +226,7 @@ public:
     this->textBackgroundColor = textBackgroundColor;
   }
 
-  uint8_t getRotation()
+  Skin::ROTATE getRotate()
   {
     return this->rotate;
   }

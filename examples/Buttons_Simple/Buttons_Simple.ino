@@ -31,9 +31,6 @@ void setup()
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
 
   Skin *skin = new Skin(); /* Using TBA default skin */
-  ControlBase::setMySkin(skin);
-//TODO:: ---------------------------
- skin = ControlBase::getMySkin();
 
  /*override TBA default skin
    skin = new Skin( name,  rotate,

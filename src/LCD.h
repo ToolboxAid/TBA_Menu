@@ -21,8 +21,6 @@
 
 #include "Point.h"
 
-// #include "ControlBase.h"
-
 /* Set REPEAT_CAL to true instead of false to run calibration
    again, otherwise it will only be done once.
    Repeat calibration if you change the screen rotation.
@@ -46,7 +44,7 @@ private:
     static std::mutex mutex_;
 
     const char *name;
-    uint8_t rotation;
+    Skin::ROTATE rotate;
 
     /* This is the file name used to store the calibration data
        You can change this to create new calibration files.
@@ -65,10 +63,10 @@ private:
     void touch_calibrate(const char *calibrationFile);
 
 protected:
-    LCD(const char *name, uint8_t rotation) : name(name), rotation(rotation)
+    LCD(const char *name, Skin::ROTATE rotate) : name(name), rotate(rotate)
     {
         // this->name = name;
-        // this->rotation = rotation;
+        // this->rotate = rotate;
     }
     ~LCD() {}
 
@@ -84,7 +82,7 @@ public:
      *  object stored in the static field.
      *  You must Initialize prior to GetInstance (will display error if out of order)
      *  */
-    static LCD *Initialize(const char *name, uint8_t rotation);
+    static LCD *Initialize(const char *name, Skin::ROTATE rotate);
     static LCD *GetInstance();
 
     /** Other static methods should be defined outside the class. */
@@ -107,8 +105,8 @@ void LCD::touch_calibrate_setup()
     // Initialise the TFT screen
     tft.init();
 
-    tft.setRotation(this->rotation);
-    switch (this->rotation)
+    tft.setRotation(this->rotate);
+    switch (this->rotate)
     {
     case Skin::ROTATE::SD_UP:
         touch_calibrate(CALIBRATION_FILE_UP);
@@ -205,14 +203,14 @@ void LCD::touch_calibrate(const char *calibrationFile)
 
 /** The first time we call GetInstance we will lock the storage location
  *  and then we make sure again that the variable is null and then we
- *  set the name and rotation. */
-LCD *LCD::Initialize(const char *name, uint8_t rotation)
+ *  set the name and rotate. */
+LCD *LCD::Initialize(const char *name, Skin::ROTATE rotate)
 {
     std::lock_guard<std::mutex> lock(mutex_);
     if (thisLCD == nullptr)
     {
         TBA_FileSystem fileSystem = TBA_FileSystem(); // init SPIFFS & SD
-        thisLCD = new LCD(name, rotation);
+        thisLCD = new LCD(name, rotate);
         thisLCD->touch_calibrate_setup();
     }
     return thisLCD;

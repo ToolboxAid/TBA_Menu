@@ -32,6 +32,7 @@ SSD1963_800, SSD1963_800ALT, ILI9225, GC9A01.
 
 #include "ElementBase.h"
 
+#include "ControlBase.h"
 #include "ControlPage.h"
 #include "ElementArg.h"
 #include "ControlButton.h"
@@ -109,9 +110,9 @@ Menu *Menu::thisMenu = NULL;
 
 void Menu::Initialize(Skin *skin, const char *lcdName = "ILI9341", const char *frontPage = "Main")
 {
-  // Init LCD
-  LCD::Initialize(lcdName, skin->getRotation());
-  //TODO: load skin to ControlBase
+  // Init LCD & control
+  LCD::Initialize(lcdName, skin->getRotate());
+  ControlBase::setSkin(skin);
 
   // Add TBA Page & Set to current
   PageTBA *tbaPage = new PageTBA(frontPage);

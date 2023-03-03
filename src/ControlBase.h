@@ -23,9 +23,6 @@ protected:
 public:
     ControlBase(const char *name) : ElementBase(name) //----->call base class
     {
-        // this->value = (char *)malloc(strlen(value) + 1);
-        // memcpy(this->value, value, strlen(value) + 1);
-        // this->value = (char *)this->value;
         lcd = LCD::GetInstance();
     }
 
@@ -35,7 +32,7 @@ public:
         //     free(this->value);
     }
 
-    static void setMySkin(Skin *skin_);
+    static void setSkin(Skin *skin_);
     static Skin *getMySkin();
 
     virtual void draw()
@@ -70,7 +67,7 @@ public:
 
 Skin *ControlBase::skin;
 
-void ControlBase::setMySkin(Skin *skin_)
+void ControlBase::setSkin(Skin *skin_)
 {
     skin = skin_;
 }
