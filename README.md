@@ -52,21 +52,35 @@ Line ::: Action     ::: Info
   80 ::: add        ::: #define TOUCH_CS 21                             // Chip select pin (T_CS) of touch screen
 ```
 
+
+```diff
+- This is a red colored line
++ This is a green colored line
+@@ This is a purple colored line @@
+```
+
 ### VSPI (the pins I am using.)
-* #define TFT_MISO 19
-* #define TFT_MOSI 23
-* #define TFT_SCLK 18
-* #define TFT_CS   15  // Chip select control pin
-* #define TFT_DC    2  // Data Command control pin
-* #define TFT_RST   4  // Reset pin (could connect to RST pin)
-* [#444444] //#define TFT_RST  -1// Set TFT_RST to -1 if display RESET is connected to ESP32 board RST [#FFFFFF]
-* #define TOUCH_CS 21     // Chip select pin (T_CS) of touch screen
+```diff
+  #define TFT_MISO 19
+  #define TFT_MOSI 23
+  #define TFT_SCLK 18
+  #define TFT_CS   15  // Chip select control pin
+  #define TFT_DC    2  // Data Command control pin
+  #define TFT_RST   4  // Reset pin (could connect to RST pin)
+- #define TFT_RST  -1  // Set TFT_RST to -1 if display RESET is connected to ESP32 board RST
+  #define TOUCH_CS 21  // Chip select pin (T_CS) of touch screen
+```
 
 ### HSPI (Not Tested)
-* #define SD_SCK  14
-* #define SD_MISO  27
-* #define SD_MOSI  13
-* #define SD_CS  15
+```diff
+  #define SD_SCK   14
+  #define SD_MISO  27
+  #define SD_MOSI  13
+  #define SD_CS    15
+```
 
 ### SPIClass spi = SPIClass(VSPI);
+```
 spi.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
+```
+
