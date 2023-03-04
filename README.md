@@ -3,9 +3,9 @@
 ## This is a library for the Adafruit ILI9341 display products
 
 ### Other than ILI9431, the library also supports:
-|           |             |             |             |               |
-| --------- | ----------- | ----------- | ----------- | ------------  |
-| ILI9341_2 | ST7735      | ILI9163     | S6D02A1     | RPI_ILI9486   |
+|           |             |             |             |                |
+| --------- | ----------- | ----------- | ----------- | -------------- |
+| ILI9341_2 | ST7735      | ILI9163     | S6D02A1     | RPI_ILI9486    |
 | S6D02A1   | RPI_ILI9486 | HX8357D     | ILI9481     | ILI9488        |
 | ILI9488   | ST7789      | ST7789_2    | R61581      | RM68140        |
 | ST7796    | SSD1351     | SSD1963_480 | SSD1963_800 | SSD1963_800ALT |
