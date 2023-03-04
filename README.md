@@ -52,13 +52,6 @@ Line ::: Action     ::: Info
   80 ::: add        ::: #define TOUCH_CS 21                             // Chip select pin (T_CS) of touch screen
 ```
 
-
-```diff
-- This is a red colored line
-+ This is a green colored line
-@@ This is a purple colored line @@
-```
-
 ### VSPI (the pins I am using.)
 ```diff
   #define TFT_MISO 19
@@ -83,4 +76,3 @@ Line ::: Action     ::: Info
 ```
 spi.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
 ```
-
