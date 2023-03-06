@@ -1,10 +1,9 @@
+# Arduino ESP32 Library for ILI9341
+
 ![This is an image](./assets/ToolboxAid.png)
 
-# Arduino ESP32 Library for ILI9341  
+## Other than ILI9431, the library should also supports (not tested)
 
-## This is a library for the ILI9341 display
-
-### Other than ILI9431, the library should also supports (not tested):
 |           |             |             |             |                |
 | --------- | ----------- | ----------- | ----------- | -------------- |
 | ILI9341_2 | ST7735      | ILI9163     | S6D02A1     | RPI_ILI9486    |
@@ -13,21 +12,25 @@
 | ST7796    | SSD1351     | SSD1963_480 | SSD1963_800 | SSD1963_800ALT |
 | ILI9225   | GC9A01      |
 
-## Libraries required:
-- [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI/discussions/1721) vx.x.x Need link to TAG
-- [TBA_LinkListPlus](https://github.com/ToolboxAid/TBA_LinkListPlus) vx.x.x
-- [TBA_SupportFunction](https://github.com/ToolboxAid/TBA_SupportFunction) vx.x.x
-- [TBA_Macros](https://github.com/ToolboxAid/TBA_Macros) vx.x.x
-- [TBA_FileSystem](https://github.com/ToolboxAid/TBA_FileSystem) vx.x.x
+## Libraries required (tag links)
 
-## Configuration:
+- [TFT_eSPI v2.4.79](https://github.com/Bodmer/TFT_eSPI/releases/tag/v2.4.79)
+- [TBA_LinkListPlus v1.0.0](https://github.com/ToolboxAid/TBA_LinkListPlus/releases/tag/v1.0.0)
+- [TBA_SupportFunction v1.0.0](https://github.com/ToolboxAid/TBA_SupportFunction/releases/tag/v1.0.0)
+- [TBA_Macros v1.0.2](https://github.com/ToolboxAid/TBA_Macros/releases/tag/v1.0.2)
+- [TBA_FileSystem v1.0.0](https://github.com/ToolboxAid/TBA_FileSystem/releases/tag/v1.0.0)
+
+## Configuration
+
 In settings.json add "C_Cpp.intelliSenseEngine" to "Tag Parser", don't forget the comma
-```
+
+``` C++
  "C_Cpp.intelliSenseEngine": "Tag Parser"
 ```
 
 Modify C:\Users\<user>\Documents\Arduino\libraries\TFT_eSPI\User_Setup_Select.h
-```
+
+``` Config
 Line ::: Action     ::: Config code                                     ::: Description
   30 ::: comment    ::: // #include <User_Setup.h>                      ::: Default setup is root library folder
   79 ::: un-comment ::: #include <User_Setups/Setup42_ILI9341_ESP32.h>  ::: Setup file for ESP32 and SPI ILI9341 240x320
@@ -35,13 +38,15 @@ Line ::: Action     ::: Config code                                     ::: Desc
 ```
 
 ## Warning
+
 Some displays do NOT have a 5V to 3.3V regulator fitted, so in that case you must ONLY connect 3V3 (3.3 Volts) to the display.
 Check the display vendors web page and look for the power voltage needs.
 A display that accepts only 3.3V may be destroyed when connecting 5V. Most survive for a while due to voltage drops but operation will be unreliable and the display may overheat.
 
+## Wiring
 
-## Wiring:
 ### VSPI (the pins I am using)
+
 ```diff
   #define TFT_MISO 19
   #define TFT_MOSI 23
@@ -54,6 +59,7 @@ A display that accepts only 3.3V may be destroyed when connecting 5V. Most survi
 ```
 
 ### HSPI (Not Tested)
+
 ```diff
   #define SD_SCK   14
   #define SD_MISO  27
@@ -61,7 +67,8 @@ A display that accepts only 3.3V may be destroyed when connecting 5V. Most survi
   #define SD_CS    15
 ```
 
-### SPIClass spi = SPIClass(VSPI);
-```
+### SPIClass spi = SPIClass(VSPI)
+
+``` C++
 spi.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
 ```
