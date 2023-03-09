@@ -63,7 +63,20 @@ private:
     void touch_calibrate_setup();
     void touch_calibrate(const char *calibrationFile);
 
+    struct MyPixel
+    {
+        uint8_t r, g, b;
+    };
+
 protected:
+    enum SCREEN_CAPTURE_STATE
+    { // Do not change order.
+        ERROR = -1,
+        WAITING,
+        CAPTURE,
+        COPING
+    };
+
     LCD(const char *name, Skin::ROTATE rotate) : name(name), rotate(rotate)
     {
         // this->name = name;
@@ -100,10 +113,66 @@ public:
     void sdINIT();
 
     void debugSerial(const char *debugLocation);
+
+    MyPixel getMyPixel(int x, int y);
+    void writeBitmap(File &file, int w, int h);
 };
 
 LCD *LCD::thisLCD{nullptr};
 std::mutex LCD::mutex_;
+
+// Dummy example. Replace with your own logic.
+LCD::MyPixel LCD::getMyPixel(int x, int y)
+{
+    uint8_t color[3] = {0, 0, 0}; // RGB and 565 format color buffer for N pixels
+    tft.readRectRGB(x, y, 1, 1, color);
+    const MyPixel myPixel = {(uint16_t)color[0], (uint16_t)color[1], (uint16_t)color[2]};
+    return myPixel;
+}
+
+void LCD::writeBitmap(File &file, int w, int h)
+{
+    size_t rowSize = 4 * ((3 * w + 3) / 4); // padded to multiple of 4
+    size_t fileSize = 54 + h * rowSize;     // includes header
+
+    // Write image header.
+    uint8_t header[54] = {
+        // File header.
+        'B', 'M',
+        (uint8_t)(fileSize >> 0),
+        (uint8_t)(fileSize >> 8),
+        (uint8_t)(fileSize >> 16),
+        (uint8_t)(fileSize >> 24),
+        0, 0, 0, 0, 54, 0, 0, 0,
+
+        // Image info header.
+        40, 0, 0, 0,
+        (uint8_t)(w >> 0),
+        (uint8_t)(w >> 8),
+        (uint8_t)(w >> 16),
+        (uint8_t)(w >> 24),
+        (uint8_t)(h >> 0),
+        (uint8_t)(h >> 8),
+        (uint8_t)(h >> 16),
+        (uint8_t)(h >> 24),
+        1, 0, 24, 0};
+    file.write(header, sizeof header);
+
+    // Write image data.
+    uint8_t row[rowSize] = {0};
+    for (int y = 0; y < h; y++)
+    {
+        Serial.print(".");
+        for (int x = 0; x < w; x++)
+        {
+            MyPixel pix = getMyPixel(x, y);
+            row[3 * x + 0] = pix.b;
+            row[3 * x + 1] = pix.g;
+            row[3 * x + 2] = pix.r;
+        }
+        file.write(row, sizeof row);
+    }
+}
 
 void LCD::touch_calibrate_setup()
 {
@@ -234,6 +303,10 @@ LCD *LCD::Initialize(const char *name, Skin::ROTATE rotate)
     SD.remove("/PageOK.bmp");
     SD.remove("/Main.bmp");
 
+    // File bmpFile = SD.open("/new.bmp", FILE_WRITE);
+    // thisLCD->writeBitmap(bmpFile, 320, 240);
+    // bmpFile.flush();
+    // bmpFile.close();
 
     return thisLCD;
 }
@@ -424,107 +497,113 @@ void LCD::dumpFS(fs::FS &fs, const char *where, const char *dirname, uint8_t lev
 
 void LCD::saveImage(const char *filename)
 {
-//         //    SD.end();
-
-  if (!SPIFFS.begin(true))
-  {
-    Serial.println("An Error has occurred while mounting SPIFFS");
-    // check file system exists
-    if (!SPIFFS.begin())
-    {
-      Serial.println("Formating SPIFFS file system");
-      SPIFFS.format();
-      SPIFFS.begin();
-      if (!SPIFFS.begin(true))
-      {
-        Serial.println("Giving up");
-      }
-    }
-    return;
-  }
-
-    uint32_t filesize, offset;
-    uint16_t width = tft.width(), height = tft.height();
 
     File bmpFile = SPIFFS.open(filename, FILE_WRITE);
-    if (!bmpFile)
-    { /* oh the clock is slow*/
-        Serial.println("*** I'm stuck, SPIFFS not open ***");
-        Serial.println(filename);
-        Serial.println("*** I'm stuck, SPIFFS not open ***");
-        return;
-    }
-
-    // File header: 14 bytes
-    bmpFile.write('B');
-    bmpFile.write('M');
-    bmpFile.write((uint32_t)14 + 40 + 12 + width * height * 2); // File size in bytes
-    bmpFile.write((uint32_t)0);
-    bmpFile.write((uint32_t)14 + 40 + 12); // Offset to image data from start
-
-    // Image header: 40 bytes
-    bmpFile.write((uint32_t)40);     // Header size
-    bmpFile.write((uint32_t)width);  // Image width
-    bmpFile.write((uint32_t)height); // Image height
-    bmpFile.write((uint16_t)1);      // Planes
-    bmpFile.write((uint16_t)16);     // Bits per pixel
-    bmpFile.write((uint32_t)0);      // Compression (none)
-    bmpFile.write((uint32_t)0);      // Image size (0 for uncompressed)
-    bmpFile.write((uint32_t)0);      // Preferred X resolution (ignore)
-    bmpFile.write((uint32_t)0);      // Preferred Y resolution (ignore)
-    bmpFile.write((uint32_t)0);      // Colour map entries (ignore)
-    bmpFile.write((uint32_t)0);      // Important colours (ignore)
-
-    // Colour masks: 12 bytes
-    bmpFile.write((uint32_t)0b0000011111100000); // Green
-    bmpFile.write((uint32_t)0b1111100000000000); // Red
-    bmpFile.write((uint32_t)0b0000000000011111); // Blue
-    //
-    // Image data: width * height * 2 bytes
-
-    // uint8_t color[3 * NPIXELS]; // RGB and 565 format color buffer for N pixels
-    // uint8_t color[3 * 8]; // RGB and 565 format color buffer for N pixels
-
-    Serial.print("Width: '");
-    Serial.print(width);
-    Serial.print("'  Height: '");
-    Serial.print(height);
-    Serial.println("'");
-
-    uint64_t cnt = 0;
-    uint8_t color[3] = {0, 0, 0}; // RGB and 565 format color buffer for N pixels
-    for (int y = height - 1; y >= 0; y--)
-    {
-        for (int x = 0; x < width; x++)
-        {
-            // bmpFile.write((uint16_t)tft.getPix getPixel(x, y)); // Each row must be a multiple of four bytes
-            tft.readRectRGB(x, y, 1, 1, color);
-            //            bmpFile.write((uint16_t[])color);
-            bmpFile.write((uint16_t)color[0]);
-            bmpFile.write((uint16_t)color[1]);
-            bmpFile.write((uint16_t)color[2]);
-
-            if (++cnt >= width * 20)
-            {
-                cnt = 0;
-
-                Serial.print("R: ");
-                Serial.print(y);
-                Serial.print(" C: ");
-                Serial.print(color[0]);
-                Serial.print(", ");
-                Serial.print(color[1]);
-                Serial.print(", ");
-                Serial.print(color[2]);
-                Serial.println();
-            }
-        }
-    }
-    // flush and close file.
+    thisLCD->writeBitmap(bmpFile, 320, 240);
     bmpFile.flush();
     bmpFile.close();
 
-    Serial.println("lcd->saveScreen(end)");
+    // //         //    SD.end();
+
+    // if (!SPIFFS.begin(true))
+    // {
+    //     Serial.println("An Error has occurred while mounting SPIFFS");
+    //     // check file system exists
+    //     if (!SPIFFS.begin())
+    //     {
+    //         Serial.println("Formating SPIFFS file system");
+    //         SPIFFS.format();
+    //         SPIFFS.begin();
+    //         if (!SPIFFS.begin(true))
+    //         {
+    //             Serial.println("Giving up");
+    //         }
+    //     }
+    //     return;
+    // }
+
+    // uint32_t filesize, offset;
+    // uint16_t width = tft.width(), height = tft.height();
+
+    // File bmpFile = SPIFFS.open(filename, FILE_WRITE);
+    // if (!bmpFile)
+    // { /* oh the clock is slow*/
+    //     Serial.println("*** I'm stuck, SPIFFS not open ***");
+    //     Serial.println(filename);
+    //     Serial.println("*** I'm stuck, SPIFFS not open ***");
+    //     return;
+    // }
+
+    // // File header: 14 bytes
+    // bmpFile.write('B');
+    // bmpFile.write('M');
+    // bmpFile.write((uint32_t)14 + 40 + 12 + width * height * 2); // File size in bytes
+    // bmpFile.write((uint32_t)0);
+    // bmpFile.write((uint32_t)14 + 40 + 12); // Offset to image data from start
+
+    // // Image header: 40 bytes
+    // bmpFile.write((uint32_t)40);     // Header size
+    // bmpFile.write((uint32_t)width);  // Image width
+    // bmpFile.write((uint32_t)height); // Image height
+    // bmpFile.write((uint16_t)1);      // Planes
+    // bmpFile.write((uint16_t)16);     // Bits per pixel
+    // bmpFile.write((uint32_t)0);      // Compression (none)
+    // bmpFile.write((uint32_t)0);      // Image size (0 for uncompressed)
+    // bmpFile.write((uint32_t)0);      // Preferred X resolution (ignore)
+    // bmpFile.write((uint32_t)0);      // Preferred Y resolution (ignore)
+    // bmpFile.write((uint32_t)0);      // Colour map entries (ignore)
+    // bmpFile.write((uint32_t)0);      // Important colours (ignore)
+
+    // // Colour masks: 12 bytes
+    // bmpFile.write((uint32_t)0b0000011111100000); // Green
+    // bmpFile.write((uint32_t)0b1111100000000000); // Red
+    // bmpFile.write((uint32_t)0b0000000000011111); // Blue
+    // //
+    // // Image data: width * height * 2 bytes
+
+    // // uint8_t color[3 * NPIXELS]; // RGB and 565 format color buffer for N pixels
+    // // uint8_t color[3 * 8]; // RGB and 565 format color buffer for N pixels
+
+    // Serial.print("Width: '");
+    // Serial.print(width);
+    // Serial.print("'  Height: '");
+    // Serial.print(height);
+    // Serial.println("'");
+
+    // uint64_t cnt = 0;
+    // uint8_t color[3] = {0, 0, 0}; // RGB and 565 format color buffer for N pixels
+    // for (int y = height - 1; y >= 0; y--)
+    // {
+    //     for (int x = 0; x < width; x++)
+    //     {
+    //         // bmpFile.write((uint16_t)tft.getPix getPixel(x, y)); // Each row must be a multiple of four bytes
+    //         tft.readRectRGB(x, y, 1, 1, color);
+    //         //            bmpFile.write((uint16_t[])color);
+    //         bmpFile.write((uint16_t)color[0]);
+    //         bmpFile.write((uint16_t)color[1]);
+    //         bmpFile.write((uint16_t)color[2]);
+
+    //         if (++cnt >= width * 20)
+    //         {
+    //             cnt = 0;
+
+    //             Serial.print("R: ");
+    //             Serial.print(y);
+    //             Serial.print(" C: ");
+    //             Serial.print(color[0]);
+    //             Serial.print(", ");
+    //             Serial.print(color[1]);
+    //             Serial.print(", ");
+    //             Serial.print(color[2]);
+    //             Serial.println();
+    //         }
+    //     }
+    // }
+    // // flush and close file.
+    // bmpFile.flush();
+    // bmpFile.close();
+
+    // Serial.println("lcd->saveScreen(end)");
 }
 
 void LCD::screenImage(const char *filename)
@@ -545,16 +624,16 @@ void LCD::screenImage(const char *filename)
     }
 
     if (SD.exists(nameBuffer))
-    {  // already copied from SPIFFS to SD
+    { // already copied from SPIFFS to SD
         Serial.print(".");
     }
     else if (SPIFFS.exists(nameBuffer))
-    {  // copy from SPIFFS to SD
+    { // copy from SPIFFS to SD
         Serial.printf("Capture Image: '%s'\n", nameBuffer);
         copyFile(nameBuffer);
     }
     else
-    {  // Create the image on SPIFFS
+    { // Create the image on SPIFFS
         Serial.printf("Coping File: '%s'\n", nameBuffer);
         saveImage(nameBuffer);
     }

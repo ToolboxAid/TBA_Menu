@@ -60,6 +60,7 @@ private:
   uint16_t t_x = 0, t_y = 0;
   Point *point;
 
+  
 protected:
 public:
   static Menu *getInstance()
