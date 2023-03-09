@@ -116,6 +116,7 @@ public:
 
     MyPixel getMyPixel(int x, int y);
     void writeBitmap(File &file, int w, int h);
+    void removeBMP(fs::FS &fs);
 };
 
 LCD *LCD::thisLCD{nullptr};
@@ -278,6 +279,60 @@ void LCD::touch_calibrate(const char *calibrationFile)
     }
 }
 
+void LCD::removeBMP(fs::FS &fs)
+{
+    Serial.println("** Look for BMP **");
+
+    File root = fs.open("/");
+    if (!root)
+    {
+        Serial.print("** Failed to open directory to delete BMP ** '/'");
+        return;
+    }
+    File file = root.openNextFile();
+    while (file)
+    {
+        if (!file.isDirectory())
+        {
+            char *compName = (char *)file.name();
+            int fileName_len = strlen(compName);
+            compName = (char *)compName + fileName_len - 4;
+            if (fileName_len >= 4 && strcmp(compName, ".bmp") == 0)
+            {
+
+Serial.print("FILE: ");
+Serial.print(file.name());
+Serial.print("  SIZE: ");
+Serial.print(file.size());
+
+Serial.print(" fileName_len: ");
+Serial.print(fileName_len);
+Serial.print(" compName: ");
+Serial.print(compName);
+
+//char *deleteFile[strlen(file.name()) + 2];
+//snprintf_P(deleteFile, sizeof(deleteFile), PSTR("/%s"), file.name());
+
+char deleteFile[256];
+sprintf(deleteFile, "/%s", file.name());
+
+// memcpy ( ((char *)deleteFile + 1), file.name(), strlen(file.name()) + 2 );
+// deleteFile[0] = (char*)'/';
+
+Serial.print(" deleteFile: '");
+Serial.print((const char *)deleteFile);
+Serial.println("'");
+
+Serial.print(" *** *** Delete FILE");
+
+                fs.remove((const char *)deleteFile);
+            }
+        }
+        file = root.openNextFile();
+    }
+    root.close(); //???????????????????
+}
+
 /** The first time we call GetInstance we will lock the storage location
  *  and then we make sure again that the variable is null and then we
  *  set the name and rotate. */
@@ -291,22 +346,8 @@ LCD *LCD::Initialize(const char *name, Skin::ROTATE rotate)
         thisLCD->touch_calibrate_setup();
     }
 
-    SPIFFS.remove("/Toolbox_Aid.bmp");
-    SPIFFS.remove("/w__Header.bmp");
-    SPIFFS.remove("/w_o_Header.bmp");
-    SPIFFS.remove("/PageOK.bmp");
-    SPIFFS.remove("/Main.bmp");
-
-    SD.remove("/Toolbox_Aid.bmp");
-    SD.remove("/w__Header.bmp");
-    SD.remove("/w_o_Header.bmp");
-    SD.remove("/PageOK.bmp");
-    SD.remove("/Main.bmp");
-
-    // File bmpFile = SD.open("/new.bmp", FILE_WRITE);
-    // thisLCD->writeBitmap(bmpFile, 320, 240);
-    // bmpFile.flush();
-    // bmpFile.close();
+    thisLCD->removeBMP(SPIFFS);
+    thisLCD->removeBMP(SD);
 
     return thisLCD;
 }
@@ -368,11 +409,6 @@ Offset Size Decimal value (0-255)   Description
 
 void LCD::copyFile(const char *fileName)
 {
-    // sdINIT();
-
-    // dumpFS(SD, "SD copyFile", "/", 0);
-    // dumpFS(SPIFFS, "SPIFFS copyFile", "/", 0);
-
     File sourceFile = SPIFFS.open(fileName);
     File destFile = SD.open(fileName, FILE_WRITE);
     static uint8_t buf[bufSize];
@@ -493,6 +529,7 @@ void LCD::dumpFS(fs::FS &fs, const char *where, const char *dirname, uint8_t lev
         }
         file = root.openNextFile();
     }
+    file.close();//???????????????????
 }
 
 void LCD::saveImage(const char *filename)
@@ -502,108 +539,6 @@ void LCD::saveImage(const char *filename)
     thisLCD->writeBitmap(bmpFile, 320, 240);
     bmpFile.flush();
     bmpFile.close();
-
-    // //         //    SD.end();
-
-    // if (!SPIFFS.begin(true))
-    // {
-    //     Serial.println("An Error has occurred while mounting SPIFFS");
-    //     // check file system exists
-    //     if (!SPIFFS.begin())
-    //     {
-    //         Serial.println("Formating SPIFFS file system");
-    //         SPIFFS.format();
-    //         SPIFFS.begin();
-    //         if (!SPIFFS.begin(true))
-    //         {
-    //             Serial.println("Giving up");
-    //         }
-    //     }
-    //     return;
-    // }
-
-    // uint32_t filesize, offset;
-    // uint16_t width = tft.width(), height = tft.height();
-
-    // File bmpFile = SPIFFS.open(filename, FILE_WRITE);
-    // if (!bmpFile)
-    // { /* oh the clock is slow*/
-    //     Serial.println("*** I'm stuck, SPIFFS not open ***");
-    //     Serial.println(filename);
-    //     Serial.println("*** I'm stuck, SPIFFS not open ***");
-    //     return;
-    // }
-
-    // // File header: 14 bytes
-    // bmpFile.write('B');
-    // bmpFile.write('M');
-    // bmpFile.write((uint32_t)14 + 40 + 12 + width * height * 2); // File size in bytes
-    // bmpFile.write((uint32_t)0);
-    // bmpFile.write((uint32_t)14 + 40 + 12); // Offset to image data from start
-
-    // // Image header: 40 bytes
-    // bmpFile.write((uint32_t)40);     // Header size
-    // bmpFile.write((uint32_t)width);  // Image width
-    // bmpFile.write((uint32_t)height); // Image height
-    // bmpFile.write((uint16_t)1);      // Planes
-    // bmpFile.write((uint16_t)16);     // Bits per pixel
-    // bmpFile.write((uint32_t)0);      // Compression (none)
-    // bmpFile.write((uint32_t)0);      // Image size (0 for uncompressed)
-    // bmpFile.write((uint32_t)0);      // Preferred X resolution (ignore)
-    // bmpFile.write((uint32_t)0);      // Preferred Y resolution (ignore)
-    // bmpFile.write((uint32_t)0);      // Colour map entries (ignore)
-    // bmpFile.write((uint32_t)0);      // Important colours (ignore)
-
-    // // Colour masks: 12 bytes
-    // bmpFile.write((uint32_t)0b0000011111100000); // Green
-    // bmpFile.write((uint32_t)0b1111100000000000); // Red
-    // bmpFile.write((uint32_t)0b0000000000011111); // Blue
-    // //
-    // // Image data: width * height * 2 bytes
-
-    // // uint8_t color[3 * NPIXELS]; // RGB and 565 format color buffer for N pixels
-    // // uint8_t color[3 * 8]; // RGB and 565 format color buffer for N pixels
-
-    // Serial.print("Width: '");
-    // Serial.print(width);
-    // Serial.print("'  Height: '");
-    // Serial.print(height);
-    // Serial.println("'");
-
-    // uint64_t cnt = 0;
-    // uint8_t color[3] = {0, 0, 0}; // RGB and 565 format color buffer for N pixels
-    // for (int y = height - 1; y >= 0; y--)
-    // {
-    //     for (int x = 0; x < width; x++)
-    //     {
-    //         // bmpFile.write((uint16_t)tft.getPix getPixel(x, y)); // Each row must be a multiple of four bytes
-    //         tft.readRectRGB(x, y, 1, 1, color);
-    //         //            bmpFile.write((uint16_t[])color);
-    //         bmpFile.write((uint16_t)color[0]);
-    //         bmpFile.write((uint16_t)color[1]);
-    //         bmpFile.write((uint16_t)color[2]);
-
-    //         if (++cnt >= width * 20)
-    //         {
-    //             cnt = 0;
-
-    //             Serial.print("R: ");
-    //             Serial.print(y);
-    //             Serial.print(" C: ");
-    //             Serial.print(color[0]);
-    //             Serial.print(", ");
-    //             Serial.print(color[1]);
-    //             Serial.print(", ");
-    //             Serial.print(color[2]);
-    //             Serial.println();
-    //         }
-    //     }
-    // }
-    // // flush and close file.
-    // bmpFile.flush();
-    // bmpFile.close();
-
-    // Serial.println("lcd->saveScreen(end)");
 }
 
 void LCD::screenImage(const char *filename)
