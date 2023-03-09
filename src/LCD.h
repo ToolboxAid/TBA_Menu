@@ -161,7 +161,7 @@ void LCD::writeBitmap(File &file, int w, int h)
 
     // Write image data.
     uint8_t row[rowSize] = {0};
-    for (int y = 0; y < h; y++)
+    for (int y = h; y > 0; y--)
     {
         Serial.print(".");
         for (int x = 0; x < w; x++)
