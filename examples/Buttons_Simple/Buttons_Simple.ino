@@ -1,10 +1,6 @@
 
 #include "Arduino.h"
 
-#include <FS.h>
-#include <SD.h>
-#include "SPIFFS.h"
-
 #include "GlobalConst.h"
 
 #include "Skin.h"
@@ -26,19 +22,19 @@ void setup()
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
   Serial.println("ToolboxAid.com");
   Serial.println("Menu Test - Simple");
-  Serial.print  ("Tag: ");
+  Serial.print("Tag: ");
   Serial.println(TAG);
   Serial.println("- - - - - - - - - - - - - - - - - - - - -");
 
   Skin *skin = new Skin(); /* Using TBA default skin */
 
- /*override TBA default skin
-   skin = new Skin( name,  rotate,
-         screenWidth,  screenHeight,
-         headerHeight,  headerFontTextSize,  headerTextColor,  headerBackGroundColor,
-         buttonTextColor,  buttonColor,  buttonShortColor,  buttonLongColor,  buttonBorderColor
-         buttonMargin,  buttonBorderWidth,  buttonPadding,  buttonRadius,
-         textFontSize,  textColor,  textBackgroundColor); */
+  /*override TBA default skin
+    skin = new Skin( name,  rotate,
+          screenWidth,  screenHeight,
+          headerHeight,  headerFontTextSize,  headerTextColor,  headerBackGroundColor,
+          buttonTextColor,  buttonColor,  buttonShortColor,  buttonLongColor,  buttonBorderColor
+          buttonMargin,  buttonBorderWidth,  buttonPadding,  buttonRadius,
+          textFontSize,  textColor,  textBackgroundColor); */
 
   Menu::getInstance()->Initialize(skin, "ILI9341");
 

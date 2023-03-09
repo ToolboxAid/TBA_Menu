@@ -1,8 +1,8 @@
 {
-    "configuration": "PartitionScheme=huge_app,FlashMode=qio,FlashFreq=80,UploadSpeed=921600,DebugLevel=none,EraseFlash=none",
+    "configuration": "PartitionScheme=default,FlashMode=qio,FlashFreq=80,UploadSpeed=921600,DebugLevel=none,EraseFlash=none",
     "board": "esp32:esp32:esp32wrover",
     "programmer": "esp32:esptool",
     "port": "COM3",
-    "sketch": "examples\\Buttons_Simple\\Buttons_Simple.ino",
+    "sketch": "examples\\File_System\\File_System.ino",
     "output": "../Build"
 }

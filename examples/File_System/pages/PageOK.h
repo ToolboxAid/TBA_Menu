@@ -27,7 +27,7 @@ private:
 
 protected:
 public:
-    PageOK() : ControlPage(NAME, 0, false, false, 10, "Main",NULL)
+    PageOK() : ControlPage(NAME, 0, false, false, 30, "Main",NULL)
     {
         Dimensions *dimensions;
         ControlButton *button;

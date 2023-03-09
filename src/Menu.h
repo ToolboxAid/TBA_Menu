@@ -13,7 +13,6 @@
 
 /* The SPIFFS (FLASH file system) is used
    to hold touch screen calibration data
-#include "TBA_FileSystem.h"
 */
 
 #include "FS.h"
@@ -158,6 +157,11 @@ boolean Menu::hasPageChange()
 {
   if (this->newPage != this->currentPage)
   {
+    LCD *lcd = LCD::GetInstance();
+
+    lcd->dumpFS(SD, "SD menu.h", "/", 0);
+    lcd->dumpFS(SPIFFS, "SPIFFS menu.h", "/", 0);
+
     if (this->currentPage)
     {
       this->currentPage->exit();
@@ -165,7 +169,7 @@ boolean Menu::hasPageChange()
     this->currentPage = this->newPage;
     this->currentPage->load();
     this->currentPage->setInputs();
-// ------------------ TODO: remove this    this->traversMenuLists(); 
+    // ------------------ TODO: remove this    this->traversMenuLists();
 
     this->pageLoadTime = millis();
     this->clearArgs();
@@ -323,6 +327,7 @@ void Menu::checkMenuActions()
   else
   {
     this->currentPage->drawInputs();
+    lcd->screenImage(this->currentPage->getName());
   }
 
   delete point; // delete anything we use NEW on.
