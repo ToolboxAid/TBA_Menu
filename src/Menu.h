@@ -33,6 +33,7 @@
 #include "PageTBA.h"
 
 // #define DEBUG
+// #define SCREEN_CAPTURE
 
 /* This is a singleton class,
 only one instance will ever be created
@@ -60,6 +61,7 @@ private:
   uint16_t t_x = 0, t_y = 0;
   Point *point;
 
+  boolean captureInProgress = false;
 
 protected:
 public:
@@ -156,49 +158,51 @@ void Menu::traversMenuLists()
 
 boolean Menu::hasPageChange()
 {
-  if (this->newPage != this->currentPage)
-  {
-    LCD *lcd = LCD::GetInstance();
-
-    lcd->dumpFS(SD, "SD menu.h", "/", 0);
-    lcd->dumpFS(SPIFFS, "SPIFFS menu.h", "/", 0);
-
-    if (this->currentPage)
+  if (!captureInProgress)
+    if (this->newPage != this->currentPage)
     {
-      this->currentPage->exit();
-    }
-    this->currentPage = this->newPage;
-    this->currentPage->load();
-    this->currentPage->setInputs();
-    // ------------------ TODO: remove this    this->traversMenuLists();
+      LCD *lcd = LCD::GetInstance();
 
-    this->pageLoadTime = millis();
-    this->clearArgs();
-    this->currentPage->drawPage(this->currentPage->getSkin()->textBackgroundColor);//skin->textBackgroundColor
-    return true;
-  }
+      lcd->dumpFS(SD, "SD menu.h", "/", 0);
+      lcd->dumpFS(SPIFFS, "SPIFFS menu.h", "/", 0);
+
+      if (this->currentPage)
+      {
+        this->currentPage->exit();
+      }
+      this->currentPage = this->newPage;
+      this->currentPage->load();
+      this->currentPage->setInputs();
+      // ------------------ TODO: remove this    this->traversMenuLists();
+
+      this->pageLoadTime = millis();
+      this->clearArgs();
+      this->currentPage->drawPage(this->currentPage->getSkin()->textBackgroundColor); // skin->textBackgroundColor
+      return true;
+    }
   return false;
 }
 
 boolean Menu::hasPageBack()
 {
-  if (this->currentPage->hasBackPage())
-  {
-    if (millis() > (this->pageLoadTime + (this->currentPage->getBackPageDelay() * 1000)))
+  if (!captureInProgress)
+    if (this->currentPage->hasBackPage())
     {
-      ControlPage *findPage = (ControlPage *)this->pageListPlus->searchName(this->currentPage->getBackPage());
-      if (findPage)
+      if (millis() > (this->pageLoadTime + (this->currentPage->getBackPageDelay() * 1000)))
       {
-        this->newPage = findPage;
-        return true;
-      }
-      else
-      {
-        this->pageLoadTime = millis(); // set time to prevent spam
-        this->validPages("checkPageBack change not found: ", this->currentPage->getBackPage());
+        ControlPage *findPage = (ControlPage *)this->pageListPlus->searchName(this->currentPage->getBackPage());
+        if (findPage)
+        {
+          this->newPage = findPage;
+          return true;
+        }
+        else
+        {
+          this->pageLoadTime = millis(); // set time to prevent spam
+          this->validPages("checkPageBack change not found: ", this->currentPage->getBackPage());
+        }
       }
     }
-  }
   return false;
 }
 
@@ -319,9 +323,7 @@ void Menu::checkMenuActions()
   if (redrawPage)
   {
     traversMenuLists();
-    this->currentPage->drawPage(this->currentPage->getSkin()->textBackgroundColor);//skin->textBackgroundColor
-
-
+    this->currentPage->drawPage(this->currentPage->getSkin()->textBackgroundColor);
   }
   else if (this->currentPage->checkRefresh())
   {
@@ -330,7 +332,9 @@ void Menu::checkMenuActions()
   else
   {
     this->currentPage->drawInputs();
-    lcd->screenCapture(this->currentPage->getName(), this->currentPage->getSkin()->getScreenWidth(), this->currentPage->getSkin()->getScreenHeight());
+#ifdef SCREEN_CAPTURE
+    captureInProgress = lcd->screenCapture(this->currentPage->getName(), this->currentPage->getSkin()->getScreenWidth(), this->currentPage->getSkin()->getScreenHeight());
+#endif
   }
 
   delete point; // delete anything we use NEW on.

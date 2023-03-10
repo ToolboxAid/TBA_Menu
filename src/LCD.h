@@ -256,7 +256,8 @@ void LCD::removeBMP(fs::FS &fs)
         }
         file = root.openNextFile();
     }
-    root.close(); //???
+    file.close();
+    root.close();
 }
 
 /** The first time we call GetInstance we will lock the storage location
@@ -449,8 +450,8 @@ void LCD::dumpFS(fs::FS &fs, const char *where, const char *dirname, uint8_t lev
         }
         file = root.openNextFile();
     }
-    file.close(); //???
-    root.close(); //???
+    file.close();
+    root.close();
 }
 
 void LCD::createImage(char *filename, uint16_t width, uint16_t height)
@@ -514,6 +515,8 @@ boolean LCD::screenCapture(const char *filename, uint16_t width, uint16_t height
     sprintf(nameBuffer, "/%s.bmp", filename);
 
     // remove invalid chars (that I am using)
+    //The allowed characters are anything except 0x0-0x1F , '<' , '>' , ':' , '"' , '/' , '\' , and '|' 
+
     for (uint8_t i = 1; i < nameBuffer[i] != '\0'; i++)
     {
         if (nameBuffer[i] == ' ')
@@ -524,22 +527,23 @@ boolean LCD::screenCapture(const char *filename, uint16_t width, uint16_t height
 
     if (SD.exists(nameBuffer))
     { // exists on SD, we are done
-        return true;
+        return false;
     }
     else if (SPIFFS.exists(nameBuffer))
     { // copy from SPIFFS to SD
         Serial.printf("Copy Image: '%s'\n", nameBuffer);
         thisLCD->copyImage(nameBuffer);
-        thisLCD->removeBMP(SPIFFS);
-        Serial.println("Image capture complete");
+        Serial.println("Capture Image complete");
+        SPIFFS.remove(nameBuffer);
+        Serial.println("Delete SPIFFS Image complete");
         return true;
     }
     else
     { // Create the image on SPIFFS
         Serial.printf("Create Image: '%s'\n", nameBuffer);
         thisLCD->createImage(nameBuffer, width, height);
+        return true;
     }
-    return false;
 }
 
 void LCD::debugSerial(const char *debugLocation)
