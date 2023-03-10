@@ -21,13 +21,12 @@
 class PageOK : public ControlPage
 {
 private:
-    uint16_t labelID;
     inline static const char *NAME = "PageOK";
     inline static const char *LABEL1 = "File Selected:";
 
 protected:
 public:
-    PageOK() : ControlPage(NAME, 0, false, false, 10, "Main",NULL)
+    PageOK() : ControlPage(NAME, 0, false, false, 5, "Main",NULL)
     {
         Dimensions *dimensions;
         ControlButton *button;
@@ -57,7 +56,6 @@ public:
         ElementArg *argPath = Menu::getInstance()->searchArg("pathSelected");
         if (argPath)
         {
-            ControlLabel *label = new ControlLabel((const char *)argPath->getValue(), new Point(40, 90), false);
             argPath->debugSerial("argPath");
         }
         else
@@ -68,9 +66,8 @@ public:
         ElementArg *argFile = Menu::getInstance()->searchArg("fileSelected");
         if (argFile)
         {
-            ControlLabel *label = new ControlLabel((const char *)argFile->getValue(), new Point(40, 90), false);
+            ControlLabel *label = new ControlLabel("fileSelected", new Point(40, 90), false, (const char *)argFile->getValue());
             this->addLabel(label);
-            this->labelID = label->getIdentity();
             argFile->debugSerial("argFile");
         }
         else
@@ -81,10 +78,9 @@ public:
 
     void exit()
     {
-        if (!removeLabel(this->labelID))
+        if (!removeLabelName("fileSelected"))
         {
-            Serial.print("Did not delete labelID: ");
-            Serial.println(this->labelID);
+            Serial.print("Did not delete labelID: 'fileSelected'");
         }
     }
 };

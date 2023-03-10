@@ -21,9 +21,6 @@
 #include "ControlLabel.h"
 #include "ControlButton.h"
 
-#include "TBA_FileSystem.h"
-TBA_FileSystem fileSystem = TBA_FileSystem();
-
 #include "TBA_SupportFunction.h"
 TBA_SupportFunction supportFunction = TBA_SupportFunction();
 

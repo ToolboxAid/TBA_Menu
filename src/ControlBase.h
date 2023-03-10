@@ -33,6 +33,7 @@ public:
     }
 
     static void setSkin(Skin *skin_);
+    Skin *getSkin();
 
     virtual void draw()
     {
@@ -69,6 +70,10 @@ Skin *ControlBase::skin;
 void ControlBase::setSkin(Skin *skin_)
 {
     skin = skin_;
+}
+Skin *ControlBase::getSkin()
+{
+    return skin;
 }
 
 #endif

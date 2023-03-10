@@ -46,7 +46,7 @@ public:
 
   void load()
   {
-    supportFunction.memoryInfo();
+    supportFunction.memoryInfo(); 
   }
 };
 

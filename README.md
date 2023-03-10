@@ -28,7 +28,7 @@ In settings.json add "C_Cpp.intelliSenseEngine" to "Tag Parser", don't forget th
  "C_Cpp.intelliSenseEngine": "Tag Parser"
 ```
 
-Modify C:\Users\<user>\Documents\Arduino\libraries\TFT_eSPI\User_Setup_Select.h
+Modify C:/Users/{user}/Documents/Arduino/libraries/TFT_eSPI/User_Setup_Select.h
 
 ``` Config
 Line ::: Action     ::: Config code                                     ::: Description

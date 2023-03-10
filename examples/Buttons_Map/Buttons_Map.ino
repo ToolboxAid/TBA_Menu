@@ -1,10 +1,6 @@
 
 #include "Arduino.h"
 
-#include <FS.h>
-#include <SD.h>
-#include "SPIFFS.h"
-
 #include "GlobalConst.h"
 
 #include "Skin.h"
