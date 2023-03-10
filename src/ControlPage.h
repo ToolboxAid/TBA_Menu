@@ -24,8 +24,6 @@
 
 #include "TBA_Macros.h"
 
-//#include "LCD.h"
-
 // Required for ConvertString & ConvertChar
 // #include <iostream>
 #include <sstream>
@@ -90,11 +88,11 @@ public:
         this->buttonListPlus->setCurrentToHead();
   }
 
-  void clearScreen()
+  void clearScreen(uint16_t color)
   {
     if (this->clrScreen)
     { // Clear the screen
-      tft.fillScreen(skin->textBackgroundColor);
+      tft.fillScreen(color);
     }
   }
 
@@ -198,10 +196,10 @@ public:
     }
   }
   
-  void drawPage()
+  void drawPage(uint16_t color)
   {
     // Clear the screen if required
-    clearScreen();
+    clearScreen(color);
 
     this->controlHeader->draw();
 

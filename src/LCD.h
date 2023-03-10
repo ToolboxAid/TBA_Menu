@@ -64,14 +64,6 @@ private:
     void touch_calibrate(const char *calibrationFile);
 
 protected:
-    enum SCREEN_CAPTURE_STATE
-    { // Do not change order.
-        ERROR = -1,
-        WAITING,
-        CAPTURE,
-        COPING
-    };
-
     LCD(const char *name, Skin::ROTATE rotate) : name(name), rotate(rotate)
     {
         // this->name = name;
@@ -100,73 +92,20 @@ public:
 
     const char *getName();
 
-    void screenImage(const char *filename);
-    void saveImage(const char *filename);
+    boolean screenCapture(const char *filename, uint16_t width, uint16_t height);
+    void createImage(char *filename, uint16_t width, uint16_t height);
+    void copyImage(const char *filename);
 
     void dumpFS(fs::FS &fs, const char *where, const char *dirname, uint8_t levels);
-    void copyFile(const char *filename);
     void sdINIT();
 
     void debugSerial(const char *debugLocation);
 
-    void writeBitmap(File &file, int w, int h);
     void removeBMP(fs::FS &fs);
 };
 
 LCD *LCD::thisLCD{nullptr};
 std::mutex LCD::mutex_;
-
-void LCD::writeBitmap(File &file, int w, int h)
-{
-    size_t rowSize = 4 * ((3 * w + 3) / 4); // padded to multiple of 4
-    size_t fileSize = 54 + h * rowSize;     // includes header
-
-    // Write image header.
-    uint8_t header[54] = {
-        // File header.
-        'B', 'M',
-        (uint8_t)(fileSize >> 0),
-        (uint8_t)(fileSize >> 8),
-        (uint8_t)(fileSize >> 16),
-        (uint8_t)(fileSize >> 24),
-        0, 0, 0, 0, 54, 0, 0, 0,
-
-        // Image info header.
-        40, 0, 0, 0,
-        (uint8_t)(w >> 0),
-        (uint8_t)(w >> 8),
-        (uint8_t)(w >> 16),
-        (uint8_t)(w >> 24),
-        (uint8_t)(h >> 0),
-        (uint8_t)(h >> 8),
-        (uint8_t)(h >> 16),
-        (uint8_t)(h >> 24),
-        1, 0, 24, 0};
-    file.write(header, sizeof header);
-
-    // Write image data.
-    uint8_t row[rowSize] = {0};
-    uint8_t color[3] = {0, 0, 0}; // RGB and 565 format color buffer for N pixels
-    char deleteFile[256];
-char *per="%";
-    for (int y = h; y > 0; y--)
-    {
-        if (y % 24 == 0)
-        {
-            double percent = (1 - ((double)y / (double)h)) * 100;
-            sprintf(deleteFile, " %3.1f %s complete", percent,per);
-            Serial.println(deleteFile);
-        }
-        for (int x = 0; x < w; x++)
-        {
-            tft.readRectRGB(x, y, 1, 1, color);
-            row[3 * x + 0] = (uint16_t)color[2];
-            row[3 * x + 1] = (uint16_t)color[1];
-            row[3 * x + 2] = (uint16_t)color[0];
-        }
-        file.write(row, sizeof row);
-    }
-}
 
 void LCD::touch_calibrate_setup()
 {
@@ -303,14 +242,8 @@ void LCD::removeBMP(fs::FS &fs)
                 Serial.print(" compName: ");
                 Serial.print(compName);
 
-                // char *deleteFile[strlen(file.name()) + 2];
-                // snprintf_P(deleteFile, sizeof(deleteFile), PSTR("/%s"), file.name());
-
                 char deleteFile[256];
                 sprintf(deleteFile, "/%s", file.name());
-
-                // memcpy ( ((char *)deleteFile + 1), file.name(), strlen(file.name()) + 2 );
-                // deleteFile[0] = (char*)'/';
 
                 Serial.print(" deleteFile: '");
                 Serial.print((const char *)deleteFile);
@@ -323,7 +256,7 @@ void LCD::removeBMP(fs::FS &fs)
         }
         file = root.openNextFile();
     }
-    root.close(); //???????????????????
+    root.close(); //???
 }
 
 /** The first time we call GetInstance we will lock the storage location
@@ -400,7 +333,7 @@ Offset Size Decimal value (0-255)   Description
 46     4    0   0    0     0          number of colors in the palett
 */
 
-void LCD::copyFile(const char *fileName)
+void LCD::copyImage(const char *fileName)
 {
     File sourceFile = SPIFFS.open(fileName);
     File destFile = SD.open(fileName, FILE_WRITE);
@@ -408,19 +341,13 @@ void LCD::copyFile(const char *fileName)
     Serial.print("SPIFFS 2 SD -> progress: ");
     Serial.println(fileName);
 
-    boolean showDebug = false;
+    uint32_t fileSize = sourceFile.available();
+    uint32_t written = 0;
+    char percentBuffer[256];
+
     while (sourceFile.available() > 0)
     {
         int bytesAvailable = sourceFile.available();
-        if (showDebug)
-        {
-            Serial.print("BytesAvailable A: ");
-            Serial.print(bytesAvailable);
-        }
-        else
-        {
-            Serial.print(".");
-        }
 
         if (bytesAvailable > bufSize)
         {
@@ -428,20 +355,20 @@ void LCD::copyFile(const char *fileName)
         }
 
         sourceFile.read(buf, bytesAvailable);
-
-        if (showDebug)
-        {
-            Serial.print(" -> BytesAvailable B: ");
-            Serial.println(bytesAvailable);
-        }
         destFile.write(buf, bytesAvailable);
+        written += bufSize;
+
+        if (written % (bufSize * 128) == 0)
+        {
+            double percent = (((double)written / (double)fileSize)) * 100;
+            sprintf(percentBuffer, " %.2f %% complete", percent);
+            Serial.println(percentBuffer);
+        }
     }
 
     sourceFile.close();
     destFile.flush();
     destFile.close();
-    Serial.println("");
-    Serial.println("copy done");
 }
 
 void LCD::sdINIT()
@@ -522,49 +449,97 @@ void LCD::dumpFS(fs::FS &fs, const char *where, const char *dirname, uint8_t lev
         }
         file = root.openNextFile();
     }
-    file.close(); //???????????????????
+    file.close(); //???
+    root.close(); //???
 }
 
-void LCD::saveImage(const char *filename)
+void LCD::createImage(char *filename, uint16_t width, uint16_t height)
 {
-
     File bmpFile = SPIFFS.open(filename, FILE_WRITE);
-    thisLCD->writeBitmap(bmpFile, 320, 240);
+
+    size_t rowSize = 4 * ((3 * width + 3) / 4); // padded to multiple of 4
+    size_t fileSize = 54 + height * rowSize;    // includes header
+
+    // Write image header.
+    uint8_t header[54] = {
+        // File header.
+        'B', 'M',
+        (uint8_t)(fileSize >> 0),
+        (uint8_t)(fileSize >> 8),
+        (uint8_t)(fileSize >> 16),
+        (uint8_t)(fileSize >> 24),
+        0, 0, 0, 0, 54, 0, 0, 0,
+
+        // Image info header.
+        40, 0, 0, 0,
+        (uint8_t)(width >> 0),
+        (uint8_t)(width >> 8),
+        (uint8_t)(width >> 16),
+        (uint8_t)(width >> 24),
+        (uint8_t)(height >> 0),
+        (uint8_t)(height >> 8),
+        (uint8_t)(height >> 16),
+        (uint8_t)(height >> 24),
+        1, 0, 24, 0};
+    bmpFile.write(header, sizeof header);
+
+    // Write image data.
+    uint8_t row[rowSize] = {0};
+    uint8_t color[3] = {0, 0, 0}; // RGB and 565 format color buffer for N pixels
+    char percentBuffer[256];
+    for (int y = height; y > 0; y--)
+    {
+        if (y % 24 == 0)
+        {
+            double percent = (1 - ((double)y / (double)height)) * 100;
+            sprintf(percentBuffer, " %.2f %% complete", percent);
+            Serial.println(percentBuffer);
+        }
+        for (int x = 0; x < width; x++)
+        {
+            tft.readRectRGB(x, y, 1, 1, color);
+            row[3 * x + 0] = (uint16_t)color[2];
+            row[3 * x + 1] = (uint16_t)color[1];
+            row[3 * x + 2] = (uint16_t)color[0];
+        }
+        bmpFile.write(row, sizeof row);
+    }
     bmpFile.flush();
     bmpFile.close();
 }
 
-void LCD::screenImage(const char *filename)
+boolean LCD::screenCapture(const char *filename, uint16_t width, uint16_t height)
 {
     char nameBuffer[256];
     sprintf(nameBuffer, "/%s.bmp", filename);
 
+    // remove invalid chars (that I am using)
     for (uint8_t i = 1; i < nameBuffer[i] != '\0'; i++)
     {
         if (nameBuffer[i] == ' ')
-        {
             nameBuffer[i] = '_';
-        }
         if (nameBuffer[i] == '/')
-        {
             nameBuffer[i] = '_';
-        }
     }
 
     if (SD.exists(nameBuffer))
-    { // already copied from SPIFFS to SD
-        Serial.print(".");
+    { // exists on SD, we are done
+        return true;
     }
     else if (SPIFFS.exists(nameBuffer))
     { // copy from SPIFFS to SD
-        Serial.printf("Capture Image: '%s'\n", nameBuffer);
-        copyFile(nameBuffer);
+        Serial.printf("Copy Image: '%s'\n", nameBuffer);
+        thisLCD->copyImage(nameBuffer);
+        thisLCD->removeBMP(SPIFFS);
+        Serial.println("Image capture complete");
+        return true;
     }
     else
     { // Create the image on SPIFFS
-        Serial.printf("Coping File: '%s'\n", nameBuffer);
-        saveImage(nameBuffer);
+        Serial.printf("Create Image: '%s'\n", nameBuffer);
+        thisLCD->createImage(nameBuffer, width, height);
     }
+    return false;
 }
 
 void LCD::debugSerial(const char *debugLocation)

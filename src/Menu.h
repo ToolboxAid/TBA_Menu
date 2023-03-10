@@ -60,7 +60,7 @@ private:
   uint16_t t_x = 0, t_y = 0;
   Point *point;
 
-  
+
 protected:
 public:
   static Menu *getInstance()
@@ -174,7 +174,7 @@ boolean Menu::hasPageChange()
 
     this->pageLoadTime = millis();
     this->clearArgs();
-    this->currentPage->drawPage();
+    this->currentPage->drawPage(this->currentPage->getSkin()->textBackgroundColor);//skin->textBackgroundColor
     return true;
   }
   return false;
@@ -319,7 +319,9 @@ void Menu::checkMenuActions()
   if (redrawPage)
   {
     traversMenuLists();
-    this->currentPage->drawPage();
+    this->currentPage->drawPage(this->currentPage->getSkin()->textBackgroundColor);//skin->textBackgroundColor
+
+
   }
   else if (this->currentPage->checkRefresh())
   {
@@ -328,7 +330,7 @@ void Menu::checkMenuActions()
   else
   {
     this->currentPage->drawInputs();
-    lcd->screenImage(this->currentPage->getName());
+    lcd->screenCapture(this->currentPage->getName(), this->currentPage->getSkin()->getScreenWidth(), this->currentPage->getSkin()->getScreenHeight());
   }
 
   delete point; // delete anything we use NEW on.

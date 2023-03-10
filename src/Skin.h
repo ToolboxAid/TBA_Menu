@@ -32,10 +32,9 @@ public:
   };
 
 private:
-
 protected:
 public:
-   uint16_t screenWidth;
+  uint16_t screenWidth;
   uint16_t screenHeight;
   Skin::ROTATE rotate;
 
@@ -44,8 +43,8 @@ public:
 
   uint16_t headerHeight;
   uint16_t headerWidth;
-  
- const char *name;
+
+  const char *name;
 
   // uint8_t  headerFont;    // need to add font someday
   uint8_t headerFontTextSize;
@@ -132,7 +131,7 @@ public:
     this->headerFontTextSize = 3;
     this->headerTextColor = TBA_ORANGE;
     this->headerBackGroundColor = TBA_PURPLE;
-  
+
     // Button
     this->buttonTextColor = TBA_ORANGE;
     this->buttonColor = TBA_PURPLE;
@@ -164,12 +163,12 @@ public:
 
   Skin(const char *name, Skin::ROTATE rotate,
        uint16_t screenWidth, uint16_t screenHeight,
-       uint8_t headerHeight, uint8_t headerFontTextSize, uint16_t headerTextColor, uint16_t headerBackGroundColor, 
+       uint8_t headerHeight, uint8_t headerFontTextSize, uint16_t headerTextColor, uint16_t headerBackGroundColor,
        uint16_t buttonTextColor, uint16_t buttonColor, uint16_t buttonShortColor, uint16_t buttonLongColor, uint16_t buttonBorderColor,
        uint8_t buttonMargin, uint8_t buttonBorderWidth, uint8_t buttonPadding, uint8_t buttonRadius,
        uint8_t textFontSize, uint16_t textColor, uint16_t textBackgroundColor)
   {
-    Serial.println("Skin");  //TODO: remove this
+    Serial.println("Skin"); // TODO: remove this
 
     this->name = name;
 
