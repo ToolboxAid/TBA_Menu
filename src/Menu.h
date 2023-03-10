@@ -33,7 +33,7 @@
 #include "PageTBA.h"
 
 // #define DEBUG
-// #define SCREEN_CAPTURE
+#define CAPTURE_SCREEN_SHOT false
 
 /* This is a singleton class,
 only one instance will ever be created
@@ -61,7 +61,7 @@ private:
   uint16_t t_x = 0, t_y = 0;
   Point *point;
 
-  boolean captureInProgress = false;
+  boolean snapShotInProgress = false;
 
 protected:
 public:
@@ -158,13 +158,13 @@ void Menu::traversMenuLists()
 
 boolean Menu::hasPageChange()
 {
-  if (!captureInProgress)
+  if (!snapShotInProgress)
     if (this->newPage != this->currentPage)
     {
       LCD *lcd = LCD::GetInstance();
 
-      lcd->dumpFS(SD, "SD menu.h", "/", 0);
-      lcd->dumpFS(SPIFFS, "SPIFFS menu.h", "/", 0);
+      // lcd->dumpFS(SD, "SD menu.h", "/snapShot", 0);
+      // lcd->dumpFS(SPIFFS, "SPIFFS menu.h", "/", 0);
 
       if (this->currentPage)
       {
@@ -185,7 +185,7 @@ boolean Menu::hasPageChange()
 
 boolean Menu::hasPageBack()
 {
-  if (!captureInProgress)
+  if (!snapShotInProgress)
     if (this->currentPage->hasBackPage())
     {
       if (millis() > (this->pageLoadTime + (this->currentPage->getBackPageDelay() * 1000)))
@@ -332,9 +332,8 @@ void Menu::checkMenuActions()
   else
   {
     this->currentPage->drawInputs();
-#ifdef SCREEN_CAPTURE
-    captureInProgress = lcd->screenCapture(this->currentPage->getName(), this->currentPage->getSkin()->getScreenWidth(), this->currentPage->getSkin()->getScreenHeight());
-#endif
+    if (CAPTURE_SCREEN_SHOT)
+      snapShotInProgress = lcd->snapShot(this->currentPage->getName(), this->currentPage->getSkin()->getScreenWidth(), this->currentPage->getSkin()->getScreenHeight());
   }
 
   delete point; // delete anything we use NEW on.

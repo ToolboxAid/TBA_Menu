@@ -92,9 +92,9 @@ public:
 
     const char *getName();
 
-    boolean screenCapture(const char *filename, uint16_t width, uint16_t height);
+    boolean snapShot(const char *filename, uint16_t width, uint16_t height);
     void createImage(char *filename, uint16_t width, uint16_t height);
-    void copyImage(const char *filename);
+    void copyImage(const char *filename, const char *fullPath);
 
     void dumpFS(fs::FS &fs, const char *where, const char *dirname, uint8_t levels);
     void sdINIT();
@@ -314,33 +314,13 @@ const char *LCD::getName()
     return this->name;
 }
 
-// https://cdn.hackaday.io/files/274271173436768/Simplified%20Windows%20BMP%20Bitmap%20File%20Format%20Specification.htm
-/*
-Offset Size Decimal value (0-255)   Description
-0      2    -   66   77    -          "BM"
-2      4    N   N>>8 N>>16 N>>24      size, N, of a BMP file
-6      2    -   0    0     -          application specific - not used by the yBmp namespace
-8      2    -   0    0     -          application specific - not used by the yBmp namespace
-10     4    54  0    0     0          number of bytes from beginning of file to beginning of pixel data
-14     4    40  0    0     0          number of bytes from this point to the beginning of pixel data
-18     4    w   w>>8 0     0          Width, w, of image (in pixels, limited to 216-1=65,535)
-22     4    h   h>>8 0     0          Height, h, of image (in pixels, limited to 216-1=65,535). Height values can be positive or negative. Negative values imply that the image is mirrored, top to bottom
-26     2    -   1    0     -          number of color planes used
-28     2    -   24   0     -          number of bits per pixel
-30     4    0   0    0     0          no compression
-34     4    n   n>>8 n>>16 n>>24      size, n, of image (n=h*(3*w+w%4)=N-54)
-38     4    19  11   0     0          horizontal resolution of image (2835 pixels/meter)
-42     4    19  11   0     0          vertical resolution of image (2835 pixels/meter)
-46     4    0   0    0     0          number of colors in the palett
-*/
-
-void LCD::copyImage(const char *fileName)
+void LCD::copyImage(const char *fileName, const char *fullPath)
 {
     File sourceFile = SPIFFS.open(fileName);
-    File destFile = SD.open(fileName, FILE_WRITE);
+    File destFile = SD.open(fullPath, FILE_WRITE);
     static uint8_t buf[bufSize];
-    Serial.print("SPIFFS 2 SD -> progress: ");
-    Serial.println(fileName);
+
+    Serial.printf("SPIFFS to SD Image copy from: '%s' to '%s' \n -> progress:\n", fileName, fullPath);
 
     uint32_t fileSize = sourceFile.available();
     uint32_t written = 0;
@@ -370,6 +350,8 @@ void LCD::copyImage(const char *fileName)
     sourceFile.close();
     destFile.flush();
     destFile.close();
+
+    Serial.println("Copy Image complete");
 }
 
 void LCD::sdINIT()
@@ -509,38 +491,47 @@ void LCD::createImage(char *filename, uint16_t width, uint16_t height)
     bmpFile.close();
 }
 
-boolean LCD::screenCapture(const char *filename, uint16_t width, uint16_t height)
+boolean LCD::snapShot(const char *filename, uint16_t width, uint16_t height)
 {
     char nameBuffer[256];
     sprintf(nameBuffer, "/%s.bmp", filename);
 
-    // remove invalid chars (that I am using)
-    //The allowed characters are anything except 0x0-0x1F , '<' , '>' , ':' , '"' , '/' , '\' , and '|' 
-
-    for (uint8_t i = 1; i < nameBuffer[i] != '\0'; i++)
+    // The allowed characters are anything except 0x0-0x1F , '<' , '>' , ':' , '"' , '/' , '\' , and '|'
+    const char *invalidChars = " <>:,\"\\/|";
+    for (uint8_t n = 1; n < nameBuffer[n] != '\0'; n++)
     {
-        if (nameBuffer[i] == ' ')
-            nameBuffer[i] = '_';
-        if (nameBuffer[i] == '/')
-            nameBuffer[i] = '_';
+        for (uint8_t i = 0; i < invalidChars[i] != '\0'; i++)
+        {
+            if (nameBuffer[n] == invalidChars[i])
+                nameBuffer[n] = '_';
+        }
     }
 
-    if (SD.exists(nameBuffer))
+    const char *snapShotPath = "/snapShot";
+    char fullPath[256];
+    sprintf(fullPath, "%s%s", snapShotPath, nameBuffer);
+
+    if (!SD.exists(snapShotPath))
+    {
+        SD.mkdir(snapShotPath);
+    }
+
+    if (SD.exists(fullPath))
     { // exists on SD, we are done
         return false;
     }
     else if (SPIFFS.exists(nameBuffer))
     { // copy from SPIFFS to SD
-        Serial.printf("Copy Image: '%s'\n", nameBuffer);
-        thisLCD->copyImage(nameBuffer);
-        Serial.println("Capture Image complete");
+
+        thisLCD->copyImage(nameBuffer, fullPath);
+
         SPIFFS.remove(nameBuffer);
-        Serial.println("Delete SPIFFS Image complete");
+        Serial.println("SPIFFS : Delete SPIFFS Image complete");
         return true;
     }
     else
     { // Create the image on SPIFFS
-        Serial.printf("Create Image: '%s'\n", nameBuffer);
+        Serial.printf("SPIFFS : Create Image: '%s'\n", nameBuffer);
         thisLCD->createImage(nameBuffer, width, height);
         return true;
     }
