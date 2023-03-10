@@ -315,6 +315,10 @@ public:
   {
     return this->labelListPlus->deleteID(identity);
   }
+  boolean removeLabelName(const char *name)
+  {
+    return this->labelListPlus->deleteName(name);
+  }  
   boolean removePageRectangle(const char *name)
   {
     return this->rectangleListPlus->deleteName(name);

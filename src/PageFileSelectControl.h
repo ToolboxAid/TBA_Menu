@@ -70,18 +70,18 @@ public:
       top = skin->getHeaderHeight();
     }
 
-    // =============================================================================
+    // ==================================================================
     // Add input directory name
     dimensions = new Dimensions(skin->buttonMargin, top + skin->buttonMargin, skin->getScreenWidth() - (skin->buttonMargin * 1) - (skin->buttonBorderWidth * 2), CURRENT_DIRECTORY_SIZE);
     this->addInput(new ControlInput(CURRENT_DIRECTORY, CURRENT_DIRECTORY_SIZE, ControlInput::JUSTIFICATION::LEFT, dimensions, currentDirectory.c_str()));
 
-    // =============================================================================
+    // ==================================================================
     // Add rectangles back drop
     top = dimensions->getY() + dimensions->getH() + skin->buttonMargin;
     dimensions = new Dimensions(skin->buttonMargin, top, skin->getScreenWidth() - size - (skin->buttonMargin * 2) - (skin->buttonBorderWidth * 2), skin->getScreenHeight() - top - (skin->buttonMargin * 1));
     this->addRectangle(new ControlRectangle(BACKDROP, dimensions));
 
-    // =========================================================================
+    // ==================================================================
     // --------------------------- Scrole Bar ----------------------------------
     // Add button: UP
     dimensions = new Dimensions(skin->getScreenWidth() - size - skin->buttonMargin, top, size, size);

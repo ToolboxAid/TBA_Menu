@@ -33,7 +33,6 @@
 #include "PageTBA.h"
 
 // #define DEBUG
-#define SCREEN_CAPTURE true
 
 /* This is a singleton class,
 only one instance will ever be created
@@ -61,6 +60,7 @@ private:
   uint16_t t_x = 0, t_y = 0;
   Point *point;
 
+  boolean screen_capture = false;
   boolean captureInProgress = false;
 
 protected:
@@ -332,7 +332,7 @@ void Menu::checkMenuActions()
   else
   {
     this->currentPage->drawInputs();
-    if (SCREEN_CAPTURE)
+    if (screen_capture)
       captureInProgress = lcd->screenCapture(this->currentPage->getName(), this->currentPage->getSkin()->getScreenWidth(), this->currentPage->getSkin()->getScreenHeight());
   }
 

@@ -18,7 +18,6 @@ public:
     {
         this->value = (char *)malloc(strlen(value) + 1);
         memcpy(this->value, value, strlen(value) + 1);
- // Todo, why is this here???        this->value = (char *)this->value;
     }
 
     ~ElementArg()

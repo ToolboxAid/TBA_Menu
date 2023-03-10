@@ -353,8 +353,7 @@ void LCD::copyImage(const char *fileName)
 }
 
 void LCD::sdINIT()
-{
-    //    SD.end();
+{   //    SD.end();
     if (SD.begin())
     {
         Serial.println("SD Mounted");
@@ -392,7 +391,7 @@ void LCD::sdINIT()
 
 void LCD::dumpFS(fs::FS &fs, const char *where, const char *dirname, uint8_t levels)
 {
-    Serial.println("\n====================================================================");
+    Serial.println("\n======================================================");
     Serial.printf("Listing directory: where '%s' : dir '%s'\n", where, dirname);
 
     File root = fs.open(dirname);
@@ -496,7 +495,6 @@ boolean LCD::screenCapture(const char *filename, uint16_t width, uint16_t height
 
     // remove invalid chars (that I am using)
     //The allowed characters are anything except 0x0-0x1F , '<' , '>' , ':' , '"' , '/' , '\' , and '|' 
-
     for (uint8_t i = 1; i < nameBuffer[i] != '\0'; i++)
     {
         if (nameBuffer[i] == ' ')
