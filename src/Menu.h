@@ -33,7 +33,7 @@
 #include "PageTBA.h"
 
 // #define DEBUG
-// #define SCREEN_CAPTURE
+#define SCREEN_CAPTURE true
 
 /* This is a singleton class,
 only one instance will ever be created
@@ -332,9 +332,8 @@ void Menu::checkMenuActions()
   else
   {
     this->currentPage->drawInputs();
-#ifdef SCREEN_CAPTURE
-    captureInProgress = lcd->screenCapture(this->currentPage->getName(), this->currentPage->getSkin()->getScreenWidth(), this->currentPage->getSkin()->getScreenHeight());
-#endif
+    if (SCREEN_CAPTURE)
+      captureInProgress = lcd->screenCapture(this->currentPage->getName(), this->currentPage->getSkin()->getScreenWidth(), this->currentPage->getSkin()->getScreenHeight());
   }
 
   delete point; // delete anything we use NEW on.

@@ -314,26 +314,6 @@ const char *LCD::getName()
     return this->name;
 }
 
-// https://cdn.hackaday.io/files/274271173436768/Simplified%20Windows%20BMP%20Bitmap%20File%20Format%20Specification.htm
-/*
-Offset Size Decimal value (0-255)   Description
-0      2    -   66   77    -          "BM"
-2      4    N   N>>8 N>>16 N>>24      size, N, of a BMP file
-6      2    -   0    0     -          application specific - not used by the yBmp namespace
-8      2    -   0    0     -          application specific - not used by the yBmp namespace
-10     4    54  0    0     0          number of bytes from beginning of file to beginning of pixel data
-14     4    40  0    0     0          number of bytes from this point to the beginning of pixel data
-18     4    w   w>>8 0     0          Width, w, of image (in pixels, limited to 216-1=65,535)
-22     4    h   h>>8 0     0          Height, h, of image (in pixels, limited to 216-1=65,535). Height values can be positive or negative. Negative values imply that the image is mirrored, top to bottom
-26     2    -   1    0     -          number of color planes used
-28     2    -   24   0     -          number of bits per pixel
-30     4    0   0    0     0          no compression
-34     4    n   n>>8 n>>16 n>>24      size, n, of image (n=h*(3*w+w%4)=N-54)
-38     4    19  11   0     0          horizontal resolution of image (2835 pixels/meter)
-42     4    19  11   0     0          vertical resolution of image (2835 pixels/meter)
-46     4    0   0    0     0          number of colors in the palett
-*/
-
 void LCD::copyImage(const char *fileName)
 {
     File sourceFile = SPIFFS.open(fileName);

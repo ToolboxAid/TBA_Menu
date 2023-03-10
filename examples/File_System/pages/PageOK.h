@@ -57,7 +57,7 @@ public:
         ElementArg *argPath = Menu::getInstance()->searchArg("pathSelected");
         if (argPath)
         {
-            ControlLabel *label = new ControlLabel((const char *)argPath->getValue(), new Point(40, 90), false);
+            //ControlLabel *label = new ControlLabel((const char *)argPath->getValue(), new Point(40, 90), false);
             argPath->debugSerial("argPath");
         }
         else
