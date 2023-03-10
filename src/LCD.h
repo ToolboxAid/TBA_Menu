@@ -63,11 +63,6 @@ private:
     void touch_calibrate_setup();
     void touch_calibrate(const char *calibrationFile);
 
-    struct MyPixel
-    {
-        uint8_t r, g, b;
-    };
-
 protected:
     enum SCREEN_CAPTURE_STATE
     { // Do not change order.
@@ -114,22 +109,12 @@ public:
 
     void debugSerial(const char *debugLocation);
 
-    MyPixel getMyPixel(int x, int y);
     void writeBitmap(File &file, int w, int h);
     void removeBMP(fs::FS &fs);
 };
 
 LCD *LCD::thisLCD{nullptr};
 std::mutex LCD::mutex_;
-
-// Dummy example. Replace with your own logic.
-LCD::MyPixel LCD::getMyPixel(int x, int y)
-{
-    uint8_t color[3] = {0, 0, 0}; // RGB and 565 format color buffer for N pixels
-    tft.readRectRGB(x, y, 1, 1, color);
-    const MyPixel myPixel = {(uint16_t)color[0], (uint16_t)color[1], (uint16_t)color[2]};
-    return myPixel;
-}
 
 void LCD::writeBitmap(File &file, int w, int h)
 {
@@ -161,15 +146,23 @@ void LCD::writeBitmap(File &file, int w, int h)
 
     // Write image data.
     uint8_t row[rowSize] = {0};
+    uint8_t color[3] = {0, 0, 0}; // RGB and 565 format color buffer for N pixels
+    char deleteFile[256];
+char *per="%";
     for (int y = h; y > 0; y--)
     {
-        Serial.print(".");
+        if (y % 24 == 0)
+        {
+            double percent = (1 - ((double)y / (double)h)) * 100;
+            sprintf(deleteFile, " %3.1f %s complete", percent,per);
+            Serial.println(deleteFile);
+        }
         for (int x = 0; x < w; x++)
         {
-            MyPixel pix = getMyPixel(x, y);
-            row[3 * x + 0] = pix.b;
-            row[3 * x + 1] = pix.g;
-            row[3 * x + 2] = pix.r;
+            tft.readRectRGB(x, y, 1, 1, color);
+            row[3 * x + 0] = (uint16_t)color[2];
+            row[3 * x + 1] = (uint16_t)color[1];
+            row[3 * x + 2] = (uint16_t)color[0];
         }
         file.write(row, sizeof row);
     }
@@ -300,30 +293,30 @@ void LCD::removeBMP(fs::FS &fs)
             if (fileName_len >= 4 && strcmp(compName, ".bmp") == 0)
             {
 
-Serial.print("FILE: ");
-Serial.print(file.name());
-Serial.print("  SIZE: ");
-Serial.print(file.size());
+                Serial.print("FILE: ");
+                Serial.print(file.name());
+                Serial.print("  SIZE: ");
+                Serial.print(file.size());
 
-Serial.print(" fileName_len: ");
-Serial.print(fileName_len);
-Serial.print(" compName: ");
-Serial.print(compName);
+                Serial.print(" fileName_len: ");
+                Serial.print(fileName_len);
+                Serial.print(" compName: ");
+                Serial.print(compName);
 
-//char *deleteFile[strlen(file.name()) + 2];
-//snprintf_P(deleteFile, sizeof(deleteFile), PSTR("/%s"), file.name());
+                // char *deleteFile[strlen(file.name()) + 2];
+                // snprintf_P(deleteFile, sizeof(deleteFile), PSTR("/%s"), file.name());
 
-char deleteFile[256];
-sprintf(deleteFile, "/%s", file.name());
+                char deleteFile[256];
+                sprintf(deleteFile, "/%s", file.name());
 
-// memcpy ( ((char *)deleteFile + 1), file.name(), strlen(file.name()) + 2 );
-// deleteFile[0] = (char*)'/';
+                // memcpy ( ((char *)deleteFile + 1), file.name(), strlen(file.name()) + 2 );
+                // deleteFile[0] = (char*)'/';
 
-Serial.print(" deleteFile: '");
-Serial.print((const char *)deleteFile);
-Serial.println("'");
+                Serial.print(" deleteFile: '");
+                Serial.print((const char *)deleteFile);
+                Serial.println("'");
 
-Serial.print(" *** *** Delete FILE");
+                Serial.print(" *** *** Delete FILE");
 
                 fs.remove((const char *)deleteFile);
             }
@@ -529,7 +522,7 @@ void LCD::dumpFS(fs::FS &fs, const char *where, const char *dirname, uint8_t lev
         }
         file = root.openNextFile();
     }
-    file.close();//???????????????????
+    file.close(); //???????????????????
 }
 
 void LCD::saveImage(const char *filename)
